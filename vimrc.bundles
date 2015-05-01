@@ -1,0 +1,5 @@
+Bundle 'https://github.com/flazz/vim-colorschemes.git'
+Bundle 'https://github.com/scrooloose/nerdtree.git'
+Plugin 'Valloric/YouCompleteMe'
+Plugin 'groovy.vim'
+Plugin 'vim-ruby/vim-ruby'
