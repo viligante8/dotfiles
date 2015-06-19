@@ -84,7 +84,7 @@ alias ber='bundle exec rspec'
 alias work='cd /home/vito/dev/careerbuilder'
 alias lsl='ls -la'
 alias fixmouse='sudo apt-get --purge autoremove xserver-xorg-input-synaptics && sudo apt-get install xserver-xorg-input-synaptics'
-alias nstart='/opt/nginx/sbin/nginx start'
+alias nstart='sudo /opt/nginx/sbin/nginx'
 alias nreload='sudo /opt/nginx/sbin/nginx -s reload'
 alias install='sudo apt-get install'
 

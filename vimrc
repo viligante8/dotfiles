@@ -2,6 +2,7 @@ let mapleader=" "
 
 noremap <leader>so :so ~/.vimrc<cr>
 noremap <leader>w :wincmd w<cr>
+noremap <leader>s :w<cr>
 noremap <leader>- :vertical resize -5<cr>
 noremap <leader>= :vertical resize +5<cr>
 noremap <leader>n :NERDTree<cr>
@@ -48,3 +49,6 @@ set noswapfile
 
 set path=$PWD/**
 color monokai
+color gruvbox
+set background=dark
+set backspace=indent,eol,start
