@@ -5,7 +5,25 @@ noremap <leader>w :wincmd w<cr>
 noremap <leader>s :w<cr>
 noremap <leader>- :vertical resize -5<cr>
 noremap <leader>= :vertical resize +5<cr>
-noremap <leader>n :NERDTree<cr>
+noremap <leader>n :e.<cr>
+
+if exists('+relativenumber')
+  nnoremap <expr> <C-N> CycleLNum()
+  xnoremap <expr> <C-N> CycleLNum()
+  onoremap <expr> <C-N> CycleLNum()
+
+  function! CycleLNum()
+    if &l:rnu
+      setlocal nonu nornu
+    elseif &l:nu
+      setlocal nu rnu
+    else
+      setlocal nu
+    endif
+    redraw
+    return ""
+  endfunc
+endif
 
 let g:vimfiler_as_default_explorer = 1
 
@@ -16,15 +34,6 @@ if has("autocmd")
   filetype indent plugin on
 endif
 
-" set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
-
-if filereadable(expand("~/.vimrc.bundles"))
-  source ~/.vimrc.bundles
-endif
-
-call vundle#end() " required
 filetype plugin indent on
 
 set relativenumber
@@ -48,7 +57,11 @@ set autoindent
 set noswapfile
 
 set path=$PWD/**
-color monokai
-color gruvbox
 set background=dark
+color elflord
+
 set backspace=indent,eol,start
+set tags=$PWD/.git/tags
+
+set rtp+=~/.fzf
+autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
