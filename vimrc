@@ -5,16 +5,7 @@ noremap <leader>w :wincmd w<cr>
 noremap <leader>s :w<cr>
 noremap <leader>- :vertical resize -5<cr>
 noremap <leader>= :vertical resize +5<cr>
-noremap <leader>n :vsp .<cr>
-
-noremap <leader>yy "*yy
-noremap <leader>y "*y
-noremap <leader>dd "*dd
-noremap <leader>d "*d
-noremap <leader>p "*p
-noremap <leader>P "*P
-
-noremap <leader>j :%!python -m json.tool<cr>
+noremap <leader>n :e.<cr>
 
 if exists('+relativenumber')
   nnoremap <expr> <C-N> CycleLNum()
@@ -34,17 +25,21 @@ if exists('+relativenumber')
   endfunc
 endif
 
-function! OpenFileBrowserDrawer()
-  :vsp . <cr> 
-  :vertical resize 30<cr>
-endfunc
+noremap <leader>yy "*yy
+noremap <leader>y "*y
+noremap <leader>dd "*dd
+noremap <leader>d "*d
+noremap <leader>p "*p
+noremap <leader>P "*P
 
+noremap <leader>j :%!python -m json.tool<cr>
 
 set nocompatible              " be iMproved, required
 filetype off                  " required
 if has("autocmd")
   filetype indent plugin on
 endif
+
 "set the runtime path to include Vundle and initialize
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
@@ -52,6 +47,7 @@ if filereadable(expand("~/.vimrc.bundles"))
   source ~/.vimrc.bundles
 endif
 call vundle#end()            " required
+
 filetype plugin indent on
 
 set number
