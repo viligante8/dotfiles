@@ -1,5 +1,5 @@
 # Path to your oh-my-zsh installation.
-export ZSH=/home/vito/.oh-my-zsh
+export ZSH=/Users/vpistelli/.oh-my-zsh
 
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
@@ -45,12 +45,9 @@ ZSH_THEME="gozilla"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git)
+plugins=(git gitfast git-extras)
 
 # User configuration
-
-export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"
-# export MANPATH="/usr/local/man:$MANPATH"
 
 source $ZSH/oh-my-zsh.sh
 
@@ -79,14 +76,49 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
+export INTELJS_CLIENT_ID=
+export INTELJS_SIGNATURE=
+
+export INTELJS_CLIENT_ID_TEST=
+export INTELJS_SIGNATURE_TEST=
+
+#export DATADOG_API_KEY=
+#export DATADOG_APPLICATION_KEY=
+
 alias bers='bundle exec rails s'
 alias ber='bundle exec rspec'
-alias work='cd /home/vito/dev/careerbuilder'
+alias work='cd /Users/vpistelli/dev/careerbuilder'
 alias lsl='ls -la'
-alias fixmouse='sudo apt-get --purge autoremove xserver-xorg-input-synaptics && sudo apt-get install xserver-xorg-input-synaptics'
-alias nstart='sudo /opt/nginx/sbin/nginx'
-alias nreload='sudo /opt/nginx/sbin/nginx -s reload'
-alias install='sudo apt-get install'
+alias vim='mvim -v'
+alias :q='exit'
+alias token='NODE_ENV=production node /Users/vpistelli/dev/careerbuilder/tokenizer/index.js'
+alias test_token='NODE_ENV=staging node /Users/vpistelli/dev/careerbuilder/tokenizer/index_wwwtest.js'
+alias googleToken='node /Users/vpistelli/dev/careerbuilder/node/google-credentials/get-credentials.js | pbcopy'
 
-export PATH="$HOME/.rbenv/bin:$PATH"
+alias kula='cp ~/.aws/credentials_kula ~/.aws/credentials'
+alias cb='cp ~/.aws/credentials_cb ~/.aws/credentials'
+alias mobile_app='cp ~/.aws/credentials_mobile_app ~/.aws/credentials'
+
+#######
+# nvm #
+#######
+export NVM_DIR="/Users/vpistelli/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
+nvm use 4.3.2
+
+#export PATH=$PATH:/usr/local/bin
+
+# added by travis gem
+[ -f /Users/vpistelli/.travis/travis.sh ] && source /Users/vpistelli/.travis/travis.sh
+
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+
+eval $(/usr/libexec/path_helper -s)
+
+source ~/.iterm2_shell_integration.`basename $SHELL`
+
+#########
+# rbenv #
+#########
+export PATH="$HOME/.rbenv/bin:$HOME/.rbenv/shims:$PATH"
 eval "$(rbenv init -)"
