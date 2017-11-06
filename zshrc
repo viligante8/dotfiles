@@ -93,9 +93,9 @@ alias vim='mvim -v'
 alias :q='exit'
 alias token='NODE_ENV=production node /Users/vpistelli/dev/careerbuilder/tokenizer/index.js'
 alias test_token='NODE_ENV=staging node /Users/vpistelli/dev/careerbuilder/tokenizer/index_wwwtest.js'
-alias googleToken='node /Users/vpistelli/dev/careerbuilder/node/google-credentials/get-credentials.js | pbcopy'
+alias googleToken='node /Users/vpistelli/dev/careerbuilder/google-credentials/get-credentials.js | pbcopy'
+alias github="open http://www.github.com/$(git remote show origin -n | grep h.URL | sed 's/.*://;s/.git$//')"
 
-alias kula='cp ~/.aws/credentials_kula ~/.aws/credentials'
 alias cb='cp ~/.aws/credentials_cb ~/.aws/credentials'
 alias mobile_app='cp ~/.aws/credentials_mobile_app ~/.aws/credentials'
 
@@ -104,21 +104,20 @@ alias mobile_app='cp ~/.aws/credentials_mobile_app ~/.aws/credentials'
 #######
 export NVM_DIR="/Users/vpistelli/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
-nvm use 4.3.2
-
-#export PATH=$PATH:/usr/local/bin
-
-# added by travis gem
-[ -f /Users/vpistelli/.travis/travis.sh ] && source /Users/vpistelli/.travis/travis.sh
-
-test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
-
-eval $(/usr/libexec/path_helper -s)
-
-source ~/.iterm2_shell_integration.`basename $SHELL`
+nvm use 4.3.2 > /dev/null
 
 #########
 # rbenv #
 #########
 export PATH="$HOME/.rbenv/bin:$HOME/.rbenv/shims:$PATH"
 eval "$(rbenv init -)"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# Enable Ctrl-x-e to edit command line with vim keybindings
+autoload -U edit-command-line
+zle -N edit-command-line
+bindkey -M vicmd v edit-command-line
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
