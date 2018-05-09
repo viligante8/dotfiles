@@ -1,1 +1,2 @@
 Plugin 'morhetz/gruvbox'
+Plugin 'tpope/vim-fugitive'

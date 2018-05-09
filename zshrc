@@ -94,24 +94,29 @@ alias :q='exit'
 alias token='NODE_ENV=production node /Users/vpistelli/dev/careerbuilder/tokenizer/index.js'
 alias test_token='NODE_ENV=staging node /Users/vpistelli/dev/careerbuilder/tokenizer/index_wwwtest.js'
 alias googleToken='node /Users/vpistelli/dev/careerbuilder/google-credentials/get-credentials.js | pbcopy'
-alias github="open http://www.github.com/$(git remote show origin -n | grep h.URL | sed 's/.*://;s/.git$//')"
+#alias github="open http://www.github.com/$(git remote show origin -n | grep h.URL | sed 's/.*://;s/.git$//')"
 
 alias cb='cp ~/.aws/credentials_cb ~/.aws/credentials'
 alias mobile_app='cp ~/.aws/credentials_mobile_app ~/.aws/credentials'
 
+alias cdg='cd `git rev-parse --show-toplevel`'
+
 #######
 # nvm #
 #######
-export NVM_DIR="/Users/vpistelli/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
-nvm use 4.3.2 > /dev/null
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
 #########
 # rbenv #
 #########
 export PATH="$HOME/.rbenv/bin:$HOME/.rbenv/shims:$PATH"
 eval "$(rbenv init -)"
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+########
+# rust #
+#######
+export PATH="$HOME/.cargo/bin:$PATH"
 
 # Enable Ctrl-x-e to edit command line with vim keybindings
 autoload -U edit-command-line

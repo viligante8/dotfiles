@@ -34,6 +34,8 @@ noremap <leader>P "*P
 
 noremap <leader>j :%!python -m json.tool<cr>
 
+let @q = '0df"f"df>i="f<d$A"j0'
+
 set nocompatible              " be iMproved, required
 filetype off                  " required
 if has("autocmd")
