@@ -1,5 +1,5 @@
 # Path to your oh-my-zsh installation.
-export ZSH=/Users/vpistelli/.oh-my-zsh
+export ZSH=/Users/vito.pistelli/.oh-my-zsh
 
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
@@ -76,53 +76,58 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-export INTELJS_CLIENT_ID=
-export INTELJS_SIGNATURE=
-
-export INTELJS_CLIENT_ID_TEST=
-export INTELJS_SIGNATURE_TEST=
-
-#export DATADOG_API_KEY=
-#export DATADOG_APPLICATION_KEY=
-
-alias bers='bundle exec rails s'
-alias ber='bundle exec rspec'
-alias work='cd /Users/vpistelli/dev/careerbuilder'
 alias lsl='ls -la'
 alias vim='mvim -v'
 alias :q='exit'
-alias token='NODE_ENV=production node /Users/vpistelli/dev/careerbuilder/tokenizer/index.js'
-alias test_token='NODE_ENV=staging node /Users/vpistelli/dev/careerbuilder/tokenizer/index_wwwtest.js'
-alias googleToken='node /Users/vpistelli/dev/careerbuilder/google-credentials/get-credentials.js | pbcopy'
 #alias github="open http://www.github.com/$(git remote show origin -n | grep h.URL | sed 's/.*://;s/.git$//')"
-
-alias cb='cp ~/.aws/credentials_cb ~/.aws/credentials'
-alias mobile_app='cp ~/.aws/credentials_mobile_app ~/.aws/credentials'
 
 alias cdg='cd `git rev-parse --show-toplevel`'
 
-#######
-# nvm #
-#######
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+  [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
+  [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+autoload -U add-zsh-hook
 
-#########
-# rbenv #
-#########
-export PATH="$HOME/.rbenv/bin:$HOME/.rbenv/shims:$PATH"
-eval "$(rbenv init -)"
+load-nvmrc() {
+  local nvmrc_path
+  nvmrc_path="$(nvm_find_nvmrc)"
 
-########
-# rust #
-#######
-export PATH="$HOME/.cargo/bin:$PATH"
+  if [ -n "$nvmrc_path" ]; then
+    local nvmrc_node_version
+    nvmrc_node_version=$(nvm version "$(cat "${nvmrc_path}")")
+
+    if [ "$nvmrc_node_version" = "N/A" ]; then
+      nvm install
+    elif [ "$nvmrc_node_version" != "$(nvm version)" ]; then
+      nvm use
+    fi
+  elif [ -n "$(PWD=$OLDPWD nvm_find_nvmrc)" ] && [ "$(nvm version)" != "$(nvm version default)" ]; then
+    echo "Reverting to nvm default version"
+    nvm use default
+  fi
+}
+
+add-zsh-hook chpwd load-nvmrc
+load-nvmrc
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+
+autoload bashcompinit && bashcompinit
+autoload -Uz compinit && compinit
+complete -C '/usr/local/bin/aws_completer' aws
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/vito.pistelli/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/vito.pistelli/Downloads/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/vito.pistelli/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/vito.pistelli/Downloads/google-cloud-sdk/completion.zsh.inc'; fi
+
+#fzf
+source <(fzf --zsh)
 
 # Enable Ctrl-x-e to edit command line with vim keybindings
 autoload -U edit-command-line
 zle -N edit-command-line
 bindkey -M vicmd v edit-command-line
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
