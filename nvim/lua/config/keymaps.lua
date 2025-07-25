@@ -97,3 +97,11 @@ keymap('n', '<C-Right>', '<cmd>vertical resize +2<cr>', { desc = 'Increase windo
 
 -- Quick save
 keymap('n', '<leader>w', '<cmd>w<cr>', { desc = 'Save file' })
+
+-- Debugging keymaps (additional to those in tools/init.lua)
+keymap('n', '<leader>dc', '<cmd>DapContinue<cr>', { desc = 'Debug: Continue' })
+keymap('n', '<leader>ds', '<cmd>DapStepOver<cr>', { desc = 'Debug: Step Over' })
+keymap('n', '<leader>di', '<cmd>DapStepInto<cr>', { desc = 'Debug: Step Into' })
+keymap('n', '<leader>do', '<cmd>DapStepOut<cr>', { desc = 'Debug: Step Out' })
+keymap('n', '<leader>dr', '<cmd>DapRestart<cr>', { desc = 'Debug: Restart' })
+keymap('n', '<leader>dx', '<cmd>DapTerminate<cr>', { desc = 'Debug: Terminate' })

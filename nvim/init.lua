@@ -12,9 +12,25 @@
 --
 -- lua/plugins/
 --   ├── ui/             -- UI-related plugins (colorschemes, statusline, etc.)
+--   │   ├── kanagawa.lua    -- Colorscheme
+--   │   ├── nvim-tree.lua   -- File explorer  
+--   │   ├── which-key.lua   -- Keybinding hints
+--   │   └── mini.lua        -- Mini.nvim statusline & more
 --   ├── editor/         -- Editor enhancements (telescope, treesitter, etc.)
+--   │   ├── telescope.lua   -- Telescope fuzzy finder
+--   │   ├── treesitter.lua  -- Treesitter syntax highlighting
+--   │   ├── gitsigns.lua    -- Git integration
+--   │   └── autopairs.lua   -- Auto bracket pairing
 --   ├── coding/         -- Coding tools (LSP, completion, etc.)
+--   │   ├── lsp.lua         -- LSP configuration
+--   │   ├── blink-cmp.lua   -- Completion engine
+--   │   ├── conform.lua     -- Code formatting
+--   │   └── nvim-lint.lua   -- Linting
 --   └── tools/          -- Additional tools (git, testing, etc.)
+--       ├── lazygit.lua     -- Git TUI integration
+--       ├── neotest.lua     -- Testing framework
+--       ├── dap.lua         -- Debugging
+--       └── dadbod.lua      -- Database UI
 
 -- Set leader keys before anything else
 vim.g.mapleader = ' '
