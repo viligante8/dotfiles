@@ -4,6 +4,4 @@
 
 local keymap = vim.keymap.set
 
--- Script debugging and execution keymaps (avoiding conflicts with LazyVim DAP)
-keymap("n", "<leader>dQ", "<cmd>DebugQuick<cr>", { desc = "Debug Quick (Current Project)" })
-keymap("n", "<leader>dR", "<cmd>RunScript<cr>", { desc = "Run Script (Terminal Split)" })
+-- Custom DAP keymaps are now handled in plugins/dap.lua with proper filetype restrictions
