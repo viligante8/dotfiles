@@ -2,8 +2,14 @@
 return {
   "kevinhwang91/nvim-bqf",
   ft = "qf",
+  dependencies = {
+    "junegunn/fzf",
+  },
   config = function()
-    require("bqf").setup({
+    -- Check if fzf is available before setting up filter
+    local has_fzf = vim.fn.executable("fzf") == 1
+
+    local config = {
       auto_enable = true,
       preview = {
         win_height = 12,
@@ -16,12 +22,18 @@ return {
         ptogglemode = "z,",
         stoggleup = "",
       },
-      filter = {
+    }
+
+    -- Only add fzf filter if fzf is available
+    if has_fzf then
+      config.filter = {
         fzf = {
           action_for = { ["ctrl-s"] = "split" },
           extra_opts = { "--bind", "ctrl-o:toggle-all", "--prompt", "> " },
         },
-      },
-    })
+      }
+    end
+
+    require("bqf").setup(config)
   end,
 }
