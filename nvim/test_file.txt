@@ -1,6 +1,0 @@
-This is a test file for search and replace functionality.
-We have some sample text here.
-Let's test searching for words like "test" and "sample".
-The quick brown fox jumps over the lazy dog.
-Another line with test content.
-Final line for testing purposes.

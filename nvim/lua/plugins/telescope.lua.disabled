@@ -1,0 +1,399 @@
+return {
+  {
+    "nvim-telescope/telescope.nvim",
+    branch = "0.1.x",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      {
+        "nvim-telescope/telescope-fzf-native.nvim",
+        build = "make",
+        cond = function()
+          return vim.fn.executable("make") == 1
+        end,
+      },
+      "nvim-telescope/telescope-ui-select.nvim",
+      "nvim-tree/nvim-web-devicons",
+    },
+    cmd = "Telescope",
+    keys = {
+      -- File navigation
+      {
+        "<leader>ff",
+        "<cmd>Telescope find_files<cr>",
+        desc = "Find Files",
+      },
+      {
+        "<leader>fF",
+        "<cmd>Telescope find_files hidden=true no_ignore=true<cr>",
+        desc = "Find Files (hidden)",
+      },
+      {
+        "<leader>fr",
+        "<cmd>Telescope oldfiles<cr>",
+        desc = "Recent Files",
+      },
+      {
+        "<leader>fb",
+        "<cmd>Telescope buffers<cr>",
+        desc = "Buffers",
+      },
+      
+      -- Search
+      {
+        "<leader>sg",
+        "<cmd>Telescope live_grep<cr>",
+        desc = "Live Grep",
+      },
+      {
+        "<leader>sw",
+        "<cmd>Telescope grep_string<cr>",
+        desc = "Word under cursor",
+      },
+      {
+        "<leader>ss",
+        "<cmd>Telescope current_buffer_fuzzy_find<cr>",
+        desc = "Search in current buffer",
+      },
+      {
+        "<leader>s/",
+        "<cmd>Telescope search_history<cr>",
+        desc = "Search History",
+      },
+      
+      -- Git
+      {
+        "<leader>gc",
+        "<cmd>Telescope git_commits<cr>",
+        desc = "Git Commits",
+      },
+      {
+        "<leader>gb",
+        "<cmd>Telescope git_branches<cr>",
+        desc = "Git Branches",
+      },
+      {
+        "<leader>gs",
+        "<cmd>Telescope git_status<cr>",
+        desc = "Git Status",
+      },
+      
+      -- LSP
+      {
+        "<leader>lr",
+        "<cmd>Telescope lsp_references<cr>",
+        desc = "LSP References",
+      },
+      {
+        "<leader>ld",
+        "<cmd>Telescope lsp_definitions<cr>",
+        desc = "LSP Definitions",
+      },
+      {
+        "<leader>li",
+        "<cmd>Telescope lsp_implementations<cr>",
+        desc = "LSP Implementations",
+      },
+      {
+        "<leader>lt",
+        "<cmd>Telescope lsp_type_definitions<cr>",
+        desc = "LSP Type Definitions",
+      },
+      {
+        "<leader>ls",
+        "<cmd>Telescope lsp_document_symbols<cr>",
+        desc = "Document Symbols",
+      },
+      {
+        "<leader>lS",
+        "<cmd>Telescope lsp_workspace_symbols<cr>",
+        desc = "Workspace Symbols",
+      },
+      {
+        "<leader>le",
+        "<cmd>Telescope diagnostics<cr>",
+        desc = "Diagnostics",
+      },
+      
+      -- Help and config
+      {
+        "<leader>hh",
+        "<cmd>Telescope help_tags<cr>",
+        desc = "Help Tags",
+      },
+      {
+        "<leader>hm",
+        "<cmd>Telescope man_pages<cr>",
+        desc = "Man Pages",
+      },
+      {
+        "<leader>hk",
+        "<cmd>Telescope keymaps<cr>",
+        desc = "Keymaps",
+      },
+      {
+        "<leader>hc",
+        "<cmd>Telescope commands<cr>",
+        desc = "Commands",
+      },
+      {
+        "<leader>ho",
+        "<cmd>Telescope vim_options<cr>",
+        desc = "Vim Options",
+      },
+      
+      -- Misc
+      {
+        "<leader>:",
+        "<cmd>Telescope command_history<cr>",
+        desc = "Command History",
+      },
+      {
+        "<leader>sm",
+        "<cmd>Telescope marks<cr>",
+        desc = "Marks",
+      },
+      {
+        "<leader>sj",
+        "<cmd>Telescope jumplist<cr>",
+        desc = "Jumplist",
+      },
+      {
+        "<leader>sl",
+        "<cmd>Telescope loclist<cr>",
+        desc = "Location List",
+      },
+      {
+        "<leader>sq",
+        "<cmd>Telescope quickfix<cr>",
+        desc = "Quickfix",
+      },
+    },
+    config = function()
+      local telescope = require("telescope")
+      local actions = require("telescope.actions")
+      
+      -- Safely require trouble if available
+      local trouble_ok, trouble = pcall(require, "trouble")
+      if not trouble_ok then
+        trouble = nil
+      end
+      
+      telescope.setup({
+        defaults = {
+          -- Default configuration for telescope goes here:
+          prompt_prefix = " ",
+          selection_caret = " ",
+          multi_icon = " ",
+          path_display = { "truncate" },
+          file_ignore_patterns = {
+            "%.git/",
+            "node_modules/",
+            "%.DS_Store",
+            "%.pyc",
+            "__pycache__/",
+            "%.o",
+            "%.a",
+            "%.out",
+            "%.class",
+            "%.pdf",
+            "%.mkv",
+            "%.mp4",
+            "%.zip",
+          },
+          
+          -- Key mappings for telescope
+          mappings = {
+            i = {
+              ["<C-j>"] = actions.move_selection_next,
+              ["<C-k>"] = actions.move_selection_previous,
+              ["<C-n>"] = actions.cycle_history_next,
+              ["<C-p>"] = actions.cycle_history_prev,
+              ["<C-c>"] = actions.close,
+              ["<Down>"] = actions.move_selection_next,
+              ["<Up>"] = actions.move_selection_previous,
+              ["<CR>"] = actions.select_default,
+              ["<C-x>"] = actions.select_horizontal,
+              ["<C-v>"] = actions.select_vertical,
+              ["<C-u>"] = actions.preview_scrolling_up,
+              ["<C-d>"] = actions.preview_scrolling_down,
+              ["<PageUp>"] = actions.results_scrolling_up,
+              ["<PageDown>"] = actions.results_scrolling_down,
+              ["<Tab>"] = actions.toggle_selection + actions.move_selection_worse,
+              ["<S-Tab>"] = actions.toggle_selection + actions.move_selection_better,
+              ["<C-q>"] = actions.send_to_qflist + actions.open_qflist,
+              ["<M-q>"] = actions.send_selected_to_qflist + actions.open_qflist,
+              ["<C-l>"] = actions.complete_tag,
+              ["<C-/>"] = actions.which_key,
+              ["<C-_>"] = actions.which_key, -- keys from pressing <C-/>
+              -- Send to trouble (only if available)
+              ["<C-t>"] = function(...)
+                if trouble then
+                  return trouble.open_with_trouble(...)
+                else
+                  return actions.select_tab(...)
+                end
+              end,
+            },
+            n = {
+              ["<esc>"] = actions.close,
+              ["<CR>"] = actions.select_default,
+              ["<C-x>"] = actions.select_horizontal,
+              ["<C-v>"] = actions.select_vertical,
+              ["<C-t>"] = actions.select_tab,
+              ["<Tab>"] = actions.toggle_selection + actions.move_selection_worse,
+              ["<S-Tab>"] = actions.toggle_selection + actions.move_selection_better,
+              ["<C-q>"] = actions.send_to_qflist + actions.open_qflist,
+              ["<M-q>"] = actions.send_selected_to_qflist + actions.open_qflist,
+              ["j"] = actions.move_selection_next,
+              ["k"] = actions.move_selection_previous,
+              ["H"] = actions.move_to_top,
+              ["M"] = actions.move_to_middle,
+              ["L"] = actions.move_to_bottom,
+              ["<Down>"] = actions.move_selection_next,
+              ["<Up>"] = actions.move_selection_previous,
+              ["gg"] = actions.move_to_top,
+              ["G"] = actions.move_to_bottom,
+              ["<C-u>"] = actions.preview_scrolling_up,
+              ["<C-d>"] = actions.preview_scrolling_down,
+              ["<PageUp>"] = actions.results_scrolling_up,
+              ["<PageDown>"] = actions.results_scrolling_down,
+              ["?"] = actions.which_key,
+              -- Send to trouble (only if available)
+              ["<C-t>"] = function(...)
+                if trouble then
+                  return trouble.open_with_trouble(...)
+                else
+                  return actions.select_tab(...)
+                end
+              end,
+            },
+          },
+          
+          -- Layout configuration
+          layout_config = {
+            horizontal = {
+              prompt_position = "top",
+              preview_width = 0.55,
+              results_width = 0.8,
+            },
+            vertical = {
+              mirror = false,
+            },
+            width = 0.87,
+            height = 0.80,
+            preview_cutoff = 120,
+          },
+          
+          -- Sorting strategy
+          sorting_strategy = "ascending",
+          
+          -- Preview configuration
+          preview = {
+            treesitter = true,
+          },
+          
+          -- History configuration
+          history = {
+            path = vim.fn.stdpath("data") .. "/telescope_history.sqlite3",
+            limit = 100,
+          },
+        },
+        
+        pickers = {
+          -- Default configuration for builtin pickers goes here
+          find_files = {
+            theme = "dropdown",
+            previewer = false,
+            find_command = { "rg", "--files", "--hidden", "--glob", "!**/.git/*" },
+          },
+          live_grep = {
+            additional_args = function(opts)
+              return { "--hidden" }
+            end,
+          },
+          grep_string = {
+            additional_args = function(opts)
+              return { "--hidden" }
+            end,
+          },
+          buffers = {
+            theme = "dropdown",
+            previewer = false,
+            initial_mode = "normal",
+            mappings = {
+              i = {
+                ["<C-d>"] = actions.delete_buffer,
+              },
+              n = {
+                ["dd"] = actions.delete_buffer,
+              },
+            },
+          },
+          oldfiles = {
+            theme = "dropdown",
+            previewer = false,
+          },
+          current_buffer_fuzzy_find = {
+            theme = "dropdown",
+            previewer = false,
+          },
+          help_tags = {
+            theme = "ivy",
+          },
+          man_pages = {
+            theme = "ivy",
+          },
+          git_commits = {
+            theme = "ivy",
+          },
+          git_branches = {
+            theme = "dropdown",
+            previewer = false,
+          },
+          git_status = {
+            theme = "ivy",
+          },
+          lsp_references = {
+            theme = "ivy",
+            initial_mode = "normal",
+          },
+          lsp_definitions = {
+            theme = "ivy",
+            initial_mode = "normal", 
+          },
+          lsp_implementations = {
+            theme = "ivy",
+            initial_mode = "normal",
+          },
+          diagnostics = {
+            theme = "ivy",
+            initial_mode = "normal",
+          },
+        },
+        
+        extensions = {
+          fzf = {
+            fuzzy = true,
+            override_generic_sorter = true,
+            override_file_sorter = true,
+            case_mode = "smart_case",
+          },
+          ["ui-select"] = {
+            require("telescope.themes").get_dropdown({
+              -- Even more opts
+            }),
+          },
+        },
+      })
+      
+      -- Load extensions
+      pcall(telescope.load_extension, "fzf")
+      pcall(telescope.load_extension, "ui-select")
+      
+      -- Set vim.ui.select to use telescope
+      vim.ui.select = function(...)
+        require("telescope.builtin").ui_select(...)
+      end
+    end,
+  },
+}
