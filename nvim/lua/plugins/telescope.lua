@@ -18,6 +18,11 @@ return {
     keys = {
       -- File navigation
       {
+        "<leader>sf",
+        "<cmd>Telescope find_files<cr>",
+        desc = "Find Files",
+      },
+      {
         "<leader>ff",
         "<cmd>Telescope find_files<cr>",
         desc = "Find Files",
@@ -37,7 +42,7 @@ return {
         "<cmd>Telescope buffers<cr>",
         desc = "Buffers",
       },
-      
+
       -- Search
       {
         "<leader>sg",
@@ -59,7 +64,7 @@ return {
         "<cmd>Telescope search_history<cr>",
         desc = "Search History",
       },
-      
+
       -- Git
       {
         "<leader>gc",
@@ -76,7 +81,7 @@ return {
         "<cmd>Telescope git_status<cr>",
         desc = "Git Status",
       },
-      
+
       -- LSP
       {
         "<leader>lr",
@@ -113,7 +118,7 @@ return {
         "<cmd>Telescope diagnostics<cr>",
         desc = "Diagnostics",
       },
-      
+
       -- Help and config
       {
         "<leader>hh",
@@ -140,7 +145,7 @@ return {
         "<cmd>Telescope vim_options<cr>",
         desc = "Vim Options",
       },
-      
+
       -- Misc
       {
         "<leader>:",
@@ -171,13 +176,13 @@ return {
     config = function()
       local telescope = require("telescope")
       local actions = require("telescope.actions")
-      
+
       -- Safely require trouble if available
       local trouble_ok, trouble = pcall(require, "trouble")
       if not trouble_ok then
         trouble = nil
       end
-      
+
       telescope.setup({
         defaults = {
           -- Default configuration for telescope goes here:
@@ -200,10 +205,11 @@ return {
             "%.mp4",
             "%.zip",
           },
-          
+
           -- Key mappings for telescope
           mappings = {
             i = {
+              ["<C-CR>"] = actions.to_fuzzy_refine,
               ["<C-j>"] = actions.move_selection_next,
               ["<C-k>"] = actions.move_selection_previous,
               ["<C-n>"] = actions.cycle_history_next,
@@ -235,6 +241,7 @@ return {
               end,
             },
             n = {
+              ["<C-CR>"] = actions.to_fuzzy_refine,
               ["<esc>"] = actions.close,
               ["<CR>"] = actions.select_default,
               ["<C-x>"] = actions.select_horizontal,
@@ -259,16 +266,16 @@ return {
               ["<PageDown>"] = actions.results_scrolling_down,
               ["?"] = actions.which_key,
               -- Send to trouble (only if available)
-              ["<C-t>"] = function(...)
-                if trouble then
-                  return trouble.open_with_trouble(...)
-                else
-                  return actions.select_tab(...)
-                end
-              end,
+              -- ["<C-t>"] = function(...)
+              --   if trouble then
+              --     return trouble.open_with_trouble(...)
+              --   else
+              --     return actions.select_tab(...)
+              --   end
+              -- end,
             },
           },
-          
+
           -- Layout configuration
           layout_config = {
             horizontal = {
@@ -283,22 +290,22 @@ return {
             height = 0.80,
             preview_cutoff = 120,
           },
-          
+
           -- Sorting strategy
           sorting_strategy = "ascending",
-          
+
           -- Preview configuration
           preview = {
             treesitter = true,
           },
-          
+
           -- History configuration
           history = {
             path = vim.fn.stdpath("data") .. "/telescope_history.sqlite3",
             limit = 100,
           },
         },
-        
+
         pickers = {
           -- Default configuration for builtin pickers goes here
           find_files = {
@@ -359,7 +366,7 @@ return {
           },
           lsp_definitions = {
             theme = "ivy",
-            initial_mode = "normal", 
+            initial_mode = "normal",
           },
           lsp_implementations = {
             theme = "ivy",
@@ -370,7 +377,7 @@ return {
             initial_mode = "normal",
           },
         },
-        
+
         extensions = {
           fzf = {
             fuzzy = true,
@@ -385,11 +392,11 @@ return {
           },
         },
       })
-      
+
       -- Load extensions
       pcall(telescope.load_extension, "fzf")
       pcall(telescope.load_extension, "ui-select")
-      
+
       -- Set vim.ui.select to use telescope
       vim.ui.select = function(...)
         require("telescope.builtin").ui_select(...)
