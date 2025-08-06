@@ -3,7 +3,8 @@ return {
   event = "VimEnter",
   config = function()
     local function ascii_clock()
-      local time = os.date("%H:%M:%S")
+      local time = os.date("%I:%M")
+      local ampm = os.date("%p")
       local digits = {
         ["0"] = {
           "████████",
@@ -81,16 +82,42 @@ return {
           "   ",
           " ██",
           "   "
+        },
+        ["A"] = {
+          "████████",
+          "██    ██",
+          "████████",
+          "██    ██",
+          "██    ██"
+        },
+        ["P"] = {
+          "████████",
+          "██    ██",
+          "████████",
+          "██      ",
+          "██      "
+        },
+        ["M"] = {
+          "██    ██",
+          "████████",
+          "██ ██ ██",
+          "██    ██",
+          "██    ██"
         }
       }
       
+      local full_time = time .. " " .. ampm
       local lines = {"", "", "", "", ""}
-      for i = 1, #time do
-        local char = time:sub(i, i)
+      for i = 1, #full_time do
+        local char = full_time:sub(i, i)
         local digit = digits[char]
         if digit then
           for j = 1, 5 do
             lines[j] = lines[j] .. digit[j] .. "  "
+          end
+        elseif char == " " then
+          for j = 1, 5 do
+            lines[j] = lines[j] .. "      "
           end
         end
       end
@@ -143,14 +170,7 @@ return {
 
     require("dashboard").setup(opts)
     
-    -- Update clock every second
-    local timer = vim.loop.new_timer()
-    timer:start(1000, 1000, vim.schedule_wrap(function()
-      if vim.bo.filetype == "dashboard" then
-        opts.config.header = get_header()
-        require("dashboard").setup(opts)
-      end
-    end))
+
   end,
   dependencies = { "nvim-tree/nvim-web-devicons" },
 }
