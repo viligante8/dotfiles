@@ -14,10 +14,7 @@ require("config.autocmds")
 -- Setup lazy.nvim
 require("lazy").setup({
   spec = {
-    { import = "plugins.ui" },
-    { import = "plugins.editor" },
-    { import = "plugins.coding" },
-    { import = "plugins.tools" },
+    { import = "plugins" },
   },
   defaults = { lazy = false },
   install = { colorscheme = { "kanagawa", "tokyonight" } },

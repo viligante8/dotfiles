@@ -1,78 +1,40 @@
 return {
-  -- Colorscheme
+  -- Dashboard
   {
-    "rebelot/kanagawa.nvim",
-    lazy = false,
-    priority = 1000,
-    config = function()
-      require("kanagawa").setup({
-        compile = false,
-        undercurl = true,
-        commentStyle = { italic = true },
-        functionStyle = {},
-        keywordStyle = { italic = true },
-        statementStyle = { bold = true },
-        typeStyle = {},
-        transparent = false,
-        dimInactive = false,
-        terminalColors = true,
-        colors = {
-          palette = {},
-          theme = { wave = {}, lotus = {}, dragon = {}, all = {} },
-        },
-        overrides = function(colors)
-          return {}
-        end,
-        theme = "wave",
-        background = {
-          dark = "wave",
-          light = "lotus"
-        },
-      })
-      vim.cmd("colorscheme kanagawa")
-    end,
-  },
-
-  -- File explorer
-  {
-    "nvim-neo-tree/neo-tree.nvim",
-    branch = "v3.x",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "nvim-tree/nvim-web-devicons",
-      "MunifTanjim/nui.nvim",
-    },
-    keys = {
-      { "<leader>e", "<cmd>Neotree toggle<cr>", desc = "Toggle Neo-tree" },
-      { "<leader>E", "<cmd>Neotree reveal<cr>", desc = "Reveal in Neo-tree" },
-    },
+    "nvimdev/dashboard-nvim",
+    event = "VimEnter",
     opts = {
-      close_if_last_window = true,
-      popup_border_style = "rounded",
-      enable_git_status = true,
-      enable_diagnostics = true,
-      window = {
-        position = "left",
-        width = 30,
-        mappings = {
-          ["<cr>"] = "open",
-          ["<2-LeftMouse>"] = "open",
-          ["l"] = "open",
-          ["h"] = "close_node",
-          ["<space>"] = "none",
+      theme = "hyper",
+      config = {
+        week_header = {
+          enable = true,
         },
-      },
-      filesystem = {
-        bind_to_cwd = false,
-        follow_current_file = { enabled = true },
-        use_libuv_file_watcher = true,
-        filtered_items = {
-          visible = false,
-          hide_dotfiles = false,
-          hide_gitignored = true,
+        shortcut = {
+          { desc = "󰚰 Update", group = "@property", action = "Lazy update", key = "u" },
+          {
+            icon = " ",
+            icon_hl = "@variable",
+            desc = "Files",
+            group = "Label",
+            action = "Telescope find_files",
+            key = "f",
+          },
+          {
+            desc = " Apps",
+            group = "DiagnosticHint",
+            action = "Telescope app",
+            key = "a",
+          },
+          {
+            desc = " dotfiles",
+            group = "Number",
+            action = "Telescope find_files cwd=~/.dotfiles",
+            key = "d",
+          },
         },
       },
     },
+    dependencies = { "nvim-tree/nvim-web-devicons" },
   },
 
   -- Statusline
@@ -131,8 +93,11 @@ return {
     event = "VeryLazy",
     opts = {
       plugins = { spelling = true },
-      defaults = {
-        mode = { "n", "v" },
+    },
+    config = function(_, opts)
+      local wk = require("which-key")
+      wk.setup(opts)
+      wk.register({
         ["g"] = { name = "+goto" },
         ["gz"] = { name = "+surround" },
         ["]"] = { name = "+next" },
@@ -148,12 +113,7 @@ return {
         ["<leader>u"] = { name = "+ui" },
         ["<leader>w"] = { name = "+windows" },
         ["<leader>x"] = { name = "+diagnostics/quickfix" },
-      },
-    },
-    config = function(_, opts)
-      local wk = require("which-key")
-      wk.setup(opts)
-      wk.register(opts.defaults)
+      })
     end,
   },
 
@@ -169,17 +129,8 @@ return {
       scope = { enabled = false },
       exclude = {
         filetypes = {
-          "help",
-          "alpha",
-          "dashboard",
-          "neo-tree",
-          "Trouble",
-          "trouble",
-          "lazy",
-          "mason",
-          "notify",
-          "toggleterm",
-          "lazyterm",
+          "help", "alpha", "dashboard", "neo-tree", "Trouble", "trouble",
+          "lazy", "mason", "notify", "toggleterm", "lazyterm",
         },
       },
     },
@@ -195,9 +146,6 @@ return {
       end,
       max_width = function()
         return math.floor(vim.o.columns * 0.75)
-      end,
-      on_open = function(win)
-        vim.api.nvim_win_set_config(win, { zindex = 100 })
       end,
     },
     init = function()
