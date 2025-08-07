@@ -1,121 +1,72 @@
 return {
+  -- Mason: LSP installer
+  {
+    'williamboman/mason.nvim',
+    config = true,
+  },
+
+  -- Mason LSP config bridge
+  {
+    'williamboman/mason-lspconfig.nvim',
+    dependencies = { 'mason.nvim' },
+  },
+
   -- LSP Configuration
   {
-    "neovim/nvim-lspconfig",
-    event = { "BufReadPre", "BufNewFile" },
+    'neovim/nvim-lspconfig',
     dependencies = {
-      "mason.nvim",
-      "williamboman/mason-lspconfig.nvim",
-      {
-        "folke/neodev.nvim",
-        opts = {},
-      },
+      'mason.nvim',
+      'mason-lspconfig.nvim',
     },
-    opts = {
-      diagnostics = {
-        underline = true,
-        update_in_insert = false,
-        virtual_text = {
-          spacing = 4,
-          source = "if_many",
-          prefix = "●",
-        },
-        severity_sort = true,
-      },
-      servers = {
-        lua_ls = {
-          settings = {
-            Lua = {
-              workspace = {
-                checkThirdParty = false,
-              },
-              completion = {
-                callSnippet = "Replace",
-              },
-            },
-          },
-        },
-        tsserver = {},
-        pyright = {},
-        rust_analyzer = {},
-        gopls = {},
-      },
-    },
-    config = function(_, opts)
-      local servers = opts.servers
-      local has_cmp, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
-      local capabilities = vim.tbl_deep_extend(
-        "force",
-        {},
-        vim.lsp.protocol.make_client_capabilities(),
-        has_cmp and cmp_nvim_lsp.default_capabilities() or {}
-      )
+    config = function()
+      -- LSP keymaps (applied when LSP attaches to buffer)
+      vim.api.nvim_create_autocmd('LspAttach', {
+        callback = function(event)
+          local map = function(keys, func, desc)
+            vim.keymap.set('n', keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
+          end
 
-      local function setup(server)
-        local server_opts = vim.tbl_deep_extend("force", {
-          capabilities = vim.deepcopy(capabilities),
-        }, servers[server] or {})
-        require("lspconfig")[server].setup(server_opts)
-      end
-
-      local have_mason, mlsp = pcall(require, "mason-lspconfig")
-      if have_mason then
-        local ensure_installed = vim.tbl_keys(servers)
-        mlsp.setup({ ensure_installed = ensure_installed, handlers = { setup } })
-      end
-
-      -- LSP keymaps
-      vim.api.nvim_create_autocmd("LspAttach", {
-        group = vim.api.nvim_create_augroup("UserLspConfig", {}),
-        callback = function(ev)
-          local opts = { buffer = ev.buf }
-          vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
-          vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
-          vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
-          vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
-          vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, opts)
-          vim.keymap.set("n", "<leader>D", vim.lsp.buf.type_definition, opts)
-          vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
-          vim.keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, opts)
-          vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
-          vim.keymap.set("n", "<leader>f", function()
-            vim.lsp.buf.format { async = true }
-          end, opts)
+          map('gd', vim.lsp.buf.definition, 'Go to Definition')
+          map('gr', vim.lsp.buf.references, 'Go to References')
+          map('gi', vim.lsp.buf.implementation, 'Go to Implementation')
+          map('K', vim.lsp.buf.hover, 'Hover Documentation')
+          map('<leader>rn', vim.lsp.buf.rename, 'Rename')
+          map('<leader>ca', vim.lsp.buf.code_action, 'Code Action')
+          map('<leader>f', function() vim.lsp.buf.format({ async = true }) end, 'Format')
         end,
       })
 
-      vim.diagnostic.config(vim.deepcopy(opts.diagnostics))
-    end,
-  },
+      -- Enhanced capabilities for completion
+      local capabilities = vim.lsp.protocol.make_client_capabilities()
+      if pcall(require, 'blink.cmp') then
+        capabilities = require('blink.cmp').get_lsp_capabilities(capabilities)
+      end
 
-  -- Mason
-  {
-    "williamboman/mason.nvim",
-    cmd = "Mason",
-    keys = { { "<leader>cm", "<cmd>Mason<cr>", desc = "Mason" } },
-    build = ":MasonUpdate",
-    opts = {
-      ensure_installed = {
-        "stylua",
-        "shfmt",
-      },
-    },
-    config = function(_, opts)
-      require("mason").setup(opts)
-      local mr = require("mason-registry")
-      local function ensure_installed()
-        for _, tool in ipairs(opts.ensure_installed) do
-          local p = mr.get_package(tool)
-          if not p:is_installed() then
-            p:install()
-          end
+      -- Setup function for LSP servers
+      local function setup_server(server_name)
+        local opts = { capabilities = capabilities }
+        
+        -- Special configs for specific servers
+        if server_name == 'lua_ls' then
+          opts.settings = {
+            Lua = {
+              workspace = { checkThirdParty = false },
+              telemetry = { enable = false },
+            },
+          }
         end
+        
+        require('lspconfig')[server_name].setup(opts)
       end
-      if mr.refresh then
-        mr.refresh(ensure_installed)
-      else
-        ensure_installed()
-      end
+      
+      -- Setup mason-lspconfig with handlers
+      require('mason-lspconfig').setup({
+        ensure_installed = servers,
+        automatic_installation = true,
+        handlers = {
+          setup_server, -- Default handler for all servers
+        },
+      })
     end,
   },
 }
