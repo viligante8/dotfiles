@@ -1,6 +1,12 @@
 return {
   "akinsho/toggleterm.nvim",
   version = "*",
+  keys = {
+    { "<leader>tto", "<cmd>ToggleTerm<cr>", desc = "Toggle Terminal" },
+    { "<leader>ttf", "<cmd>ToggleTerm direction=float<cr>", desc = "Float Terminal" },
+    { "<leader>tth", "<cmd>ToggleTerm direction=horizontal<cr>", desc = "Horizontal Terminal" },
+    { "<leader>ttv", "<cmd>ToggleTerm direction=vertical<cr>", desc = "Vertical Terminal" },
+  },
   opts = {
     size = 20,
     open_mapping = [[<c-\>]],

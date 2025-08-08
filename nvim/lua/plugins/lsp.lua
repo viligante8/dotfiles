@@ -30,9 +30,9 @@ return {
           map('gr', vim.lsp.buf.references, 'Go to References')
           map('gi', vim.lsp.buf.implementation, 'Go to Implementation')
           map('K', vim.lsp.buf.hover, 'Hover Documentation')
-          map('<leader>rn', vim.lsp.buf.rename, 'Rename')
+          map('<leader>cr', vim.lsp.buf.rename, 'Rename')
           map('<leader>ca', vim.lsp.buf.code_action, 'Code Action')
-          map('<leader>f', function() vim.lsp.buf.format({ async = true }) end, 'Format')
+          map('<leader>cf', function() vim.lsp.buf.format({ async = true }) end, 'Format')
         end,
       })
 

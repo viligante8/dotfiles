@@ -14,19 +14,22 @@ return {
     "nvim-tree/nvim-web-devicons",
   },
   keys = {
+    -- Files
     { "<leader>ff", "<cmd>Telescope find_files<cr>", desc = "Find Files" },
     { "<leader>fr", "<cmd>Telescope oldfiles<cr>", desc = "Recent Files" },
     { "<leader>fb", "<cmd>Telescope buffers<cr>", desc = "Buffers" },
-    { "<leader>sg", "<cmd>Telescope live_grep<cr>", desc = "Live Grep" },
-    { "<leader>sw", "<cmd>Telescope grep_string<cr>", desc = "Word under cursor" },
-    { "<leader>ss", "<cmd>Telescope current_buffer_fuzzy_find<cr>", desc = "Search in current buffer" },
-    { "<leader>gc", "<cmd>Telescope git_commits<cr>", desc = "Git Commits" },
-    { "<leader>gb", "<cmd>Telescope git_branches<cr>", desc = "Git Branches" },
-    { "<leader>gs", "<cmd>Telescope git_status<cr>", desc = "Git Status" },
-    { "<leader>hh", "<cmd>Telescope help_tags<cr>", desc = "Help Tags" },
-    { "<leader>hk", "<cmd>Telescope keymaps<cr>", desc = "Keymaps" },
-    { "<leader>hc", "<cmd>Telescope commands<cr>", desc = "Commands" },
-    { "<leader>:", "<cmd>Telescope command_history<cr>", desc = "Command History" },
+    -- Search
+    { "<leader>sg", "<cmd>Telescope live_grep<cr>", desc = "Grep" },
+    { "<leader>sw", "<cmd>Telescope grep_string<cr>", desc = "Word" },
+    { "<leader>sb", "<cmd>Telescope current_buffer_fuzzy_find<cr>", desc = "Buffer" },
+    { "<leader>sc", "<cmd>Telescope command_history<cr>", desc = "Command History" },
+    { "<leader>sh", "<cmd>Telescope help_tags<cr>", desc = "Help Pages" },
+    { "<leader>sk", "<cmd>Telescope keymaps<cr>", desc = "Key Maps" },
+    { "<leader>sC", "<cmd>Telescope commands<cr>", desc = "Commands" },
+    -- Git
+    { "<leader>gc", "<cmd>Telescope git_commits<cr>", desc = "Commits" },
+    { "<leader>gb", "<cmd>Telescope git_branches<cr>", desc = "Branches" },
+    { "<leader>gs", "<cmd>Telescope git_status<cr>", desc = "Status" },
   },
   config = function()
     local telescope = require("telescope")
@@ -108,8 +111,6 @@ return {
     pcall(telescope.load_extension, "fzf")
     pcall(telescope.load_extension, "ui-select")
     
-    vim.ui.select = function(...)
-      require("telescope.builtin").ui_select(...)
-    end
+    -- ui-select extension handles vim.ui.select automatically
   end,
 }
