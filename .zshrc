@@ -37,6 +37,16 @@ load-nvmrc
 # FZF
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
+# History substring search (type command, then up/down arrows to filter)
+autoload -U up-line-or-beginning-search
+autoload -U down-line-or-beginning-search
+zle -N up-line-or-beginning-search
+zle -N down-line-or-beginning-search
+bindkey "^[[A" up-line-or-beginning-search    # Up arrow
+bindkey "^[[B" down-line-or-beginning-search  # Down arrow
+bindkey "^[OA" up-line-or-beginning-search    # Up arrow (alternative)
+bindkey "^[OB" down-line-or-beginning-search  # Down arrow (alternative)
+
 # AUTOCOMPLETION SETUP - This is the important part!
 autoload bashcompinit && bashcompinit
 autoload -Uz compinit && compinit
