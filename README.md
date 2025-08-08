@@ -59,8 +59,19 @@ brew install starship fzf
 
 ## 🎨 Neovim Configuration
 
+### Philosophy: Custom LazyVim-Inspired Setup
+
+This is a **custom Neovim configuration** inspired by [LazyVim](https://lazyvim.org) but built from the ground up for complete control and transparency. 
+
+**Why custom instead of LazyVim?**
+- 🎯 **Full control**: Every plugin and setting is explicit and customizable
+- 🔍 **Transparency**: No hidden configurations or magic - you see exactly what's loaded
+- ⚡ **Performance**: Only the features you actually use, no bloat
+- 🛠️ **Maintainability**: Individual plugin files make debugging and modifications easier
+- 🎨 **Aesthetics**: Preserves LazyVim's beautiful UI (dashboard, noice, etc.) without the framework overhead
+
 ### Architecture
-Modern Neovim setup using **Lazy.nvim** plugin manager with individual plugin files for better organization and maintainability.
+Modern Neovim setup using **Lazy.nvim** plugin manager with individual plugin files for better organization and maintainability. Each plugin is configured in its own file, making the setup modular and easy to understand.
 
 ### Core Features
 
@@ -126,7 +137,77 @@ Modern Neovim setup using **Lazy.nvim** plugin manager with individual plugin fi
 - `<C-e>` - Toggle file tree
 - `<leader>xx` - Toggle trouble
 
+## 📊 Configuration Comparison
+
+### Custom vs LazyVim vs Kickstart.nvim
+
+| Feature | This Setup | LazyVim | Kickstart.nvim |
+|---------|------------|---------|----------------|
+| **Philosophy** | LazyVim-inspired, full control | Opinionated distribution | Minimal starting point |
+| **Plugin Count** | ~25 explicit plugins | 50+ plugins (many hidden) | ~8 essential plugins |
+| **Startup Time** | Fast (lazy loading) | Fast (lazy loading) | Fastest (minimal) |
+| **Transparency** | ✅ Every plugin visible | ❌ Many plugins hidden | ✅ Everything explicit |
+| **Customization** | ✅ Full control | ⚠️ Limited without overrides | ✅ Full control |
+| **Maintenance** | ✅ Individual files | ❌ Framework updates | ✅ Manual updates |
+| **Learning Curve** | Medium | Low | High |
+
+### Feature Matrix
+
+| Feature | This Setup | LazyVim | Kickstart.nvim |
+|---------|:----------:|:-------:|:--------------:|
+| **LSP Integration** | ✅ | ✅ | ✅ |
+| **Autocompletion** | ✅ blink.cmp | ✅ nvim-cmp | ✅ nvim-cmp |
+| **Fuzzy Finding** | ✅ Telescope | ✅ Telescope | ✅ Telescope |
+| **File Explorer** | ✅ Neo-tree | ✅ Neo-tree | ❌ |
+| **Git Integration** | ✅ LazyGit + gitsigns | ✅ LazyGit + gitsigns | ✅ gitsigns only |
+| **Debugging (DAP)** | ✅ | ✅ | ❌ |
+| **Testing** | ✅ Neotest | ✅ Neotest | ❌ |
+| **AI Integration** | ✅ Avante + Amazon Q | ✅ Various | ❌ |
+| **Beautiful UI** | ✅ Dashboard + Noice | ✅ Dashboard + Noice | ❌ |
+| **Terminal** | ✅ Integrated | ✅ Integrated | ❌ |
+| **Session Management** | ✅ Persistence | ✅ Persistence | ❌ |
+| **Keybinding Hints** | ✅ Which-key | ✅ Which-key | ❌ |
+| **Statusline** | ✅ Lualine | ✅ Lualine | ❌ |
+| **Buffer Management** | ✅ Bufferline | ✅ Bufferline | ❌ |
+| **Code Formatting** | ✅ Conform | ✅ Conform | ✅ |
+| **Syntax Highlighting** | ✅ Treesitter | ✅ Treesitter | ✅ |
+
+### Why This Approach?
+
+**Advantages over LazyVim:**
+- 🔍 **Complete transparency**: See exactly what's installed and configured
+- 🎛️ **Granular control**: Modify any aspect without fighting the framework
+- 📚 **Learning opportunity**: Understand how each piece works
+- 🎨 **Aesthetic preservation**: Keep the beautiful UI without the hidden complexity
+- ⚡ **Performance**: Only load what you actually need
+
+**Advantages over Kickstart.nvim:**
+- 🎨 **Rich UI**: Beautiful dashboard, notifications, and interface elements
+- 🛠️ **Feature complete**: Debugging, testing, AI integration out of the box
+- 💼 **Professional setup**: Ready for serious development work
+- 🔧 **Advanced tooling**: Git UI, terminal integration, session management
+
+**Trade-offs:**
+- More complex than kickstart.nvim (but still manageable)
+- Requires more maintenance than LazyVim (but gives you control)
+- Larger plugin count than minimal setups (but each serves a purpose)
+
 ## 🔧 Development Workflow
+
+### Custom Plugin Development
+This setup serves as a testing ground for two custom Neovim plugins in active development:
+
+1. **[amazon-q.nvim](~/dev/personal/amazon-q.nvim)**: Integration with Amazon Q AI assistant
+   - Terminal-based chat interface
+   - Code context awareness
+   - Seamless workflow integration
+
+2. **[script-runner.nvim](~/dev/personal/script-runner.nvim)**: Enhanced script execution and management
+   - Project-aware script detection
+   - Multiple execution contexts
+   - Terminal integration
+
+Both plugins are designed to integrate seamlessly with this configuration and demonstrate how custom tooling can enhance the development experience.
 
 ### Project Structure Support
 - **Automatic Node version switching** with .nvmrc files
