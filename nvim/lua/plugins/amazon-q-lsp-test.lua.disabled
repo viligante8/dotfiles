@@ -3,7 +3,8 @@
 
 return {
   {
-    "viligante8/amazon-q-lsp.nvim",
+    dir = "~/dev/personal/amazon-q-lsp.nvim", -- Use local dev folder
+    name = "amazon-q-lsp-test",
     enabled = true, -- Enable for testing
     dependencies = {
       "neovim/nvim-lspconfig",
