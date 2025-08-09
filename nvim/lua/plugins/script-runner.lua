@@ -1,3 +1,4 @@
 return {
-  'viligante8/script-runner.nvim'
+	dir = "~/dev/personal/script-runner.nvim", -- Use local dev folder
 }
+
