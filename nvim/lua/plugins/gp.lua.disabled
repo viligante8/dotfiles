@@ -1,0 +1,29 @@
+return {
+  "robitx/gp.nvim",
+  -- Disabled by default via .disabled filename
+  config = function()
+    -- Minimal, provider-based setup using OPENAI_API_KEY
+    local ok, gp = pcall(require, "gp")
+    if not ok then
+      return
+    end
+    gp.setup({
+      providers = {
+        openai = {
+          disable = false,
+          endpoint = "https://api.openai.com/v1",
+          secret = os.getenv("OPENAI_API_KEY"),
+        },
+      },
+      -- Define a default agent targeting GPT-5
+      agents = {
+        {
+          name = "OpenAI GPT-5",
+          provider = "openai",
+          model = "gpt-5",
+          chat = true,
+        },
+      },
+    })
+  end,
+}

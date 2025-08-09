@@ -1,6 +1,5 @@
 # Amazon Q pre block. Keep at the top of this file.
 [[ -f "${HOME}/Library/Application Support/amazon-q/shell/zshrc.pre.zsh" ]] && builtin source "${HOME}/Library/Application Support/amazon-q/shell/zshrc.pre.zsh"
-
 # Add deno completions to search path
 if [[ ":$FPATH:" != *":/Users/vito.pistelli/completions:"* ]]; then export FPATH="/Users/vito.pistelli/completions:$FPATH"; fi
 
@@ -80,8 +79,8 @@ export EDITOR=nvim
 # Initialize Starship prompt (install with: brew install starship)
 eval "$(starship init zsh)"
 
-# Amazon Q post block. Keep at the bottom of this file.
-[[ -f "${HOME}/Library/Application Support/amazon-q/shell/zshrc.post.zsh" ]] && builtin source "${HOME}/Library/Application Support/amazon-q/shell/zshrc.post.zsh"
-
 # Load secrets
 [ -f ~/.dotfiles/.zshrc.secrets ] && source ~/.dotfiles/.zshrc.secrets
+
+# Amazon Q post block. Keep at the bottom of this file.
+[[ -f "${HOME}/Library/Application Support/amazon-q/shell/zshrc.post.zsh" ]] && builtin source "${HOME}/Library/Application Support/amazon-q/shell/zshrc.post.zsh"

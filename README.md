@@ -1,3 +1,7 @@
+hello world
+
+hello world
+
 # Personal Dotfiles
 
 A modern, performance-optimized development environment setup featuring a blazing-fast shell configuration and a modular Neovim setup.
@@ -89,8 +93,9 @@ Modern Neovim setup using **Lazy.nvim** plugin manager with individual plugin fi
 - **Trouble**: Beautiful diagnostics and quickfix lists
 
 #### 🤖 AI Integration
-- **Avante**: AI coding assistant for code generation and chat
-- **Amazon Q**: Integrated development assistant
+- **Amazon Q**: Integrated development assistant with beautiful sidebar UI
+- **Custom plugin**: Built specifically for this configuration
+- **AWS-aware**: Understands AWS services and best practices
 
 #### 🛠️ Development Tools
 - **LazyGit**: Terminal UI for Git operations
@@ -128,9 +133,10 @@ Modern Neovim setup using **Lazy.nvim** plugin manager with individual plugin fi
 - `<leader>gb` - Git blame
 
 **AI Assistant**
-- `<leader>aa` - Open Avante chat
-- `<leader>ae` - Avante edit
-- `<leader>ar` - Avante refresh
+- `<leader>aa` - Toggle Amazon Q sidebar
+- `<leader>ac` - Amazon Q with context
+- `<leader>as` - Amazon Q simple chat
+- `<leader>av` - Add selection to context (visual mode)
 
 **Navigation**
 - `<C-h/j/k/l>` - Window navigation
@@ -162,7 +168,7 @@ Modern Neovim setup using **Lazy.nvim** plugin manager with individual plugin fi
 | **Git Integration** | ✅ LazyGit + gitsigns | ✅ LazyGit + gitsigns | ✅ gitsigns only |
 | **Debugging (DAP)** | ✅ | ✅ | ❌ |
 | **Testing** | ✅ Neotest | ✅ Neotest | ❌ |
-| **AI Integration** | ✅ Avante + Amazon Q | ✅ Various | ❌ |
+| **AI Integration** | ✅ **Amazon Q only** | ✅ Copilot/Codeium/Supermaven | ❌ |
 | **Beautiful UI** | ✅ Dashboard + Noice | ✅ Dashboard + Noice | ❌ |
 | **Terminal** | ✅ Integrated | ✅ Integrated | ❌ |
 | **Session Management** | ✅ Persistence | ✅ Persistence | ❌ |
@@ -180,6 +186,7 @@ Modern Neovim setup using **Lazy.nvim** plugin manager with individual plugin fi
 - 📚 **Learning opportunity**: Understand how each piece works
 - 🎨 **Aesthetic preservation**: Keep the beautiful UI without the hidden complexity
 - ⚡ **Performance**: Only load what you actually need
+- 🤖 **Amazon Q integration**: Focused AI assistance with AWS expertise (not available in LazyVim)
 
 **Advantages over Kickstart.nvim:**
 - 🎨 **Rich UI**: Beautiful dashboard, notifications, and interface elements
