@@ -2,6 +2,7 @@ return {
   {
     dir = "~/dev/personal/amazon-q.nvim",
     name = "amazon-q",
+    lazy = false, -- Load immediately so commands are available
     dependencies = {
       "MunifTanjim/nui.nvim",           -- Required for advanced UI
       "nvim-lua/plenary.nvim",          -- Required for file operations
