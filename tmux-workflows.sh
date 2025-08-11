@@ -4,9 +4,9 @@
 # Usage: source this in your .zshrc or run directly
 
 # Function to start a development session for Workday Integrations
-workday-dev() {
+wdi-dev() {
     local project_path="$HOME/dev/emsi/workday-integrations"
-    local session_name="workday-dev"
+    local session_name="wdi-dev"
     
     # Check if session already exists
     if tmux has-session -t $session_name 2>/dev/null; then
@@ -22,19 +22,15 @@ workday-dev() {
     
     # Window 1: Editor
     tmux rename-window -t $session_name:1 'editor'
-    tmux send-keys -t $session_name:1 'nvim .' Enter
+    tmux send-keys -t $session_name:1 'nvim' Enter
     
-    # Window 2: Server/API
-    tmux new-window -t $session_name:2 -n 'server' -c "$project_path"
-    tmux send-keys -t $session_name:2 'bun run start:api'
+    # Window 2 Terminal
+    tmux new-window -t $session_name:2 -n 'terminal' -c "$project_path"
+    tmux send-keys -t $session_name:2 'clear' Enter
     
-    # Window 3: Terminal
-    tmux new-window -t $session_name:3 -n 'terminal' -c "$project_path"
-    tmux send-keys -t $session_name:3 'clear' Enter
-    
-    # Window 4: Q (Amazon Q AI Assistant)
-    tmux new-window -t $session_name:4 -n 'q' -c "$project_path"
-    tmux send-keys -t $session_name:4 'q chat' Enter
+    # Window 3: Q (Amazon Q AI Assistant)
+    tmux new-window -t $session_name:3 -n 'q' -c "$project_path"
+    tmux send-keys -t $session_name:3 'q chat' Enter
     
     # Go back to first window and attach
     tmux select-window -t $session_name:1
@@ -42,9 +38,9 @@ workday-dev() {
 }
 
 # Function to start a development session for Company Datastore
-datastore-dev() {
+cds-dev() {
     local project_path="$HOME/dev/emsi/company-datastore"
-    local session_name="datastore-dev"
+    local session_name="cds-dev"
     
     # Check if session already exists
     if tmux has-session -t $session_name 2>/dev/null; then
@@ -60,19 +56,15 @@ datastore-dev() {
     
     # Window 1: Editor
     tmux rename-window -t $session_name:1 'editor'
-    tmux send-keys -t $session_name:1 'nvim .' Enter
+    tmux send-keys -t $session_name:1 'nvim' Enter
     
-    # Window 2: Server
-    tmux new-window -t $session_name:2 -n 'server' -c "$project_path"
+    # Window 2 Terminal
+    tmux new-window -t $session_name:2 -n 'terminal' -c "$project_path"
     tmux send-keys -t $session_name:2 'clear' Enter
     
-    # Window 3: Terminal
-    tmux new-window -t $session_name:3 -n 'terminal' -c "$project_path"
-    tmux send-keys -t $session_name:3 'clear' Enter
-    
-    # Window 4: Q (Amazon Q AI Assistant)
-    tmux new-window -t $session_name:4 -n 'q' -c "$project_path"
-    tmux send-keys -t $session_name:4 'q chat' Enter
+    # Window 3: Q (Amazon Q AI Assistant)
+    tmux new-window -t $session_name:3 -n 'q' -c "$project_path"
+    tmux send-keys -t $session_name:3 'q chat' Enter
     
     # Go back to first window and attach
     tmux select-window -t $session_name:1
@@ -80,9 +72,9 @@ datastore-dev() {
 }
 
 # Function to start a development session for Talent Transform
-talent-dev() {
+tt-dev() {
     local project_path="$HOME/dev/emsi/talent-transform"
-    local session_name="talent-dev"
+    local session_name="tt-dev"
     
     # Check if session already exists
     if tmux has-session -t $session_name 2>/dev/null; then
@@ -98,19 +90,15 @@ talent-dev() {
     
     # Window 1: Editor
     tmux rename-window -t $session_name:1 'editor'
-    tmux send-keys -t $session_name:1 'nvim .' Enter
+    tmux send-keys -t $session_name:1 'nvim' Enter
     
-    # Window 2: Server
-    tmux new-window -t $session_name:2 -n 'server' -c "$project_path"
+    # Window 2 Terminal
+    tmux new-window -t $session_name:2 -n 'terminal' -c "$project_path"
     tmux send-keys -t $session_name:2 'clear' Enter
     
-    # Window 3: Terminal
-    tmux new-window -t $session_name:3 -n 'terminal' -c "$project_path"
-    tmux send-keys -t $session_name:3 'clear' Enter
-    
-    # Window 4: Q (Amazon Q AI Assistant)
-    tmux new-window -t $session_name:4 -n 'q' -c "$project_path"
-    tmux send-keys -t $session_name:4 'q chat' Enter
+    # Window 3: Q (Amazon Q AI Assistant)
+    tmux new-window -t $session_name:3 -n 'q' -c "$project_path"
+    tmux send-keys -t $session_name:3 'q chat' Enter
     
     # Go back to first window and attach
     tmux select-window -t $session_name:1
@@ -137,19 +125,15 @@ dev-session() {
     
     # Window 1: Editor
     tmux rename-window -t $session_name:1 'editor'
-    tmux send-keys -t $session_name:1 'nvim .' Enter
+    tmux send-keys -t $session_name:1 'nvim' Enter
     
-    # Window 2: Server/Build
-    tmux new-window -t $session_name:2 -n 'server' -c "$current_dir"
+    # Window 2 Terminal
+    tmux new-window -t $session_name:2 -n 'terminal' -c "$current_dir"
     tmux send-keys -t $session_name:2 'clear' Enter
     
-    # Window 3: Terminal
-    tmux new-window -t $session_name:3 -n 'terminal' -c "$current_dir"
-    tmux send-keys -t $session_name:3 'clear' Enter
-    
-    # Window 4: Q (Amazon Q AI Assistant)
-    tmux new-window -t $session_name:4 -n 'q' -c "$current_dir"
-    tmux send-keys -t $session_name:4 'q chat' Enter
+    # Window 3: Q (Amazon Q AI Assistant)
+    tmux new-window -t $session_name:3 -n 'q' -c "$current_dir"
+    tmux send-keys -t $session_name:3 'q chat' Enter
     
     # Go back to first window and attach
     tmux select-window -t $session_name:1
@@ -164,7 +148,7 @@ dev-layout() {
     
     # Select the first pane and open nvim
     tmux select-pane -t 0
-    tmux send-keys 'nvim .' Enter
+    tmux send-keys 'nvim' Enter
     
     # Clear the other panes
     tmux select-pane -t 1
@@ -199,9 +183,9 @@ q-drawer() {
 # Function to switch between project sessions quickly
 switch-project() {
     echo "Available project sessions:"
-    echo "1. workday-dev (Workday Integrations)"
-    echo "2. datastore-dev (Company Datastore)"
-    echo "3. talent-dev (Talent Transform)"
+    echo "1. wdi-dev (Workday Integrations)"
+    echo "2. cdi-dev (Company Datastore)"
+    echo "3. tt-dev (Talent Transform)"
     echo "4. dev-session (Generic - current directory)"
     echo ""
     
@@ -213,28 +197,28 @@ switch-project() {
     read -p "Enter session name to attach (or 'q' to quit): " choice
     
     case $choice in
-        1|workday-dev)
-            if tmux has-session -t workday-dev 2>/dev/null; then
-                tmux attach-session -t workday-dev
+        1|wdi-dev)
+            if tmux has-session -t wdi-dev 2>/dev/null; then
+                tmux attach-session -t wdi-dev
             else
-                echo "Starting workday-dev session..."
-                workday-dev
+                echo "Starting wdi-dev session..."
+                wdi-dev
             fi
             ;;
-        2|datastore-dev)
-            if tmux has-session -t datastore-dev 2>/dev/null; then
-                tmux attach-session -t datastore-dev
+        2|cds-dev)
+            if tmux has-session -t cds-dev 2>/dev/null; then
+                tmux attach-session -t cds-dev
             else
-                echo "Starting datastore-dev session..."
-                datastore-dev
+                echo "Starting cds-dev session..."
+                cds-dev
             fi
             ;;
-        3|talent-dev)
-            if tmux has-session -t talent-dev 2>/dev/null; then
-                tmux attach-session -t talent-dev
+        3|tt-dev)
+            if tmux has-session -t tt-dev 2>/dev/null; then
+                tmux attach-session -t tt-dev
             else
-                echo "Starting talent-dev session..."
-                talent-dev
+                echo "Starting tt-dev session..."
+                tt-dev
             fi
             ;;
         4|dev-session)
@@ -282,10 +266,10 @@ tmux-attach() {
 tmux-help() {
     echo "EMSI Project Tmux Shortcuts:"
     echo ""
-    echo "Project Sessions (4 windows: editor, server, terminal, q):"
-    echo "  workday-dev    - Start Workday Integrations development session"
-    echo "  datastore-dev  - Start Company Datastore development session"
-    echo "  talent-dev     - Start Talent Transform development session"
+    echo "Project Sessions (3 windows: editor, terminal, q):"
+    echo "  wdi-dev    - Start Workday Integrations development session"
+    echo "  cds-dev  - Start Company Datastore development session"
+    echo "  tt-dev     - Start Talent Transform development session"
     echo "  dev-session    - Start generic development session (current directory)"
     echo ""
     echo "Utilities:"
