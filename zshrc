@@ -1,20 +1,7 @@
 # Amazon Q pre block. Keep at the top of this file.
 [[ -f "${HOME}/Library/Application Support/amazon-q/shell/zshrc.pre.zsh" ]] && builtin source "${HOME}/Library/Application Support/amazon-q/shell/zshrc.pre.zsh"
-
 # Add deno completions to search path
 if [[ ":$FPATH:" != *":/Users/vito.pistelli/completions:"* ]]; then export FPATH="/Users/vito.pistelli/completions:$FPATH"; fi
-
-# Path to your oh-my-zsh installation.
-export ZSH=/Users/vito.pistelli/.oh-my-zsh
-
-# Set name of the theme to load.
-ZSH_THEME="gozilla"
-
-# Minimal plugins for faster startup
-plugins=(git gitfast)
-
-# User configuration
-source $ZSH/oh-my-zsh.sh
 
 # NVM setup with auto-switching for .nvmrc
 export NVM_DIR="$HOME/.nvm"
@@ -49,12 +36,33 @@ load-nvmrc
 # FZF
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-# Completions
+# History substring search (type command, then up/down arrows to filter)
+autoload -U up-line-or-beginning-search
+autoload -U down-line-or-beginning-search
+zle -N up-line-or-beginning-search
+zle -N down-line-or-beginning-search
+bindkey "^[[A" up-line-or-beginning-search    # Up arrow
+bindkey "^[[B" down-line-or-beginning-search  # Down arrow
+bindkey "^[OA" up-line-or-beginning-search    # Up arrow (alternative)
+bindkey "^[OB" down-line-or-beginning-search  # Down arrow (alternative)
+
+# AUTOCOMPLETION SETUP - This is the important part!
 autoload bashcompinit && bashcompinit
 autoload -Uz compinit && compinit
 
+# Enable better completion matching
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
+zstyle ':completion:*' list-colors ''
+zstyle ':completion:*' menu select
+
 # AWS completion
 complete -C '/usr/local/bin/aws_completer' aws
+
+# Terraform completion
+complete -o nospace -C /opt/homebrew/bin/terraform terraform
+
+# Tenv completion
+source $HOME/.tenv.completion.zsh
 
 # PATH exports
 export PATH=".:$PATH:/Users/vito.pistelli/.local/bin"
@@ -64,18 +72,18 @@ export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 [ -s "/Users/vito.pistelli/.bun/_bun" ] && source "/Users/vito.pistelli/.bun/_bun"
 
-# Tenv completion
-source $HOME/.tenv.completion.zsh
-
 # Environment variables
 export NODE_TLS_REJECT_UNAUTHORIZED=0
 export EDITOR=nvim
 
-# Terraform completion
-complete -o nospace -C /opt/homebrew/bin/terraform terraform
+# Initialize Starship prompt (install with: brew install starship)
+eval "$(starship init zsh)"
+
+# Load secrets
+[ -f ~/.dotfiles/zshrc.secrets ] && source ~/.dotfiles/zshrc.secrets
+
+# Tmux workflow functions
+[ -f ~/.dotfiles/tmux-workflows.sh ] && source ~/.dotfiles/tmux-workflows.sh
 
 # Amazon Q post block. Keep at the bottom of this file.
 [[ -f "${HOME}/Library/Application Support/amazon-q/shell/zshrc.post.zsh" ]] && builtin source "${HOME}/Library/Application Support/amazon-q/shell/zshrc.post.zsh"
-
-# Load secrets
-[ -f ~/.dotfiles/.zshrc.secrets ] && source ~/.dotfiles/.zshrc.secrets

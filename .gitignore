@@ -2,7 +2,7 @@ tags
 test.sh
 
 .DS_Store
-.zshrc.secrets
+zshrc.secrets
 
 spell/
 lazy-lock.json

@@ -10,6 +10,23 @@ return {
     { "<leader>e", "<cmd>Neotree toggle<cr>", desc = "Toggle Neo-tree" },
     { "<leader>E", "<cmd>Neotree reveal<cr>", desc = "Reveal in Neo-tree" },
   },
+  init = function()
+    -- Disable netrw
+    vim.g.loaded_netrw = 1
+    vim.g.loaded_netrwPlugin = 1
+    
+    -- Auto-open neo-tree when starting with a directory
+    vim.api.nvim_create_autocmd("VimEnter", {
+      callback = function(data)
+        -- Check if we opened a directory
+        local directory = vim.fn.isdirectory(data.file) == 1
+        if directory then
+          -- Open neo-tree
+          require("neo-tree.command").execute({ action = "show" })
+        end
+      end,
+    })
+  end,
   opts = {
     close_if_last_window = true,
     popup_border_style = "rounded",
