@@ -3,6 +3,45 @@
 # Tmux Workflow Helper Script for EMSI Projects
 # Usage: source this in your .zshrc or run directly
 
+# Tmux-compatible wrapper function for keybindings
+tmux-dev-session() {
+    local session_name="$1"
+    local project_path="$2"
+    
+    # Check if session already exists
+    if tmux has-session -t "$session_name" 2>/dev/null; then
+        tmux switch-client -t "$session_name"
+        return
+    fi
+    
+    # Create new session
+    tmux new-session -d -s "$session_name" -c "$project_path"
+    
+    # Window 1: Editor
+    tmux rename-window -t "$session_name:1" 'editor'
+    
+    # Window 2: Terminal
+    tmux new-window -t "$session_name:2" -n 'terminal' -c "$project_path"
+    
+    # Window 3: Q (Amazon Q AI Assistant)
+    tmux new-window -t "$session_name:3" -n 'q' -c "$project_path"
+    tmux send-keys -t "$session_name:3" 'q chat' Enter
+    
+    # Window 4: LazyGit
+    tmux new-window -t "$session_name:4" -n 'git' -c "$project_path"
+    tmux send-keys -t "$session_name:4" 'lazygit' Enter
+    
+    # Go back to first window and switch
+    tmux select-window -t "$session_name:1"
+    tmux switch-client -t "$session_name"
+}
+
+# Handle command line arguments for tmux keybindings
+if [ $# -eq 2 ]; then
+    tmux-dev-session "$1" "$2"
+    exit 0
+fi
+
 # Function to start a development session for Workday Integrations
 wdi-dev() {
     local project_path="$HOME/dev/emsi/workday-integrations"
