@@ -42,7 +42,7 @@ is_node_project() {
   local dir="$PWD"
   while [[ "$dir" != "/" ]]; do
     # Look for common Node.js project indicators
-    if [[ -f "$dir/.nvmrc" ]] || [[ -f "$dir/package.json" ]] || [[ -f "$dir/yarn.lock" ]] || [[ -f "$dir/pnpm-lock.yaml" ]] || [[ -f "$dir/bun.lock" ]] || [[ -f "$dir/bun.lockb" ]]; then
+    if [[ -f "$dir/.nvmrc" ]] || [[ -f "$dir/package.json" ]] || [[ -f "$dir/yarn.lock" ]] || [[ -f "$dir/pnpm-lock.yaml" ]]; then
       return 0
     fi
     dir="$(dirname "$dir")"
@@ -146,20 +146,6 @@ yarn() {
   command yarn "$@"
 }
 
-# Lazy load bun
-bun() {
-  unset -f bun
-  load_nvm_if_needed
-  command bun "$@"
-}
-
-# Lazy load bunx
-bunx() {
-  unset -f bunx
-  load_nvm_if_needed
-  command bunx "$@"
-}
-
 # ============================================================================
 # FZF INTEGRATION
 # ============================================================================
@@ -243,10 +229,6 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 # Development environment variables
 export NODE_TLS_REJECT_UNAUTHORIZED=0  # For development with self-signed certs
 export EDITOR=nvim                      # Default editor for git, etc.
-
-# Quick access to keymaps cheat sheet
-alias keymaps="nvim ~/.dotfiles/KEYMAPS.md"
-alias cheat="cat ~/.dotfiles/KEYMAPS.md | head -50"  # Quick preview
 
 # ============================================================================
 # STARSHIP PROMPT
