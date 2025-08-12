@@ -26,6 +26,9 @@ brew install starship fzf
 ~/.dotfiles/
 ├── .zshrc                      # Optimized Zsh configuration with Starship
 ├── .zshrc.secrets              # Private environment variables (gitignored)
+├── tmux.conf                   # Tmux configuration with development workflows
+├── tmux-which-key.yaml         # Tmux which-key keybinding descriptions
+├── tmux-workflows.sh           # Development session automation scripts
 ├── nvim/                       # Neovim configuration
 │   ├── init.lua                # Main entry point
 │   ├── lazy-lock.json          # Plugin version lockfile

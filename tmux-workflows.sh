@@ -31,6 +31,10 @@ tmux-dev-session() {
     tmux new-window -t "$session_name:4" -n 'git' -c "$project_path"
     tmux send-keys -t "$session_name:4" 'lazygit' Enter
     
+    # Window 5: Database Development (dbdev pre-typed)
+    tmux new-window -t "$session_name:5" -n 'dbdev' -c "$project_path"
+    tmux send-keys -t "$session_name:5" 'dbdev' # Note: no Enter - just pre-types the command
+    
     # Go back to first window and switch
     tmux select-window -t "$session_name:1"
     tmux switch-client -t "$session_name"
@@ -75,6 +79,10 @@ wdi-dev() {
     tmux new-window -t $session_name:4 -n 'git' -c "$project_path"
     tmux send-keys -t $session_name:4 'lazygit' Enter
     
+    # Window 5: Database Development (dbdev pre-typed)
+    tmux new-window -t $session_name:5 -n 'dbdev' -c "$project_path"
+    tmux send-keys -t $session_name:5 'dbdev' # Pre-type dbdev without pressing Enter
+    
     # Go back to first window and attach
     tmux select-window -t $session_name:1
     tmux attach-session -t $session_name
@@ -113,6 +121,10 @@ cds-dev() {
     tmux new-window -t $session_name:4 -n 'git' -c "$project_path"
     tmux send-keys -t $session_name:4 'lazygit' Enter
     
+    # Window 5: Database Development (dbdev pre-typed)
+    tmux new-window -t $session_name:5 -n 'dbdev' -c "$project_path"
+    tmux send-keys -t $session_name:5 'dbdev' # Pre-type dbdev without pressing Enter
+    
     # Go back to first window and attach
     tmux select-window -t $session_name:1
     tmux attach-session -t $session_name
@@ -150,6 +162,10 @@ tt-dev() {
     # Window 4: LazyGit
     tmux new-window -t $session_name:4 -n 'git' -c "$project_path"
     tmux send-keys -t $session_name:4 'lazygit' Enter
+    
+    # Window 5: Database Development (dbdev pre-typed)
+    tmux new-window -t $session_name:5 -n 'dbdev' -c "$project_path"
+    tmux send-keys -t $session_name:5 'dbdev' # Pre-type dbdev without pressing Enter
     
     # Go back to first window and attach
     tmux select-window -t $session_name:1
@@ -366,13 +382,14 @@ tmux-help() {
     echo "  Ctrl-a D       - Quick dev layout"
     echo "  Ctrl-a |       - Split horizontally"
     echo "  Ctrl-a -       - Split vertically"
-    echo "  Alt-1 to Alt-4 - Switch windows 1-4"
+    echo "  Alt-1 to Alt-5 - Switch windows 1-5"
     echo ""
     echo "Window Layout:"
     echo "  1. editor      - Neovim"
     echo "  2. terminal    - Command line"
     echo "  3. q           - Amazon Q AI Assistant"
     echo "  4. git         - LazyGit"
+    echo "  5. dbdev       - Database development (dbdev pre-typed)"
 }
 
 # Functions are automatically available in zsh once defined

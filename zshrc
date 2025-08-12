@@ -167,6 +167,13 @@ bunx() {
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # ============================================================================
+# SHELL EDITING MODE
+# ============================================================================
+# Force emacs-style line editing (normal terminal behavior)
+# This prevents zsh from switching to vi mode based on EDITOR variable
+bindkey -e
+
+# ============================================================================
 # ENHANCED HISTORY SEARCH
 # ============================================================================
 # Type a command, then use up/down arrows to filter through history
@@ -190,13 +197,17 @@ autoload -Uz compinit
 if [[ -n ~/.zcompdump(#qN.mh+24) ]]; then
   compinit                # Full initialization (slower, but thorough)
 else
-  compinit -C            # Skip security check (faster startup)
+  compinit -C             # Skip security check (faster startup)
 fi
 
 # Better completion matching and display
-zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'  # Case insensitive
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'   # Case insensitive
 zstyle ':completion:*' list-colors ''                    # Colored completions
 zstyle ':completion:*' menu select                       # Interactive menu
+
+dbdev() {
+  command pgcli $DB_URL
+}
 
 # ============================================================================
 # LAZY-LOADED TOOL COMPLETIONS
