@@ -32,6 +32,10 @@ wdi-dev() {
     tmux new-window -t $session_name:3 -n 'q' -c "$project_path"
     tmux send-keys -t $session_name:3 'q chat' Enter
     
+    # Window 4: LazyGit
+    tmux new-window -t $session_name:4 -n 'git' -c "$project_path"
+    tmux send-keys -t $session_name:4 'lazygit' Enter
+    
     # Go back to first window and attach
     tmux select-window -t $session_name:1
     tmux attach-session -t $session_name
@@ -65,6 +69,10 @@ cds-dev() {
     # Window 3: Q (Amazon Q AI Assistant)
     tmux new-window -t $session_name:3 -n 'q' -c "$project_path"
     tmux send-keys -t $session_name:3 'q chat' Enter
+    
+    # Window 4: LazyGit
+    tmux new-window -t $session_name:4 -n 'git' -c "$project_path"
+    tmux send-keys -t $session_name:4 'lazygit' Enter
     
     # Go back to first window and attach
     tmux select-window -t $session_name:1
@@ -100,6 +108,10 @@ tt-dev() {
     tmux new-window -t $session_name:3 -n 'q' -c "$project_path"
     tmux send-keys -t $session_name:3 'q chat' Enter
     
+    # Window 4: LazyGit
+    tmux new-window -t $session_name:4 -n 'git' -c "$project_path"
+    tmux send-keys -t $session_name:4 'lazygit' Enter
+    
     # Go back to first window and attach
     tmux select-window -t $session_name:1
     tmux attach-session -t $session_name
@@ -134,6 +146,10 @@ dev-session() {
     # Window 3: Q (Amazon Q AI Assistant)
     tmux new-window -t $session_name:3 -n 'q' -c "$current_dir"
     tmux send-keys -t $session_name:3 'q chat' Enter
+    
+    # Window 4: LazyGit
+    tmux new-window -t $session_name:4 -n 'git' -c "$current_dir"
+    tmux send-keys -t $session_name:4 'lazygit' Enter
     
     # Go back to first window and attach
     tmux select-window -t $session_name:1
@@ -177,6 +193,26 @@ q-drawer() {
         echo "Creating new Q window..."
         tmux new-window -n 'q' -c "#{pane_current_path}"
         tmux send-keys 'q chat' Enter
+    fi
+}
+
+# Function to quickly open LazyGit in current session
+git-drawer() {
+    # Check if we're in a tmux session
+    if [ -z "$TMUX" ]; then
+        echo "Not in a tmux session. Starting LazyGit directly..."
+        lazygit
+        return
+    fi
+    
+    # Check if git window already exists
+    if tmux list-windows -F '#W' | grep -q '^git$'; then
+        echo "Switching to existing git window..."
+        tmux select-window -t git
+    else
+        echo "Creating new git window..."
+        tmux new-window -n 'git' -c "#{pane_current_path}"
+        tmux send-keys 'lazygit' Enter
     fi
 }
 
@@ -266,15 +302,16 @@ tmux-attach() {
 tmux-help() {
     echo "EMSI Project Tmux Shortcuts:"
     echo ""
-    echo "Project Sessions (3 windows: editor, terminal, q):"
+    echo "Project Sessions (4 windows: editor, terminal, q, git):"
     echo "  wdi-dev    - Start Workday Integrations development session"
-    echo "  cds-dev  - Start Company Datastore development session"
+    echo "  cds-dev    - Start Company Datastore development session"
     echo "  tt-dev     - Start Talent Transform development session"
     echo "  dev-session    - Start generic development session (current directory)"
     echo ""
     echo "Utilities:"
     echo "  switch-project - Interactive project session switcher"
     echo "  q-drawer       - Open/switch to Q (Amazon Q) window"
+    echo "  git-drawer     - Open/switch to LazyGit window"
     echo "  dev-layout     - Create 3-pane development layout"
     echo "  tmux-list      - List all active sessions"
     echo "  tmux-attach    - Attach to session (most recent if no name)"
@@ -286,10 +323,17 @@ tmux-help() {
     echo "  Ctrl-a C       - Quick Datastore session"
     echo "  Ctrl-a T       - Quick Talent session"
     echo "  Ctrl-a Q       - Quick Q drawer"
+    echo "  Ctrl-a G       - Quick LazyGit drawer"
     echo "  Ctrl-a D       - Quick dev layout"
     echo "  Ctrl-a |       - Split horizontally"
     echo "  Ctrl-a -       - Split vertically"
     echo "  Alt-1 to Alt-4 - Switch windows 1-4"
+    echo ""
+    echo "Window Layout:"
+    echo "  1. editor      - Neovim"
+    echo "  2. terminal    - Command line"
+    echo "  3. q           - Amazon Q AI Assistant"
+    echo "  4. git         - LazyGit"
 }
 
 # Functions are automatically available in zsh once defined

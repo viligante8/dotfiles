@@ -42,6 +42,21 @@ return {
         capabilities = require('blink.cmp').get_lsp_capabilities(capabilities)
       end
 
+      -- List of LSP servers to install and configure
+      local servers = {
+        'lua_ls',
+        'ts_ls', -- TypeScript/JavaScript
+        'pyright', -- Python
+        'rust_analyzer', -- Rust
+        'clangd', -- C/C++
+        'bashls', -- Bash
+        'jsonls', -- JSON
+        'yamlls', -- YAML
+        'html', -- HTML
+        'cssls', -- CSS
+        'tailwindcss', -- Tailwind CSS
+      }
+
       -- Setup function for LSP servers
       local function setup_server(server_name)
         local opts = { capabilities = capabilities }
