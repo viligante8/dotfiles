@@ -489,6 +489,83 @@ return {
 			local max_files = 5
 			local count = 0
 			
+			-- Cool file type icons
+			local function get_file_icon(filename)
+				local ext = filename:match("^.+%.(.+)$")
+				if not ext then return "📄" end
+				
+				local icons = {
+					-- Programming languages
+					lua = "🌙",
+					py = "🐍",
+					js = "⚡",
+					ts = "🔷",
+					jsx = "⚛️",
+					tsx = "⚛️",
+					go = "🐹",
+					rs = "🦀",
+					java = "☕",
+					cpp = "⚙️",
+					c = "⚙️",
+					cs = "🔷",
+					php = "🐘",
+					rb = "💎",
+					swift = "🦉",
+					kt = "🎯",
+					dart = "🎯",
+					
+					-- Web
+					html = "🌐",
+					css = "🎨",
+					scss = "🎨",
+					sass = "🎨",
+					vue = "💚",
+					svelte = "🧡",
+					
+					-- Config files
+					json = "📋",
+					yaml = "📋",
+					yml = "📋",
+					toml = "📋",
+					xml = "📋",
+					ini = "⚙️",
+					conf = "⚙️",
+					config = "⚙️",
+					
+					-- Documentation
+					md = "📝",
+					txt = "📄",
+					rst = "📝",
+					
+					-- Data
+					csv = "📊",
+					sql = "🗃️",
+					db = "🗃️",
+					
+					-- Images
+					png = "🖼️",
+					jpg = "🖼️",
+					jpeg = "🖼️",
+					gif = "🖼️",
+					svg = "🎨",
+					
+					-- Others
+					pdf = "📕",
+					zip = "📦",
+					tar = "📦",
+					gz = "📦",
+					log = "📜",
+					sh = "🐚",
+					zsh = "🐚",
+					bash = "🐚",
+					fish = "🐠",
+					vim = "💚",
+					nvim = "💚",
+				}
+				
+				return icons[ext:lower()] or "📄"
+			end
+			
 			for i = 1, #oldfiles do
 				if count >= max_files then break end
 				
@@ -500,7 +577,8 @@ return {
 					-- Check if file exists and is readable
 					if filename ~= "" and vim.fn.filereadable(file) == 1 then
 						count = count + 1
-						local display = string.format("%d  📄 %s/%s", count, dir, filename)
+						local icon = get_file_icon(filename)
+						local display = string.format("%d  %s %s/%s", count, icon, dir, filename)
 						local cmd = "<cmd>edit " .. vim.fn.fnameescape(file) .. "<CR>"
 						local button = dashboard.button(tostring(count), display, cmd)
 						table.insert(buttons, button)
