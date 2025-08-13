@@ -1,3 +1,5 @@
+# Amazon Q pre block. Keep at the top of this file.
+[[ -f "${HOME}/Library/Application Support/amazon-q/shell/zshrc.pre.zsh" ]] && builtin source "${HOME}/Library/Application Support/amazon-q/shell/zshrc.pre.zsh"
 # ============================================================================
 # OPTIMIZED ZSHRC - Fast Startup with Smart Auto-Switching
 # ============================================================================
@@ -15,8 +17,6 @@
 # AMAZON Q INTEGRATION (Pre-block)
 # ============================================================================
 # Amazon Q shell integration - must be at the top
-[[ -f "${HOME}/Library/Application Support/amazon-q/shell/zshrc.pre.zsh" ]] && builtin source "${HOME}/Library/Application Support/amazon-q/shell/zshrc.pre.zsh"
-
 # ============================================================================
 # COMPLETION SYSTEM SETUP
 # ============================================================================
@@ -278,8 +278,6 @@ eval "$(starship init zsh)"
 # AMAZON Q INTEGRATION (Post-block)
 # ============================================================================
 # Amazon Q shell integration - must be at the bottom
-[[ -f "${HOME}/Library/Application Support/amazon-q/shell/zshrc.post.zsh" ]] && builtin source "${HOME}/Library/Application Support/amazon-q/shell/zshrc.post.zsh"
-
 # ============================================================================
 # PERFORMANCE NOTES
 # ============================================================================
@@ -302,3 +300,6 @@ eval "$(starship init zsh)"
 # - Triggered by .nvmrc, package.json, yarn.lock, or pnpm-lock.yaml
 # - Falls back to manual loading when using node/npm/yarn commands
 # ============================================================================
+
+# Amazon Q post block. Keep at the bottom of this file.
+[[ -f "${HOME}/Library/Application Support/amazon-q/shell/zshrc.post.zsh" ]] && builtin source "${HOME}/Library/Application Support/amazon-q/shell/zshrc.post.zsh"
