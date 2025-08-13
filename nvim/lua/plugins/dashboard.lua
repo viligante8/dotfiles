@@ -1,5 +1,6 @@
 return {
 	"nvimdev/dashboard-nvim",
+	enabled = false, -- Disabled in favor of alpha-nvim
 	event = "VimEnter",
 	config = function()
 
