@@ -172,6 +172,43 @@ tt-dev() {
     tmux attach-session -t $session_name
 }
 
+# Function to start a development session for Personal Projects
+personal-dev() {
+    local session_name="personal-dev"
+    
+    # Check if session already exists
+    if tmux has-session -t $session_name 2>/dev/null; then
+        echo "Session '$session_name' already exists. Attaching..."
+        tmux attach-session -t $session_name
+        return
+    fi
+    
+    echo "Creating Personal development session..."
+    
+    # Create new session starting in personal dev folder
+    tmux new-session -d -s $session_name -c "$HOME/dev/personal"
+    
+    # Window 1: Editor in dev/personal
+    tmux rename-window -t $session_name:1 'editor'
+    tmux send-keys -t $session_name:1 'nvim' Enter
+    
+    # Window 2: Terminal in dotfiles
+    tmux new-window -t $session_name:2 -n 'dotfiles' -c "$HOME/.dotfiles"
+    tmux send-keys -t $session_name:2 'clear' Enter
+    
+    # Window 3: Terminal in dev/personal
+    tmux new-window -t $session_name:3 -n 'personal repos' -c "$HOME/dev/personal"
+    tmux send-keys -t $session_name:3 'clear' Enter
+    
+    # Window 4: Q (Amazon Q AI Assistant)
+    tmux new-window -t $session_name:4 -n 'q' -c "$HOME/dev/personal"
+    tmux send-keys -t $session_name:4 'q chat' Enter
+    
+    # Go back to first window and attach
+    tmux select-window -t $session_name:1
+    tmux attach-session -t $session_name
+}
+
 # Generic development session (can be used in any directory)
 dev-session() {
     local current_dir=$(pwd)
@@ -358,9 +395,10 @@ tmux-help() {
     echo "EMSI Project Tmux Shortcuts:"
     echo ""
     echo "Project Sessions (4 windows: editor, terminal, q, git):"
-    echo "  wdi-dev    - Start Workday Integrations development session"
-    echo "  cds-dev    - Start Company Datastore development session"
-    echo "  tt-dev     - Start Talent Transform development session"
+    echo "  wdi-dev        - Start Workday Integrations development session"
+    echo "  cds-dev        - Start Company Datastore development session"
+    echo "  tt-dev         - Start Talent Transform development session"
+    echo "  personal-dev   - Start Personal projects session (editor, dotfiles, personal repos, q)"
     echo "  dev-session    - Start generic development session (current directory)"
     echo ""
     echo "Utilities:"
