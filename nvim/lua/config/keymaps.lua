@@ -76,3 +76,27 @@ map("n", "<leader><tab><tab>", "<cmd>tabnew<cr>", { desc = "New Tab" })
 map("n", "<leader><tab>]", "<cmd>tabnext<cr>", { desc = "Next Tab" })
 map("n", "<leader><tab>d", "<cmd>tabclose<cr>", { desc = "Close Tab" })
 map("n", "<leader><tab>[", "<cmd>tabprevious<cr>", { desc = "Previous Tab" })
+
+-- PR Review
+vim.api.nvim_create_user_command('PRFiles', function()
+  local cmd = 'git diff --numstat origin/staging..HEAD'
+  local output = vim.fn.systemlist(cmd)
+  
+  local qf_list = {}
+  for _, line in ipairs(output) do
+    local parts = vim.split(line, '\t')
+    if #parts >= 3 then
+      local added, removed, file = parts[1], parts[2], parts[3]
+      table.insert(qf_list, {
+        filename = file,
+        lnum = 1,
+        text = string.format("+%s -%s", added, removed)
+      })
+    end
+  end
+  
+  vim.fn.setqflist(qf_list, 'r', { title = 'PR Files vs origin/staging' })
+  vim.cmd('copen')
+end, { desc = 'Load PR files with stats into quickfix' })
+
+map("n", "<leader>gq", "<cmd>PRFiles<cr>", { desc = "PR files to quickfix" })

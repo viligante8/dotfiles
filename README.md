@@ -49,6 +49,93 @@ brew install starship fzf
 └── README.md                   # This file
 ```
 
+## 🔍 PR Review Workflow
+
+This setup includes powerful tools for efficient PR review directly in Neovim.
+
+### Quick Start Commands
+
+| Command | Description |
+|---------|-------------|
+| `<leader>gq` | Load all PR files with change stats into quickfix |
+| `<leader>gd` | Browse PR files interactively with Telescope |
+| `<leader>gs` | View git status (all changed files) |
+| `<leader>gc` | Browse commits with preview |
+
+### Complete PR Review Workflow
+
+#### 1. **Get Overview of Changes**
+```vim
+<leader>gq  " Loads quickfix with: src/file.ts |1| +42 -8
+```
+This shows all changed files with line addition/deletion stats, helping you prioritize review.
+
+#### 2. **Navigate Through Files**
+In the quickfix window:
+- `j/k` - Move up/down through files
+- `Enter` - Open file at cursor
+- `<C-w><C-w>` - Switch between quickfix and file windows
+
+#### 3. **Interactive File Browsing**
+```vim
+<leader>gd  " Opens Telescope with changed files
+```
+- `j/k` - Navigate files
+- `Enter` - Open file
+- `<C-v>` - Open in vertical split
+- `<C-x>` - Open in horizontal split
+- `<C-q>` - Send all results to quickfix
+
+#### 4. **Review Individual Files**
+- `]c` / `[c` - Jump between git hunks (if using gitsigns)
+- `<leader>gc` - View commit history for context
+
+### BQF (Better Quickfix) Primer
+
+BQF enhances the quickfix window with modern features:
+
+#### Key Features
+- **Preview window** - See file contents without opening
+- **Fuzzy search** - Filter quickfix results
+- **Better navigation** - Enhanced movement commands
+
+#### BQF Keybinds in Quickfix Window
+
+| Key | Action |
+|-----|--------|
+| `p` | Toggle preview window |
+| `P` | Toggle preview window (stay in qf) |
+| `<Tab>` | Toggle item selection |
+| `zn` / `zN` | Create new quickfix list |
+| `zf` | Fuzzy search in quickfix |
+| `<C-f>` / `<C-b>` | Page down/up in preview |
+| `<C-c>` | Close quickfix |
+
+#### Advanced BQF Usage
+
+**Filter quickfix results:**
+```vim
+:Cfilter pattern    " Keep only matching items
+:Cfilter! pattern   " Remove matching items
+```
+
+**Example PR Review Session:**
+1. `<leader>gq` - Load PR files
+2. `p` - Enable preview
+3. `j/k` - Navigate files, see preview
+4. `zf` - Search for specific files
+5. `Enter` - Open file for detailed review
+
+### Pro Tips
+
+- **Large PRs**: Use `<leader>gq` to see change stats, focus on files with most changes first
+- **Context**: Use `<leader>gc` to understand commit history
+- **File comparison**: Open files in splits with `<C-v>` from Telescope
+- **Quick navigation**: Use quickfix commands `:cnext`, `:cprev` to jump between files
+- **Search across PR**: Use `<leader>sg` (live grep) to search within changed files
+
+This workflow transforms PR review from a tedious process into an efficient, keyboard-driven experience!
+
 ## ⚡ Shell Configuration (.zshrc)
 
 ### Key Features

@@ -34,7 +34,8 @@ return {
     enable_diagnostics = true,
     window = {
       position = "right",
-      width = 30,
+      width = 40,  -- Increased base width
+      auto_expand_width = true,  -- Automatically expand for long filenames
       mappings = {
         ["<cr>"] = "open",
         ["<2-LeftMouse>"] = "open",

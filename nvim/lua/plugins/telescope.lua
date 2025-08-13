@@ -23,6 +23,12 @@ return {
 		{ "<leader>gc", "<cmd>Telescope git_commits<cr>", desc = "Commits" },
 		{ "<leader>gb", "<cmd>Telescope git_branches<cr>", desc = "Branches" },
 		{ "<leader>gs", "<cmd>Telescope git_status<cr>", desc = "Status" },
+		{ "<leader>gd", function()
+			require('telescope.builtin').git_files({
+				git_command = { "git", "diff", "--name-only", "origin/staging..HEAD" },
+				prompt_title = "Files Changed vs origin/staging"
+			})
+		end, desc = "Diff vs staging" },
 	},
 	config = function()
 		local telescope = require("telescope")
