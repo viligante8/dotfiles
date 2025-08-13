@@ -605,27 +605,34 @@ return {
 			local recent_files_section = get_recent_files_section()
 			local date_footer = get_date_footer()
 			
+			-- Adjust padding based on screen height
+			local screen_height = vim.o.lines
+			local top_padding = screen_height > 30 and 2 or 1
+			local section_padding = screen_height > 25 and 1 or 0
+			
 			local layout = {
-				{ type = "padding", val = 2 },
+				{ type = "padding", val = top_padding },
 				dashboard.section.header,
-				{ type = "padding", val = 1 },
+				{ type = "padding", val = section_padding },
 				{ type = "text", val = live_info, opts = { hl = "Type", position = "center" } },
 				{ type = "text", val = dir_info, opts = { hl = "Comment", position = "center" } },
-				{ type = "padding", val = 1 },
+				{ type = "padding", val = section_padding },
 				dashboard.section.buttons,
-				{ type = "padding", val = 1 },
 			}
 			
-			-- Add recent files section if it has buttons
-			if recent_files_section.val and #recent_files_section.val > 0 then
+			-- Only add recent files if we have enough screen space
+			if recent_files_section.val and #recent_files_section.val > 0 and screen_height > 20 then
+				table.insert(layout, { type = "padding", val = section_padding })
 				table.insert(layout, { type = "text", val = { "Recent Files:" }, opts = { hl = "Keyword", position = "center" } })
-				table.insert(layout, { type = "padding", val = 1 })
+				table.insert(layout, { type = "padding", val = section_padding })
 				table.insert(layout, recent_files_section)
-				table.insert(layout, { type = "padding", val = 1 })
 			end
 			
-			-- Add date footer
-			table.insert(layout, { type = "text", val = date_footer, opts = { hl = "Type", position = "center" } })
+			-- Only add date footer if we have enough space
+			if screen_height > 25 then
+				table.insert(layout, { type = "padding", val = section_padding })
+				table.insert(layout, { type = "text", val = date_footer, opts = { hl = "Type", position = "center" } })
+			end
 			
 			return layout
 		end
@@ -645,8 +652,44 @@ return {
 		-- Setup alpha
 		alpha.setup(dashboard.config)
 
-		-- Disable folding on alpha buffer
-		vim.cmd([[autocmd FileType alpha setlocal nofoldenable]])
+		-- Disable folding and scrolling on alpha buffer
+		vim.api.nvim_create_autocmd("FileType", {
+			pattern = "alpha",
+			callback = function()
+				local buf = vim.api.nvim_get_current_buf()
+				local win = vim.api.nvim_get_current_win()
+				
+				-- Window-local options
+				vim.wo[win].foldenable = false
+				vim.wo[win].scrolloff = 0
+				vim.wo[win].scrollbind = false
+				
+				-- Buffer-local options
+				vim.bo[buf].modifiable = false
+				vim.bo[buf].swapfile = false
+				vim.bo[buf].bufhidden = "wipe"
+				vim.bo[buf].buftype = "nofile"
+				
+				-- Disable all scrolling keys
+				local keys_to_disable = {
+					"j", "k", "<Up>", "<Down>", 
+					"<C-u>", "<C-d>", "<C-f>", "<C-b>", 
+					"<PageUp>", "<PageDown>", "<S-Up>", "<S-Down>",
+					"<C-y>", "<C-e>", "gg", "G", "<Home>", "<End>",
+					-- Horizontal scrolling
+					"h", "l", "<Left>", "<Right>", "0", "$", "^",
+					"<S-Left>", "<S-Right>", "zh", "zl", "zH", "zL"
+				}
+				
+				for _, key in ipairs(keys_to_disable) do
+					vim.keymap.set("n", key, "<Nop>", { buffer = buf, silent = true })
+				end
+				
+				-- Disable mouse scrolling
+				vim.keymap.set("n", "<ScrollWheelUp>", "<Nop>", { buffer = buf, silent = true })
+				vim.keymap.set("n", "<ScrollWheelDown>", "<Nop>", { buffer = buf, silent = true })
+			end,
+		})
 	end,
 	dependencies = { "nvim-tree/nvim-web-devicons" },
 }
