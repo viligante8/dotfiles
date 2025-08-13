@@ -482,35 +482,52 @@ return {
 			dashboard.button("q", "  Quit", "<cmd>qa<CR>"),
 		}
 
-		-- Recent files section
-		local function get_recent_files()
-			local oldfiles = vim.v.oldfiles
-			local recent = {}
+		-- Recent files section as buttons
+		local function get_recent_files_section()
+			local oldfiles = vim.v.oldfiles or {}
+			local buttons = {}
 			local max_files = 5
+			local count = 0
 			
-			table.insert(recent, "Recent Files:")
-			table.insert(recent, "")
-			
-			for i = 1, math.min(max_files, #oldfiles) do
+			for i = 1, #oldfiles do
+				if count >= max_files then break end
+				
 				local file = oldfiles[i]
-				local filename = vim.fn.fnamemodify(file, ":t")
-				local dir = vim.fn.fnamemodify(file, ":h:t")
-				if filename ~= "" then
-					table.insert(recent, string.format("  %s  %s/%s", "📄", dir, filename))
+				if file and file ~= "" then
+					local filename = vim.fn.fnamemodify(file, ":t")
+					local dir = vim.fn.fnamemodify(file, ":h:t")
+					
+					-- Check if file exists and is readable
+					if filename ~= "" and vim.fn.filereadable(file) == 1 then
+						count = count + 1
+						local display = string.format("%d  📄 %s/%s", count, dir, filename)
+						local cmd = "<cmd>edit " .. vim.fn.fnameescape(file) .. "<CR>"
+						local button = dashboard.button(tostring(count), display, cmd)
+						table.insert(buttons, button)
+					end
 				end
 			end
 			
-			return recent
+			-- Create a section similar to dashboard.section.buttons
+			local section = {
+				type = "group",
+				val = buttons,
+				opts = {
+					spacing = 1,
+				}
+			}
+			
+			return section
 		end
 
 		-- Custom layout
 		local function create_layout()
 			local live_info = get_live_info()
 			local dir_info = get_dir_info()
-			local recent_files = get_recent_files()
+			local recent_files_section = get_recent_files_section()
 			local date_footer = get_date_footer()
 			
-			return {
+			local layout = {
 				{ type = "padding", val = 2 },
 				dashboard.section.header,
 				{ type = "padding", val = 1 },
@@ -519,10 +536,20 @@ return {
 				{ type = "padding", val = 1 },
 				dashboard.section.buttons,
 				{ type = "padding", val = 1 },
-				{ type = "text", val = recent_files, opts = { hl = "Keyword", position = "center" } },
-				{ type = "padding", val = 1 },
-				{ type = "text", val = date_footer, opts = { hl = "Type", position = "center" } },
 			}
+			
+			-- Add recent files section if it has buttons
+			if recent_files_section.val and #recent_files_section.val > 0 then
+				table.insert(layout, { type = "text", val = { "Recent Files:" }, opts = { hl = "Keyword", position = "center" } })
+				table.insert(layout, { type = "padding", val = 1 })
+				table.insert(layout, recent_files_section)
+				table.insert(layout, { type = "padding", val = 1 })
+			end
+			
+			-- Add date footer
+			table.insert(layout, { type = "text", val = date_footer, opts = { hl = "Type", position = "center" } })
+			
+			return layout
 		end
 
 		-- Set up the dashboard
