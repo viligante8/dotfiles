@@ -431,19 +431,26 @@ return {
 		-- Centered directory and branch info
 		local function get_dir_info()
 			local cwd = vim.fn.fnamemodify(vim.fn.getcwd(), ":t")
-			local session = vim.env.TMUX_SESSION or "main"
+			local info = {}
+			
+			-- Directory
+			table.insert(info, "📁 " .. cwd)
 			
 			-- Get git branch
-			local branch = ""
 			local git_branch = vim.fn.system("git branch --show-current 2>/dev/null"):gsub("\n", "")
 			if git_branch and git_branch ~= "" then
-				branch = "  " .. git_branch
+				table.insert(info, "🌿 " .. git_branch)
 			end
 			
-			return {
-				"📁 " .. cwd .. "  🖥️  " .. session .. branch,
-				"",
-			}
+			-- Get tmux session name
+			local tmux_session = vim.fn.system("tmux display-message -p '#S' 2>/dev/null"):gsub("\n", "")
+			if tmux_session and tmux_session ~= "" then
+				table.insert(info, "🖥️  " .. tmux_session)
+			end
+			
+			table.insert(info, "")
+			
+			return info
 		end
 
 		-- Date section for bottom
