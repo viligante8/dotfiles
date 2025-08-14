@@ -271,18 +271,6 @@ return {
 					localRoot = "${workspaceFolder}",
 					remoteRoot = "${workspaceFolder}",
 					skipFiles = { "<node_internals>/**", "**/node_modules/**" },
-					-- Add path mapping for TypeScript aliases
-					pathMappings = {
-						{
-							localRoot = "${workspaceFolder}/src",
-							remoteRoot = "${workspaceFolder}/src"
-						}
-					},
-					-- Better source map resolution
-					resolveSourceMapLocations = {
-						"${workspaceFolder}/**",
-						"!**/node_modules/**"
-					}
 				},
 				{
 					type = "pwa-node",
@@ -296,10 +284,6 @@ return {
 					},
 					sourceMaps = true,
 					skipFiles = { "<node_internals>/**", "**/node_modules/**" },
-					resolveSourceMapLocations = {
-						"${workspaceFolder}/**",
-						"!**/node_modules/**"
-					}
 				},
 				{
 					type = "pwa-node",
@@ -314,10 +298,6 @@ return {
 					},
 					sourceMaps = true,
 					skipFiles = { "<node_internals>/**", "**/node_modules/**" },
-					resolveSourceMapLocations = {
-						"${workspaceFolder}/**",
-						"!**/node_modules/**"
-					}
 				},
 			}
 
