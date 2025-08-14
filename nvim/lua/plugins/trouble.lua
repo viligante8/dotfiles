@@ -32,13 +32,33 @@ return {
       next = "j",
       help = "?",
     },
+    -- Enhanced quickfix integration (replacing bqf functionality)
+    auto_open = false,
+    auto_close = false,
+    auto_preview = true,
+    auto_fold = false,
+    auto_jump = { "lsp_definitions" },
+    signs = {
+      error = "",
+      warning = "",
+      hint = "",
+      information = "",
+      other = "",
+    },
+    use_diagnostic_signs = false,
   },
   keys = {
+    -- Core trouble functionality
     { "<leader>xx", "<cmd>TroubleToggle<cr>", desc = "Toggle Trouble" },
     { "<leader>xw", "<cmd>TroubleToggle workspace_diagnostics<cr>", desc = "Workspace Diagnostics" },
     { "<leader>xd", "<cmd>TroubleToggle document_diagnostics<cr>", desc = "Document Diagnostics" },
     { "<leader>xl", "<cmd>TroubleToggle loclist<cr>", desc = "Location List" },
     { "<leader>xq", "<cmd>TroubleToggle quickfix<cr>", desc = "Quickfix" },
     { "gR", "<cmd>TroubleToggle lsp_references<cr>", desc = "LSP References" },
+    -- Additional LSP integrations that work well with aerial
+    { "<leader>xr", "<cmd>TroubleToggle lsp_references<cr>", desc = "References" },
+    { "<leader>xi", "<cmd>TroubleToggle lsp_implementations<cr>", desc = "Implementations" },
+    { "<leader>xD", "<cmd>TroubleToggle lsp_definitions<cr>", desc = "Definitions" },
+    { "<leader>xt", "<cmd>TroubleToggle lsp_type_definitions<cr>", desc = "Type Definitions" },
   },
 }

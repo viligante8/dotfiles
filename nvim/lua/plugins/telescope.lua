@@ -19,6 +19,13 @@ return {
 		{ "<leader>sh", "<cmd>Telescope help_tags<cr>", desc = "Help Pages" },
 		{ "<leader>sk", "<cmd>Telescope keymaps<cr>", desc = "Key Maps" },
 		{ "<leader>sC", "<cmd>Telescope commands<cr>", desc = "Commands" },
+		-- LSP/Symbols (complement aerial and trouble)
+		{ "<leader>ss", "<cmd>Telescope lsp_document_symbols<cr>", desc = "Document Symbols" },
+		{ "<leader>sS", "<cmd>Telescope lsp_workspace_symbols<cr>", desc = "Workspace Symbols" },
+		{ "<leader>sr", "<cmd>Telescope lsp_references<cr>", desc = "References" },
+		{ "<leader>si", "<cmd>Telescope lsp_implementations<cr>", desc = "Implementations" },
+		{ "<leader>sd", "<cmd>Telescope lsp_definitions<cr>", desc = "Definitions" },
+		{ "<leader>st", "<cmd>Telescope lsp_type_definitions<cr>", desc = "Type Definitions" },
 		-- Git
 		{ "<leader>gc", "<cmd>Telescope git_commits<cr>", desc = "Commits" },
 		{ "<leader>gb", "<cmd>Telescope git_branches<cr>", desc = "Branches" },
