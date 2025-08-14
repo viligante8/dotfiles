@@ -489,11 +489,6 @@ return {
 			dashboard.button("g", "  Find Text", "<cmd>lua require('telescope.builtin').live_grep()<CR>"),
 			dashboard.button("n", "  New File", "<cmd>enew<CR>"),
 			dashboard.button(
-				"c",
-				"  Config",
-				"<cmd>lua require('telescope.builtin').find_files({cwd = '~/.config/nvim'})<CR>"
-			),
-			dashboard.button(
 				"d",
 				"  Dotfiles",
 				"<cmd>lua require('telescope.builtin').find_files({cwd = '~/.dotfiles'})<CR>"
@@ -717,7 +712,7 @@ return {
 				vim.bo[buf].buftype = "nofile"
 
 				-- Keys used by alpha dashboard buttons - DON'T disable these
-				local button_keys = { "f", "r", "g", "n", "c", "d", "s", "l", "m", "q", "1", "2", "3", "4", "5" }
+				local button_keys = { "f", "r", "g", "n", "d", "s", "l", "m", "q", "1", "2", "3", "4", "5" }
 
 				-- Disable all scrolling keys (but preserve button keys)
 				local keys_to_disable = {

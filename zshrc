@@ -252,7 +252,7 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 [ -s "/Users/vito.pistelli/.bun/_bun" ] && source "/Users/vito.pistelli/.bun/_bun"
 
 # Development environment variables
-export NODE_TLS_REJECT_UNAUTHORIZED=0  # For development with self-signed certs
+# export NODE_TLS_REJECT_UNAUTHORIZED=0  # For development with self-signed certs
 export EDITOR=nvim                      # Default editor for git, etc.
 
 # Quick access to keymaps cheat sheet
