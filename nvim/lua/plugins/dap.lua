@@ -153,18 +153,6 @@ return {
 				{
 					type = "pwa-node",
 					request = "launch",
-					name = "Launch API (tsx)",
-					runtimeExecutable = "node",
-					runtimeArgs = { "--inspect-brk", "./node_modules/.bin/tsx" },
-					args = { "src/api/server.ts" },
-					cwd = "${workspaceFolder}",
-					sourceMaps = true,
-					protocol = "inspector",
-					skipFiles = { "<node_internals>/**", "**/node_modules/**" },
-				},
-				{
-					type = "pwa-node",
-					request = "launch",
 					name = "Debug Vitest",
 					runtimeExecutable = "node",
 					runtimeArgs = { "--inspect-brk", "./node_modules/.bin/vitest", "run" },
@@ -179,6 +167,7 @@ return {
 					name = "Attach to process",
 					processId = require("dap.utils").pick_process,
 					cwd = "${workspaceFolder}",
+					internalConsoleOptions = "neverOpen",
 					skipFiles = { "<node_internals>/**", "**/node_modules/**" },
 				},
 			}
