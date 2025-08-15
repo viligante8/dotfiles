@@ -412,6 +412,46 @@ return {
 			return combined
 		end
 
+		-- Cache for slow operations
+		local weather_cache = { data = "🌍 Loading weather...", timestamp = 0 }
+		local WEATHER_CACHE_DURATION = 300 -- 5 minutes
+
+		-- Async weather function
+		local function get_weather()
+			local now = os.time()
+			if (now - weather_cache.timestamp) < WEATHER_CACHE_DURATION then
+				return weather_cache.data
+			end
+
+			-- Return cached data immediately, update in background
+			local cached_result = weather_cache.data
+			
+			-- Update in background (non-blocking)
+			vim.fn.jobstart({
+				'sh', '-c', 
+				'curl -s "wttr.in/Dunwoody?format=%l:+%c+%t+%h+%w" 2>/dev/null || echo "🌍 Weather unavailable"'
+			}, {
+				on_stdout = function(_, data)
+					if data and data[1] and data[1] ~= "" then
+						local clean_weather = data[1]:gsub("^%s*(.-)%s*$", "%1")
+						weather_cache.data = "🌍 " .. clean_weather
+						weather_cache.timestamp = now
+						
+						-- Refresh dashboard if we're on alpha
+						if vim.bo.filetype == "alpha" then
+							vim.schedule(function()
+								-- Avoid the scope issue by calling alpha.redraw directly
+								require("alpha").redraw()
+							end)
+						end
+					end
+				end,
+				stdout_buffered = true,
+			})
+			
+			return cached_result
+		end
+
 		-- Live info section - just time on top
 		local function get_live_info()
 			local time_lines = get_ascii_time()
@@ -482,17 +522,24 @@ return {
 			return info
 		end
 
+		-- Custom function for dotfiles with hidden files
+		local function open_dotfiles()
+			require('telescope.builtin').find_files({
+				cwd = '~/.dotfiles',
+				hidden = true,
+				find_command = { 'rg', '--files', '--hidden', '--no-ignore', '--glob', '!**/.git/*' },
+			})
+		end
+
 		-- Buttons/shortcuts
 		dashboard.section.buttons.val = {
 			dashboard.button("f", "  Find File", "<cmd>lua require('telescope.builtin').find_files()<CR>"),
 			dashboard.button("r", "  Recent Files", "<cmd>lua require('telescope.builtin').oldfiles()<CR>"),
 			dashboard.button("g", "  Find Text", "<cmd>lua require('telescope.builtin').live_grep()<CR>"),
 			dashboard.button("n", "  New File", "<cmd>enew<CR>"),
-			dashboard.button(
-				"d",
-				"  Dotfiles",
-				"<cmd>lua require('telescope.builtin').find_files({cwd = '~/.dotfiles'})<CR>"
-			),
+			dashboard.button("d", "  Dotfiles", function()
+				open_dotfiles()
+			end),
 			dashboard.button("s", "  Restore Session", "<cmd>lua require('persistence').load()<CR>"),
 			dashboard.button("l", "󰒲  Lazy", "<cmd>Lazy<CR>"),
 			dashboard.button("m", "  Mason", "<cmd>Mason<CR>"),
@@ -622,6 +669,7 @@ return {
 		-- Custom layout
 		local function create_layout()
 			local live_info = get_live_info()
+			local weather = get_weather()
 			local dir_info = get_dir_info()
 			local recent_files_section = get_recent_files_section()
 			local date_footer = get_date_footer()
@@ -636,6 +684,7 @@ return {
 				dashboard.section.header,
 				{ type = "padding", val = section_padding },
 				{ type = "text", val = live_info, opts = { hl = "Type", position = "center" } },
+				{ type = "text", val = { weather }, opts = { hl = "String", position = "center" } },
 				{ type = "text", val = dir_info, opts = { hl = "Comment", position = "center" } },
 				{ type = "padding", val = section_padding },
 				dashboard.section.buttons,
