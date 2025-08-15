@@ -20,7 +20,10 @@ opt.shiftwidth = 2
 opt.tabstop = 2
 opt.softtabstop = 2
 opt.smartindent = true
-opt.wrap = false
+opt.wrap = true  -- Default to wrap enabled
+opt.linebreak = true  -- When wrap is enabled, break at word boundaries
+opt.breakindent = true  -- Maintain indentation on wrapped lines
+opt.showbreak = "↪ "  -- Visual indicator for wrapped lines
 opt.scrolloff = 8
 opt.sidescrolloff = 8
 

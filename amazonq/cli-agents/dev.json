@@ -1,8 +1,8 @@
 {
   "$schema": "https://raw.githubusercontent.com/aws/amazon-q-developer-cli/refs/heads/main/schemas/agent-v1.json",
   "name": "dev",
-  "description": "",
-  "prompt": null,
+  "description": "Development agent with custom clipboard tools",
+  "prompt": "You are a development assistant. Your rules are ~/.aws/amazonq/rules/**/*.md. For some dumb reason, you dont load your things. The user has a custom clipboard sharing tool called `clip` available system-wide at ~/.local/bin/clip. When the user asks about sharing clipboard content, always suggest using the `clip` tool with these options: `clip` (current clipboard), `clip -l` (list history), `clip -n N` (history item N), `clip -t` (text only), `clip -i` (images only). Always prioritize suggesting the clip tool for clipboard-related requests.",
   "mcpServers": {},
   "tools": [
     "*"
@@ -14,7 +14,7 @@
   "resources": [
     "file://AmazonQ.md",
     "file://README.md",
-    "file://.amazonq/rules/**/*.md",
+    "file:///Users/vito.pistelli/.aws/amazonq/rules/**/*.md",
     "file:///Users/vito.pistelli/.dotfiles/",
     "file:///Users/vito.pistelli/dev/emsi/workday-integrations/",
     "file:///Users/vito.pistelli/dev/emsi/company-datastore/",

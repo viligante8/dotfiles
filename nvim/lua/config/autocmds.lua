@@ -65,10 +65,12 @@ autocmd("FileType", {
 -- Wrap and check for spell in text filetypes
 autocmd("FileType", {
   group = augroup("wrap_spell", { clear = true }),
-  pattern = { "gitcommit", "markdown" },
+  pattern = { "gitcommit", "markdown", "text", "rst" },
   callback = function()
     vim.opt_local.wrap = true
     vim.opt_local.spell = true
+    vim.opt_local.textwidth = 80
+    vim.opt_local.colorcolumn = "80"
   end,
 })
 
