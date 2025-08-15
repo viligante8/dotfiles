@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Development session launcher from shell
+# Usage: dev [work|personal]
+# If no argument provided, defaults to personal
+
+PROJECT_TYPE="${1:-personal}"
+
+case "$PROJECT_TYPE" in
+    "work"|"w")
+        ~/.dotfiles/tmux-project-picker.sh ~/dev/emsi
+        ;;
+    "personal"|"p")
+        ~/.dotfiles/tmux-project-picker.sh ~/dev/personal ~/.dotfiles
+        ;;
+    *)
+        echo "Usage: dev [work|personal]"
+        echo "  work (or w)     - Pick from work projects in ~/dev/emsi"
+        echo "  personal (or p) - Pick from personal projects in ~/dev/personal + dotfiles"
+        exit 1
+        ;;
+esac
