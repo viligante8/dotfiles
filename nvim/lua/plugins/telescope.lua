@@ -31,12 +31,26 @@ return {
 		{ "<leader>gf", "<cmd>Telescope git_bcommits<cr>", desc = "File History" },
 		{ "<leader>gb", "<cmd>Telescope git_branches<cr>", desc = "Branches" },
 		{ "<leader>gs", "<cmd>Telescope git_status<cr>", desc = "Status" },
-		{ "<leader>gd", function()
-			require('telescope.builtin').git_files({
-				git_command = { "git", "diff", "--name-only", "origin/staging..HEAD" },
-				prompt_title = "Files Changed vs origin/staging"
-			})
-		end, desc = "Diff vs staging" },
+		{
+			"<leader>gds",
+			function()
+				require("telescope.builtin").git_files({
+					git_command = { "git", "diff", "--name-only", "origin/staging..HEAD" },
+					prompt_title = "Files Changed vs origin/staging",
+				})
+			end,
+			desc = "Diff vs staging",
+		},
+		{
+			"<leader>gdm",
+			function()
+				require("telescope.builtin").git_files({
+					git_command = { "git", "diff", "--name-only", "origin/main..HEAD" },
+					prompt_title = "Files Changed vs origin/main",
+				})
+			end,
+			desc = "Diff vs main",
+		},
 	},
 	config = function()
 		local telescope = require("telescope")
@@ -118,4 +132,3 @@ return {
 		-- ui-select extension handles vim.ui.select automatically
 	end,
 }
-

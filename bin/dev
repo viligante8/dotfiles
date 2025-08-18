@@ -1,23 +1,88 @@
 #!/bin/bash
 
-# Development session launcher from shell
-# Usage: dev [work|personal]
-# If no argument provided, defaults to personal
+# Universal project picker for tmux
+# Reads project directories from config file and shows existing sessions at the top
 
-PROJECT_TYPE="${1:-work}"
-SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CONFIG_FILE="$SCRIPT_DIR/../project-dirs.conf"
 
-case "$PROJECT_TYPE" in
-    "work"|"w")
-        "$SCRIPT_DIR/tmux-project-picker.sh" ~/dev/emsi
-        ;;
-    "personal"|"p")
-        "$SCRIPT_DIR/tmux-project-picker.sh" ~/dev/personal
-        ;;
-    *)
-        echo "Usage: dev [work|personal]"
-        echo "  work (or w)     - Pick from work projects in ~/dev/emsi"
-        echo "  personal (or p) - Pick from personal projects in ~/dev/personal"
-        exit 1
-        ;;
-esac
+# Check if config file exists
+if [ ! -f "$CONFIG_FILE" ]; then
+    echo "Error: Config file not found at $CONFIG_FILE"
+    echo "Create it with one project directory per line."
+    exit 1
+fi
+
+# Create temporary files for the menu
+TEMP_FILE=$(mktemp)
+EXISTING_SESSIONS_FILE=$(mktemp)
+ALL_PROJECTS_FILE=$(mktemp)
+SEEN_PATHS_FILE=$(mktemp)
+
+# Get list of existing tmux sessions
+existing_sessions=$(tmux list-sessions -F "#{session_name}" 2>/dev/null || true)
+
+# Collect all project directories from config
+all_projects=()
+
+while IFS= read -r line || [ -n "$line" ]; do
+    # Skip empty lines and comments
+    [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]] && continue
+    
+    # Expand ~ and environment variables
+    expanded_dir=$(eval echo "$line")
+    
+    if [ -d "$expanded_dir" ]; then
+        # Scan subdirectories
+        for dir in "$expanded_dir"/*; do
+            if [ -d "$dir" ]; then
+                basename_dir=$(basename "$dir")
+                real_path=$(realpath "$dir" 2>/dev/null || echo "$dir")
+                
+                # Check if we've seen this path before
+                if ! grep -Fxq "$real_path" "$SEEN_PATHS_FILE"; then
+                    echo "$real_path" >> "$SEEN_PATHS_FILE"
+                    all_projects+=("$basename_dir -> $dir")
+                fi
+            fi
+        done
+    fi
+done < "$CONFIG_FILE"
+
+# Separate existing sessions from new projects
+for project in "${all_projects[@]}"; do
+    project_name=$(echo "$project" | cut -d' ' -f1)
+    # Convert project name to session name format (replace special chars with dashes)
+    session_name=$(echo "$project_name" | sed 's/[^a-zA-Z0-9]/-/g')
+    
+    # Check if this project has an existing session
+    if echo "$existing_sessions" | grep -q "^${session_name}$"; then
+        echo "🔄 $project" >> "$EXISTING_SESSIONS_FILE"
+    else
+        echo "$project" >> "$ALL_PROJECTS_FILE"
+    fi
+done
+
+# Combine files: existing sessions first, then all other projects
+cat "$EXISTING_SESSIONS_FILE" "$ALL_PROJECTS_FILE" > "$TEMP_FILE"
+
+# Use fzf to show the picker
+selected=$(cat "$TEMP_FILE" | fzf --height=40% --layout=reverse --border --prompt="Select project: ")
+
+# Clean up temp files
+rm "$TEMP_FILE" "$EXISTING_SESSIONS_FILE" "$ALL_PROJECTS_FILE" "$SEEN_PATHS_FILE"
+
+# Exit if nothing selected
+if [ -z "$selected" ]; then
+    exit 0
+fi
+
+# Extract project name and path (remove emoji prefix if present)
+project_name=$(echo "$selected" | sed 's/^🔄 //' | cut -d' ' -f1)
+project_path=$(echo "$selected" | sed 's/^🔄 //' | cut -d'>' -f2 | xargs)
+
+# Create session name (replace dots and special chars with dashes)
+session_name=$(echo "$project_name" | sed 's/[^a-zA-Z0-9]/-/g')
+
+# Use the existing tmux-workflows.sh script to create the session
+exec "$SCRIPT_DIR/../tmux-workflows.sh" "$session_name" "$project_path"
