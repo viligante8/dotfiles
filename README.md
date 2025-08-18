@@ -10,11 +10,11 @@ A modern, performance-optimized development environment setup featuring a blazin
 
 ```bash
 # Clone the repository
-git clone <your-repo-url> ~/.dotfiles
+git clone <your-repo-url> <dotfiles-directory>
 
-# Link configurations
-ln -sf ~/.dotfiles/.zshrc ~/.zshrc
-ln -sf ~/.dotfiles/nvim ~/.config/nvim
+# Link configurations (adjust paths as needed)
+ln -sf <dotfiles-directory>/zshrc ~/.zshrc
+ln -sf <dotfiles-directory>/nvim ~/.config/nvim
 
 # Install dependencies
 brew install starship fzf
@@ -23,8 +23,8 @@ brew install starship fzf
 ## 📁 Repository Structure
 
 ```
-~/.dotfiles/
-├── .zshrc                      # Optimized Zsh configuration with Starship
+dotfiles/
+├── zshrc                       # Optimized Zsh configuration with Starship
 ├── .zshrc.secrets              # Private environment variables (gitignored)
 ├── tmux.conf                   # Tmux configuration with development workflows
 ├── tmux-which-key.yaml         # Tmux which-key keybinding descriptions

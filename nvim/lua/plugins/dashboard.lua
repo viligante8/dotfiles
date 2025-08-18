@@ -78,7 +78,7 @@ return {
 						desc = "Dotfiles",
 						key = "d",
 						action = function()
-							require("telescope.builtin").find_files({ cwd = "~/.dotfiles" })
+							require("telescope.builtin").find_files({ cwd = vim.fn.fnamemodify(vim.fn.stdpath("config"), ":h") })
 						end,
 					},
 					{

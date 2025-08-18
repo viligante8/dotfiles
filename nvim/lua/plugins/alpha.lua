@@ -524,8 +524,11 @@ return {
 
 		-- Custom function for dotfiles with hidden files
 		local function open_dotfiles()
+			-- Resolve the symlink to get the actual dotfiles directory
+			local config_path = vim.fn.stdpath("config")
+			local dotfiles_path = vim.fn.resolve(config_path .. "/..")
 			require('telescope.builtin').find_files({
-				cwd = '~/.dotfiles',
+				cwd = dotfiles_path,
 				hidden = true,
 				find_command = { 'rg', '--files', '--hidden', '--no-ignore', '--glob', '!**/.git/*' },
 			})

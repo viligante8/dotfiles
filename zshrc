@@ -18,6 +18,12 @@
 # ============================================================================
 # Amazon Q shell integration - must be at the top
 # ============================================================================
+# DOTFILES DIRECTORY SETUP
+# ============================================================================
+# Define dotfiles directory early so it can be used in PATH exports
+DOTFILES_DIR="$(dirname "$(readlink ~/.zshrc)")"
+
+# ============================================================================
 # COMPLETION SYSTEM SETUP
 # ============================================================================
 # Add custom completion paths (lightweight)
@@ -246,6 +252,9 @@ terraform() {
 # Add current directory and local bin to PATH
 export PATH=".:$PATH:/Users/vito.pistelli/.local/bin"
 
+# Add dotfiles bin directory to PATH
+export PATH="$DOTFILES_DIR/bin:$PATH"
+
 # Bun setup (JavaScript runtime - lightweight)
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
@@ -256,8 +265,8 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 export EDITOR=nvim                      # Default editor for git, etc.
 
 # Quick access to keymaps cheat sheet
-alias keymaps="nvim ~/.dotfiles/KEYMAPS.md"
-alias cheat="cat ~/.dotfiles/KEYMAPS.md | head -50"  # Quick preview
+alias keymaps="nvim $DOTFILES_DIR/KEYMAPS.md"
+alias cheat="cat $DOTFILES_DIR/KEYMAPS.md | head -50"  # Quick preview
 
 # ============================================================================
 # STARSHIP PROMPT
@@ -269,10 +278,10 @@ eval "$(starship init zsh)"
 # SECRETS AND WORKFLOW INTEGRATION
 # ============================================================================
 # Load private environment variables (API keys, tokens, etc.)
-[ -f ~/.dotfiles/zshrc.secrets ] && source ~/.dotfiles/zshrc.secrets
+[ -f "$DOTFILES_DIR/zshrc.secrets" ] && source "$DOTFILES_DIR/zshrc.secrets"
 
 # Load tmux workflow functions (your custom session management)
-[ -f ~/.dotfiles/tmux-workflows.sh ] && source ~/.dotfiles/tmux-workflows.sh
+[ -f "$DOTFILES_DIR/tmux-workflows.sh" ] && source "$DOTFILES_DIR/tmux-workflows.sh"
 
 # ============================================================================
 # AMAZON Q INTEGRATION (Post-block)

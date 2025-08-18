@@ -3,7 +3,7 @@
 # Universal project picker for tmux
 # Usage: tmux-project-picker.sh <base_dir> [additional_dirs...]
 # Example: tmux-project-picker.sh ~/dev/emsi
-# Example: tmux-project-picker.sh ~/dev/personal ~/.dotfiles
+# Example: tmux-project-picker.sh ~/dev/personal ~/dev/personal/dotfiles
 
 if [ $# -eq 0 ]; then
     echo "Usage: $0 <base_dir> [additional_dirs...]"
@@ -53,4 +53,5 @@ project_path=$(echo "$selected" | cut -d'>' -f2 | xargs)
 session_name=$(echo "$project_name" | sed 's/[^a-zA-Z0-9]/-/g')
 
 # Use the existing tmux-workflows.sh script to create the session
-exec "$HOME/.dotfiles/tmux-workflows.sh" "$session_name" "$project_path"
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+exec "$script_dir/../tmux-workflows.sh" "$session_name" "$project_path"

@@ -4,19 +4,20 @@
 # Usage: dev [work|personal]
 # If no argument provided, defaults to personal
 
-PROJECT_TYPE="${1:-personal}"
+PROJECT_TYPE="${1:-work}"
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 
 case "$PROJECT_TYPE" in
     "work"|"w")
-        ~/.dotfiles/tmux-project-picker.sh ~/dev/emsi
+        "$SCRIPT_DIR/tmux-project-picker.sh" ~/dev/emsi
         ;;
     "personal"|"p")
-        ~/.dotfiles/tmux-project-picker.sh ~/dev/personal ~/.dotfiles
+        "$SCRIPT_DIR/tmux-project-picker.sh" ~/dev/personal
         ;;
     *)
         echo "Usage: dev [work|personal]"
         echo "  work (or w)     - Pick from work projects in ~/dev/emsi"
-        echo "  personal (or p) - Pick from personal projects in ~/dev/personal + dotfiles"
+        echo "  personal (or p) - Pick from personal projects in ~/dev/personal"
         exit 1
         ;;
 esac

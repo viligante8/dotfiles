@@ -28,6 +28,7 @@ return {
 		{ "<leader>st", "<cmd>Telescope lsp_type_definitions<cr>", desc = "Type Definitions" },
 		-- Git
 		{ "<leader>gc", "<cmd>Telescope git_commits<cr>", desc = "Commits" },
+		{ "<leader>gf", "<cmd>Telescope git_bcommits<cr>", desc = "File History" },
 		{ "<leader>gb", "<cmd>Telescope git_branches<cr>", desc = "Branches" },
 		{ "<leader>gs", "<cmd>Telescope git_status<cr>", desc = "Status" },
 		{ "<leader>gd", function()

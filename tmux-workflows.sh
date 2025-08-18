@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Tmux Workflow Helper Script for EMSI Projects
+# Tmux Workflow Helper Script for Development Projects
 # Usage: source this in your .zshrc or run directly
 
 # Tmux-compatible wrapper function for keybindings
@@ -10,7 +10,12 @@ tmux-dev-session() {
     
     # Check if session already exists
     if tmux has-session -t "$session_name" 2>/dev/null; then
-        tmux switch-client -t "$session_name"
+        # If we're already in tmux, switch client; otherwise attach
+        if [ -n "$TMUX" ]; then
+            tmux switch-client -t "$session_name"
+        else
+            tmux attach-session -t "$session_name"
+        fi
         return
     fi
     
@@ -19,6 +24,7 @@ tmux-dev-session() {
     
     # Window 1: Editor
     tmux rename-window -t "$session_name:1" 'editor'
+    tmux send-keys -t "$session_name:1" 'nvim' Enter
     
     # Window 2: Terminal
     tmux new-window -t "$session_name:2" -n 'terminal' -c "$project_path"
@@ -35,9 +41,15 @@ tmux-dev-session() {
     tmux new-window -t "$session_name:5" -n 'dbdev' -c "$project_path"
     tmux send-keys -t "$session_name:5" 'dbdev' # Note: no Enter - just pre-types the command
     
-    # Go back to first window and switch
+    # Go back to first window and attach/switch
     tmux select-window -t "$session_name:1"
-    tmux switch-client -t "$session_name"
+    
+    # If we're already in tmux, switch client; otherwise attach
+    if [ -n "$TMUX" ]; then
+        tmux switch-client -t "$session_name"
+    else
+        tmux attach-session -t "$session_name"
+    fi
 }
 
 # Handle command line arguments for tmux keybindings
@@ -45,169 +57,6 @@ if [ $# -eq 2 ]; then
     tmux-dev-session "$1" "$2"
     exit 0
 fi
-
-# Function to start a development session for Workday Integrations
-wdi-dev() {
-    local project_path="$HOME/dev/emsi/workday-integrations"
-    local session_name="wdi-dev"
-    
-    # Check if session already exists
-    if tmux has-session -t $session_name 2>/dev/null; then
-        echo "Session '$session_name' already exists. Attaching..."
-        tmux attach-session -t $session_name
-        return
-    fi
-    
-    echo "Creating Workday Integrations development session..."
-    
-    # Create new session
-    tmux new-session -d -s $session_name -c "$project_path"
-    
-    # Window 1: Editor
-    tmux rename-window -t $session_name:1 'editor'
-    tmux send-keys -t $session_name:1 'nvim' Enter
-    
-    # Window 2 Terminal
-    tmux new-window -t $session_name:2 -n 'terminal' -c "$project_path"
-    tmux send-keys -t $session_name:2 'clear' Enter
-    
-    # Window 3: Q (Amazon Q AI Assistant)
-    tmux new-window -t $session_name:3 -n 'q' -c "$project_path"
-    tmux send-keys -t $session_name:3 'q chat' Enter
-    
-    # Window 4: LazyGit
-    tmux new-window -t $session_name:4 -n 'git' -c "$project_path"
-    tmux send-keys -t $session_name:4 'lazygit' Enter
-    
-    # Window 5: Database Development (dbdev pre-typed)
-    tmux new-window -t $session_name:5 -n 'dbdev' -c "$project_path"
-    tmux send-keys -t $session_name:5 'dbdev' # Pre-type dbdev without pressing Enter
-    
-    # Go back to first window and attach
-    tmux select-window -t $session_name:1
-    tmux attach-session -t $session_name
-}
-
-# Function to start a development session for Company Datastore
-cds-dev() {
-    local project_path="$HOME/dev/emsi/company-datastore"
-    local session_name="cds-dev"
-    
-    # Check if session already exists
-    if tmux has-session -t $session_name 2>/dev/null; then
-        echo "Session '$session_name' already exists. Attaching..."
-        tmux attach-session -t $session_name
-        return
-    fi
-    
-    echo "Creating Company Datastore development session..."
-    
-    # Create new session
-    tmux new-session -d -s $session_name -c "$project_path"
-    
-    # Window 1: Editor
-    tmux rename-window -t $session_name:1 'editor'
-    tmux send-keys -t $session_name:1 'nvim' Enter
-    
-    # Window 2 Terminal
-    tmux new-window -t $session_name:2 -n 'terminal' -c "$project_path"
-    tmux send-keys -t $session_name:2 'clear' Enter
-    
-    # Window 3: Q (Amazon Q AI Assistant)
-    tmux new-window -t $session_name:3 -n 'q' -c "$project_path"
-    tmux send-keys -t $session_name:3 'q chat' Enter
-    
-    # Window 4: LazyGit
-    tmux new-window -t $session_name:4 -n 'git' -c "$project_path"
-    tmux send-keys -t $session_name:4 'lazygit' Enter
-    
-    # Window 5: Database Development (dbdev pre-typed)
-    tmux new-window -t $session_name:5 -n 'dbdev' -c "$project_path"
-    tmux send-keys -t $session_name:5 'dbdev' # Pre-type dbdev without pressing Enter
-    
-    # Go back to first window and attach
-    tmux select-window -t $session_name:1
-    tmux attach-session -t $session_name
-}
-
-# Function to start a development session for Talent Transform
-tt-dev() {
-    local project_path="$HOME/dev/emsi/talent-transform"
-    local session_name="tt-dev"
-    
-    # Check if session already exists
-    if tmux has-session -t $session_name 2>/dev/null; then
-        echo "Session '$session_name' already exists. Attaching..."
-        tmux attach-session -t $session_name
-        return
-    fi
-    
-    echo "Creating Talent Transform development session..."
-    
-    # Create new session
-    tmux new-session -d -s $session_name -c "$project_path"
-    
-    # Window 1: Editor
-    tmux rename-window -t $session_name:1 'editor'
-    tmux send-keys -t $session_name:1 'nvim' Enter
-    
-    # Window 2 Terminal
-    tmux new-window -t $session_name:2 -n 'terminal' -c "$project_path"
-    tmux send-keys -t $session_name:2 'clear' Enter
-    
-    # Window 3: Q (Amazon Q AI Assistant)
-    tmux new-window -t $session_name:3 -n 'q' -c "$project_path"
-    tmux send-keys -t $session_name:3 'q chat' Enter
-    
-    # Window 4: LazyGit
-    tmux new-window -t $session_name:4 -n 'git' -c "$project_path"
-    tmux send-keys -t $session_name:4 'lazygit' Enter
-    
-    # Window 5: Database Development (dbdev pre-typed)
-    tmux new-window -t $session_name:5 -n 'dbdev' -c "$project_path"
-    tmux send-keys -t $session_name:5 'dbdev' # Pre-type dbdev without pressing Enter
-    
-    # Go back to first window and attach
-    tmux select-window -t $session_name:1
-    tmux attach-session -t $session_name
-}
-
-# Function to start a development session for Personal Projects
-personal-dev() {
-    local session_name="personal-dev"
-    
-    # Check if session already exists
-    if tmux has-session -t $session_name 2>/dev/null; then
-        echo "Session '$session_name' already exists. Attaching..."
-        tmux attach-session -t $session_name
-        return
-    fi
-    
-    echo "Creating Personal development session..."
-    
-    # Create new session starting in personal dev folder
-    tmux new-session -d -s $session_name -c "$HOME/dev/personal"
-    
-    # Window 1: Editor in dev/personal
-    tmux rename-window -t $session_name:1 'editor'
-    tmux send-keys -t $session_name:1 'nvim' Enter
-    
-    # Window 2: Terminal in dotfiles
-    tmux new-window -t $session_name:2 -n 'dotfiles' -c "$HOME/.dotfiles"
-    tmux send-keys -t $session_name:2 'clear' Enter
-    
-    # Window 3: Terminal in dev/personal
-    tmux new-window -t $session_name:3 -n 'personal repos' -c "$HOME/dev/personal"
-    tmux send-keys -t $session_name:3 'clear' Enter
-    
-    # Window 4: Q (Amazon Q AI Assistant)
-    tmux new-window -t $session_name:4 -n 'q' -c "$HOME/dev/personal"
-    tmux send-keys -t $session_name:4 'q chat' Enter
-    
-    # Go back to first window and attach
-    tmux select-window -t $session_name:1
-    tmux attach-session -t $session_name
-}
 
 # Generic development session (can be used in any directory)
 dev-session() {
@@ -308,64 +157,6 @@ git-drawer() {
     fi
 }
 
-# Function to switch between project sessions quickly
-switch-project() {
-    echo "Available project sessions:"
-    echo "1. wdi-dev (Workday Integrations)"
-    echo "2. cdi-dev (Company Datastore)"
-    echo "3. tt-dev (Talent Transform)"
-    echo "4. dev-session (Generic - current directory)"
-    echo ""
-    
-    # List current sessions
-    echo "Current sessions:"
-    tmux list-sessions 2>/dev/null || echo "No active sessions"
-    echo ""
-    
-    read -p "Enter session name to attach (or 'q' to quit): " choice
-    
-    case $choice in
-        1|wdi-dev)
-            if tmux has-session -t wdi-dev 2>/dev/null; then
-                tmux attach-session -t wdi-dev
-            else
-                echo "Starting wdi-dev session..."
-                wdi-dev
-            fi
-            ;;
-        2|cds-dev)
-            if tmux has-session -t cds-dev 2>/dev/null; then
-                tmux attach-session -t cds-dev
-            else
-                echo "Starting cds-dev session..."
-                cds-dev
-            fi
-            ;;
-        3|tt-dev)
-            if tmux has-session -t tt-dev 2>/dev/null; then
-                tmux attach-session -t tt-dev
-            else
-                echo "Starting tt-dev session..."
-                tt-dev
-            fi
-            ;;
-        4|dev-session)
-            dev-session
-            ;;
-        q|quit)
-            echo "Goodbye!"
-            ;;
-        *)
-            # Try to attach to the session name directly
-            if tmux has-session -t "$choice" 2>/dev/null; then
-                tmux attach-session -t "$choice"
-            else
-                echo "Session '$choice' not found."
-            fi
-            ;;
-    esac
-}
-
 # Function to kill all tmux sessions
 tmux-clean() {
     echo "Killing all tmux sessions..."
@@ -392,17 +183,13 @@ tmux-attach() {
 
 # Function to show project shortcuts
 tmux-help() {
-    echo "EMSI Project Tmux Shortcuts:"
+    echo "Development Tmux Shortcuts:"
     echo ""
-    echo "Project Sessions (4 windows: editor, terminal, q, git):"
-    echo "  wdi-dev        - Start Workday Integrations development session"
-    echo "  cds-dev        - Start Company Datastore development session"
-    echo "  tt-dev         - Start Talent Transform development session"
-    echo "  personal-dev   - Start Personal projects session (editor, dotfiles, personal repos, q)"
+    echo "Project Sessions:"
+    echo "  dev            - Use your tmux dev picker (recommended)"
     echo "  dev-session    - Start generic development session (current directory)"
     echo ""
     echo "Utilities:"
-    echo "  switch-project - Interactive project session switcher"
     echo "  q-drawer       - Open/switch to Q (Amazon Q) window"
     echo "  git-drawer     - Open/switch to LazyGit window"
     echo "  dev-layout     - Create 3-pane development layout"
@@ -412,9 +199,6 @@ tmux-help() {
     echo "  tmux-help      - Show this help"
     echo ""
     echo "Tmux Key Bindings (Prefix: Ctrl-a):"
-    echo "  Ctrl-a W       - Quick Workday session"
-    echo "  Ctrl-a C       - Quick Datastore session"
-    echo "  Ctrl-a T       - Quick Talent session"
     echo "  Ctrl-a Q       - Quick Q drawer"
     echo "  Ctrl-a G       - Quick LazyGit drawer"
     echo "  Ctrl-a D       - Quick dev layout"
