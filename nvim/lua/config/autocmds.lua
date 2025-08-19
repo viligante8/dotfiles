@@ -4,6 +4,35 @@ local augroup = vim.api.nvim_create_augroup
 -- DISABLED: Alpha restore functionality - was causing tab explosions
 -- require("config.alpha-restore").setup()
 
+-- Fix quickfix to open files in full window (not split)
+autocmd("FileType", {
+  pattern = "qf",
+  group = augroup("QuickfixSettings", { clear = true }),
+  callback = function()
+    -- Map <CR> in quickfix to open file in full window
+    vim.keymap.set("n", "<CR>", function()
+      -- Get the current quickfix item
+      local qf_idx = vim.fn.line('.')
+      local qf_item = vim.fn.getqflist()[qf_idx]
+      
+      if qf_item and qf_item.bufnr ~= 0 then
+        -- Close quickfix
+        vim.cmd('cclose')
+        -- Go to main window and make it only window
+        vim.cmd('wincmd p')
+        vim.cmd('only')
+        -- Open the file
+        vim.cmd('buffer ' .. qf_item.bufnr)
+        -- Go to the line
+        if qf_item.lnum > 0 then
+          vim.api.nvim_win_set_cursor(0, {qf_item.lnum, qf_item.col > 0 and qf_item.col - 1 or 0})
+        end
+      end
+    end, { buffer = true, desc = "Open file in full window" })
+  end,
+  desc = "Configure quickfix to open files in full window"
+})
+
 -- Highlight on yank
 autocmd("TextYankPost", {
   group = augroup("highlight_yank", { clear = true }),
