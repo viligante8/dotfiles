@@ -10,19 +10,19 @@ return {
     
     layout = {
       max_width = { 40, 0.2 },
-      width = nil,
+      width = 50, -- Set fixed width
       min_width = 10,
-      default_direction = "prefer_right",
+      default_direction = "right", -- Always open on the right
       placement = "window",
     },
     
     attach_mode = "window",
     
-    -- Keymaps in aerial window
+    -- Keymaps in aerial window - use scroll instead of jump to avoid splits
     keymaps = {
       ["?"] = "actions.show_help",
-      ["<CR>"] = "actions.jump",
-      ["<2-LeftMouse>"] = "actions.jump",
+      ["<CR>"] = "actions.scroll", -- Use scroll instead of jump to avoid splits
+      ["<2-LeftMouse>"] = "actions.scroll", -- Same for mouse clicks
       ["<C-v>"] = "actions.jump_vsplit",
       ["<C-s>"] = "actions.jump_split",
       ["p"] = "actions.scroll",
@@ -38,6 +38,15 @@ return {
       ["h"] = "actions.tree_close",
       ["zc"] = "actions.tree_close",
     },
+    
+    -- Configure how aerial opens files
+    default_bindings = true,
+    
+    -- Don't open in splits by default
+    default_direction = "prefer_left", -- Jump to the main editor window
+    
+    -- When jumping to a symbol, don't create splits
+    close_on_select = false,
     
     -- When true, don't load aerial until a command is run or function is called
     lazy_load = true,
@@ -132,11 +141,13 @@ return {
     },
   },
   keys = {
-    { "<leader>a", "<cmd>AerialToggle!<CR>", desc = "Aerial (Symbols)" },
-    { "<leader>A", "<cmd>AerialNavToggle<CR>", desc = "Aerial Nav" },
-    { "<leader>ao", "<cmd>AerialOpen<CR>", desc = "Aerial Open" },
-    { "<leader>ac", "<cmd>AerialClose<CR>", desc = "Aerial Close" },
-    { "<leader>an", "<cmd>AerialNext<CR>", desc = "Aerial Next" },
-    { "<leader>ap", "<cmd>AerialPrev<CR>", desc = "Aerial Prev" },
+    -- Main sidebar toggle (replaces old <leader>ao)
+    { "<leader>xs", function() require("config.sidebar-layout").toggle_sidebar() end, desc = "Toggle Sidebar (Aerial + Trouble)" },
+    
+    -- Individual Aerial controls
+    { "<leader>xa", "<cmd>AerialToggle!<CR>", desc = "Aerial Toggle" },
+    { "<leader>xA", "<cmd>AerialNavToggle<CR>", desc = "Aerial Nav" },
+    { "<leader>xan", "<cmd>AerialNext<CR>", desc = "Aerial Next" },
+    { "<leader>xap", "<cmd>AerialPrev<CR>", desc = "Aerial Prev" },
   },
 }

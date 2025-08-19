@@ -4,6 +4,9 @@ local augroup = vim.api.nvim_create_augroup
 -- DISABLED: Alpha restore functionality - was causing tab explosions
 -- require("config.alpha-restore").setup()
 
+-- Setup right sidebar layout (Aerial + Trouble)
+require("config.sidebar-layout").setup()
+
 -- Fix quickfix to open files in full window (not split)
 autocmd("FileType", {
   pattern = "qf",
