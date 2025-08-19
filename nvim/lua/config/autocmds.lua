@@ -1,7 +1,16 @@
 local autocmd = vim.api.nvim_create_autocmd
 local augroup = vim.api.nvim_create_augroup
 
+-- DISABLED: Alpha restore functionality - was causing tab explosions
+-- require("config.alpha-restore").setup()
+
 -- Highlight on yank
+autocmd("TextYankPost", {
+  group = augroup("highlight_yank", { clear = true }),
+  callback = function()
+    vim.highlight.on_yank()
+  end,
+})
 autocmd("TextYankPost", {
   group = augroup("highlight_yank", { clear = true }),
   callback = function()

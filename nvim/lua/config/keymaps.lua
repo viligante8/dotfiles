@@ -80,7 +80,7 @@ map("n", "<leader>bp", "<cmd>bprevious<cr>", { desc = "Previous Buffer" })
 map("n", "<leader>bf", "<cmd>bfirst<cr>", { desc = "First Buffer" })
 map("n", "<leader>bl", "<cmd>blast<cr>", { desc = "Last Buffer" })
 
--- PR Review
+-- PR Review - Simple version
 vim.api.nvim_create_user_command('PRFiles', function()
   local cmd = 'git diff --numstat origin/staging..HEAD'
   local output = vim.fn.systemlist(cmd)
@@ -98,8 +98,17 @@ vim.api.nvim_create_user_command('PRFiles', function()
     end
   end
   
-  vim.fn.setqflist(qf_list, 'r', { title = 'PR Files vs origin/staging' })
+  -- Simple setqflist without title to avoid errors
+  vim.fn.setqflist(qf_list, 'r')
   vim.cmd('copen')
-end, { desc = 'Load PR files with stats into quickfix' })
+end, { desc = 'Load PR files into quickfix' })
 
 map("n", "<leader>gq", "<cmd>PRFiles<cr>", { desc = "PR files to quickfix" })
+
+-- Visual mode paste that preserves register content
+-- This prevents overwriting your yanky/maccy clipboard when pasting over selections
+map("x", "p", "P", { desc = "Paste without overwriting register" })
+
+-- Alternative: if you want to be more explicit about the behavior
+-- map("x", "<leader>p", "P", { desc = "Paste without overwriting register" })
+-- map("x", "p", "p", { desc = "Paste and overwrite register (default)" })
