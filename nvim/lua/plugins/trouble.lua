@@ -126,17 +126,14 @@ return {
 		},
 	},
 	keys = {
-		-- Main sidebar toggle
-		{ "<leader>xs", function() require("config.sidebar-layout").toggle_sidebar() end, desc = "Toggle Sidebar (Aerial + Trouble)" },
-		
 		-- Trouble diagnostics
 		{ "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", desc = "Diagnostics (Trouble)" },
 		{ "<leader>xX", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", desc = "Buffer Diagnostics (Trouble)" },
-		
+
 		-- LSP and symbols
 		{ "<leader>xc", "<cmd>Trouble symbols toggle<cr>", desc = "Symbols (Trouble)" },
 		{ "<leader>xl", "<cmd>Trouble lsp toggle<cr>", desc = "LSP Definitions / references / ... (Trouble)" },
-		
+
 		-- Lists
 		{ "<leader>xL", "<cmd>Trouble loclist toggle<cr>", desc = "Location List (Trouble)" },
 		{ "<leader>xQ", "<cmd>Trouble qflist toggle<cr>", desc = "Quickfix List (Trouble)" },

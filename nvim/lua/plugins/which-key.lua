@@ -10,7 +10,6 @@ return {
 		spec = {
 			{
 				mode = { "n", "v" },
-				{ "<leader>a", group = "ai" },
 				{ "<leader>b", group = "buffer" },
 				{ "<leader>c", group = "code" },
 				{ "<leader>d", group = "debug" },
@@ -39,10 +38,8 @@ return {
 				{ "<leader>trs", desc = "Run Script" },
 				{ "<leader>trl", desc = "Run Last Script" },
 				{ "<leader>trt", desc = "Run Test" },
-				{ "<leader>trb", desc = "Run Build" },
 				{ "<leader>trd", desc = "Debug Script" },
 				{ "<leader>trD", desc = "Debug Last Script" },
-				{ "<leader>tra", desc = "Attach to Debug" },
 				{ "<leader>trp", desc = "Package Commands" },
 				{ "<leader>u", group = "ui" },
 				{ "<leader>w", group = "windows" },
