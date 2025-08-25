@@ -85,6 +85,13 @@
       ],
       "timeout": 120000
     },
+    "utilities": {
+      "command": "node",
+      "args": [
+        "/Users/vito.pistelli/dev/personal/utilities-mcp/build/index.js"
+      ],
+      "timeout": 30000
+    },
     "git": {
       "command": "npx",
       "args": [
@@ -122,44 +129,117 @@
   },
   "allowedTools": [
     "fs_read",
-    "knowledge",
+    "fs_write",
     "report_issue",
-    "@project-memory/memory_bank_read",
-    "@project-memory/memory_bank_write", 
-    "@project-memory/memory_bank_update",
-    "@project-memory/list_projects",
-    "@project-memory/list_project_files",
-    "@sprint-memory/open_nodes",
-    "@sprint-memory/create_entities",
-    "@sprint-memory/add_observations",
-    "@sprint-memory/search_nodes",
-    "@sprint-memory/delete_entities",
-    "@sprint-memory/create_relations",
-    "@sprint-memory/delete_relations",
-    "@sprint-memory/delete_observations",
-    "@sprint-memory/read_graph",
-    "@graph-memory/open_nodes",
-    "@graph-memory/create_entities",
-    "@graph-memory/add_observations",
-    "@graph-memory/search_nodes",
-    "@graph-memory/delete_entities",
-    "@graph-memory/create_relations",
-    "@graph-memory/delete_relations",
-    "@graph-memory/delete_observations",
-    "@graph-memory/read_graph",
     "use_aws",
-    "aws",
-    "aws_suggest",
-    "tf_*",
-    "SearchSpecificAwsIaModules",
-    "SearchUserProvidedModule",
-    "@clipboard/*",
-    "@fetch/*",
-    "@git/*",
-    "@database/*",
-    "@aws-api/*",
-    "@aws-knowledge/*",
-    "@terraform/*"
+    "execute_bash",
+    
+    "@aws-api/call_aws",
+    "@aws-api/suggest_aws_commands",
+    
+    "@aws-knowledge/aws___read_documentation",
+    "@aws-knowledge/aws___recommend",
+    "@aws-knowledge/aws___search_documentation",
+    
+    "@clipboard/copy_to_clipboard",
+    "@clipboard/export_history",
+    "@clipboard/get_clipboard_stats",
+    "@clipboard/get_items_by_app",
+    "@clipboard/get_recent_items",
+    "@clipboard/pin_item",
+    "@clipboard/search_clipboard",
+    "@clipboard/unpin_item",
+    
+    "@database/apply_migration",
+    "@database/create_branch",
+    "@database/delete_branch",
+    "@database/deploy_edge_function",
+    "@database/execute_sql",
+    "@database/generate_typescript_types",
+    "@database/get_advisors",
+    "@database/get_anon_key",
+    "@database/get_logs",
+    "@database/get_project_url",
+    "@database/list_branches",
+    "@database/list_edge_functions",
+    "@database/list_extensions",
+    "@database/list_migrations",
+    "@database/list_tables",
+    "@database/merge_branch",
+    "@database/rebase_branch",
+    "@database/reset_branch",
+    "@database/search_docs",
+    
+    "@fetch/fetch_html",
+    "@fetch/fetch_json",
+    "@fetch/fetch_markdown",
+    "@fetch/fetch_txt",
+    
+    "@git/fetch_generic_documentation",
+    "@git/fetch_generic_url_content",
+    "@git/match_common_libs_owner_repo_mapping",
+    "@git/search_generic_code",
+    "@git/search_generic_documentation",
+    
+    "@graph-memory/add_observations",
+    "@graph-memory/create_entities",
+    "@graph-memory/create_relations",
+    "@graph-memory/delete_entities",
+    "@graph-memory/delete_observations",
+    "@graph-memory/delete_relations",
+    "@graph-memory/open_nodes",
+    "@graph-memory/read_graph",
+    "@graph-memory/search_nodes",
+    
+    "@project-memory/list_project_files",
+    "@project-memory/list_projects",
+    "@project-memory/memory_bank_read",
+    "@project-memory/memory_bank_update",
+    "@project-memory/memory_bank_write",
+    
+    "@sprint-memory/add_observations",
+    "@sprint-memory/create_entities",
+    "@sprint-memory/create_relations",
+    "@sprint-memory/delete_entities",
+    "@sprint-memory/delete_observations",
+    "@sprint-memory/delete_relations",
+    "@sprint-memory/open_nodes",
+    "@sprint-memory/read_graph",
+    "@sprint-memory/search_nodes",
+    
+    "@terraform/ExecuteTerraformCommand",
+    "@terraform/ExecuteTerragruntCommand",
+    "@terraform/RunCheckovScan",
+    "@terraform/SearchAwsProviderDocs",
+    "@terraform/SearchAwsccProviderDocs",
+    "@terraform/SearchSpecificAwsIaModules",
+    "@terraform/SearchUserProvidedModule",
+    
+    "@utilities/add_to_clipboard",
+    "@utilities/append_to_file",
+    "@utilities/check_port",
+    "@utilities/convert_timestamp",
+    "@utilities/create_file",
+    "@utilities/decode_base64",
+    "@utilities/encode_base64",
+    "@utilities/find_files",
+    "@utilities/format_json",
+    "@utilities/generate_uuid",
+    "@utilities/get_clipboard",
+    "@utilities/get_env_var",
+    "@utilities/get_file_info",
+    "@utilities/get_system_info",
+    "@utilities/get_timestamp",
+    "@utilities/hash_text",
+    "@utilities/list_directory",
+    "@utilities/list_processes",
+    "@utilities/notify",
+    "@utilities/open_url",
+    "@utilities/ping_host",
+    "@utilities/read_file",
+    "@utilities/set_env_var",
+    "@utilities/url_decode",
+    "@utilities/url_encode"
   ],
   "toolsSettings": {
     "fs_write": {
@@ -173,25 +253,6 @@
       "deniedPaths": [
         "/System/**",
         "/usr/**"
-      ]
-    },
-    "execute_bash": {
-      "allowedCommands": [
-        "git status",
-        "git log.*",
-        "git diff.*",
-        "ls.*",
-        "find.*",
-        "cat.*",
-        "head.*",
-        "tail.*",
-        "pwd",
-        "which.*"
-      ]
-    },
-    "use_aws": {
-      "allowedServices": [
-        "*"
       ]
     }
   },
