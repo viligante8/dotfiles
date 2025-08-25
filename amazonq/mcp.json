@@ -1,5 +1,33 @@
 {
   "mcpServers": {
+    "sprint-memory": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-knowledge-graph",
+        "--memory-path",
+        "/Users/vito.pistelli/dev/mcp-servers/data/sprint-memory.jsonl"
+      ]
+    },
+    "project-memory": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@allpepper/memory-bank-mcp@latest"
+      ],
+      "env": {
+        "MEMORY_BANK_ROOT": "/Users/vito.pistelli/dev/mcp-servers/data/project-memory"
+      }
+    },
+    "graph-memory": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-knowledge-graph@latest",
+        "--memory-path",
+        "/Users/vito.pistelli/dev/mcp-servers/data/graph-memory.jsonl"
+      ]
+    },
     "database": {
       "command": "npx",
       "args": [

@@ -1,8 +1,8 @@
 {
   "$schema": "https://raw.githubusercontent.com/aws/amazon-q-developer-cli/refs/heads/main/schemas/agent-v1.json",
   "name": "dev",
-  "description": "Development agent with custom clipboard tools",
-  "prompt": "You are a development assistant. Your rules are ~/.aws/amazonq/rules/**/*.md.",
+  "description": "Development agent with custom clipboard tools and memory MCP stack",
+  "prompt": "You are a development assistant. Your rules are ~/.aws/amazonq/rules/**/*.md.\n\n## 3-Tier Memory Architecture & Routing Rules:\n\n### Sprint Memory (Ephemeral) - Tools: ephemeral_*\n**Purpose**: Temporary entities, work-in-progress, session data, debugging notes\n**Tools**: `ephemeral_create_entities`, `ephemeral_create_relations`, `ephemeral_add_observations`, etc.\n**When to use**: Temporary decisions, current sprint work, session context, things you might delete later\n**Database**: `/Users/vito.pistelli/dev/mcp-servers/data/sprint-memory.jsonl`\n\n### Project Memory (Persistent) - Tools: memory_bank_*\n**Purpose**: Permanent decisions, ADRs, documentation, long-term storage\n**Tools**: `memory_bank_write`, `memory_bank_read`, `memory_bank_update`, `list_projects`\n**When to use**: Finalized decisions, architecture decisions, permanent documentation\n**Database**: `/Users/vito.pistelli/dev/mcp-servers/data/project-memory/`\n\n### Graph Memory (Long-term Relationships) - Tools: create_*, search_nodes, etc.\n**Purpose**: Permanent entities, system dependencies, architectural relationships\n**Tools**: `create_entities`, `create_relations`, `search_nodes`, `read_graph`, `add_observations`\n**When to use**: Stable system knowledge, permanent relationships, architectural dependencies\n**Database**: `/Users/vito.pistelli/dev/mcp-servers/data/graph-memory.jsonl`\n\n## Memory Routing Logic:\n1. **Temporary/ephemeral content** → Sprint Memory (ephemeral_* tools)\n2. **Permanent decisions/docs** → Project Memory (memory_bank_* tools)\n3. **Stable relationships/entities** → Graph Memory (create_*, search_nodes tools)\n4. **Multi-step tasks** → Start with Graph Memory for planning, use others for execution\n\n## Tool Naming Convention:\n- **ephemeral_*** = Short-term/temporary (sprint-memory)\n- **memory_bank_*** = Persistent documents (project-memory)  \n- **create_***, **search_nodes** = Long-term relationships (graph-memory)",
   "mcpServers": {},
   "tools": [
     "*"
@@ -29,7 +29,20 @@
     "@gitmcp/fetch_generic_url_content": "fetch_generic_url_content",
     "@gitmcp/match_common_libs_owner_repo_mapping": "match_common_libs_owner_repo_mapping",
     "@gitmcp/search_generic_code": "search_generic_code",
-    "@gitmcp/search_generic_documentation": "search_generic_documentation"
+    "@gitmcp/search_generic_documentation": "search_generic_documentation",
+    "@sprint-memory/create_entities": "ephemeral_create_entities",
+    "@sprint-memory/create_relations": "ephemeral_create_relations", 
+    "@sprint-memory/add_observations": "ephemeral_add_observations",
+    "@sprint-memory/delete_entities": "ephemeral_delete_entities",
+    "@sprint-memory/delete_observations": "ephemeral_delete_observations",
+    "@sprint-memory/delete_relations": "ephemeral_delete_relations",
+    "@sprint-memory/read_graph": "ephemeral_read_graph",
+    "@sprint-memory/search_nodes": "ephemeral_search_nodes",
+    "@sprint-memory/open_nodes": "ephemeral_open_nodes",
+    "sprint-memory": "sprint_memory",
+    "project-memory": "project_memory",
+    "graph-memory": "graph_memory",
+    "metamcp": "orchestrator"
   },
   "allowedTools": [
     "fs_read",
@@ -42,6 +55,9 @@
     "@maccy-clipboard/get_items_by_app",
     "@maccy-clipboard/get_clipboard_stats",
     "@maccy-clipboard/export_history",
+    "@maccy-clipboard/copy_to_clipboard",
+    "@maccy-clipboard/pin_item",
+    "@maccy-clipboard/unpin_item",
     "@database/search_docs",
     "@database/list_tables",
     "@database/list_migrations",
@@ -65,7 +81,30 @@
     "@gitmcp/fetch_generic_url_content",
     "@gitmcp/match_common_libs_owner_repo_mapping",
     "@gitmcp/search_generic_code",
-    "@gitmcp/search_generic_documentation"
+    "@gitmcp/search_generic_documentation",
+    "@project-memory/memory_bank_read",
+    "@project-memory/memory_bank_write",
+    "@project-memory/memory_bank_update",
+    "@project-memory/list_projects",
+    "@project-memory/list_project_files",
+    "@graph-memory/add_observations",
+    "@graph-memory/create_entities",
+    "@graph-memory/create_relations",
+    "@graph-memory/delete_entities",
+    "@graph-memory/delete_observations",
+    "@graph-memory/delete_relations",
+    "@graph-memory/open_nodes",
+    "@graph-memory/read_graph",
+    "@graph-memory/search_nodes",
+    "@orchestrator/orchestrate_workflow",
+    "@orchestrator/analyze_context",
+    "@orchestrator/search_web",
+    "@orchestrator/list_servers",
+    "@orchestrator/get_server_status",
+    "sprint-memory",
+    "project-memory",
+    "graph-memory",
+    "orchestrator"
   ],
   "resources": [
     "file://AmazonQ.md",
@@ -78,6 +117,198 @@
     "file:///Users/vito.pistelli/dev/emsi/conduct-of-code/"
   ],
   "hooks": {},
-  "toolsSettings": {},
+  "toolsSettings": {
+    "execute_bash": {
+      "allowedCommands": [
+        "node",
+        "git status",
+        "git log --oneline -10",
+        "ls",
+        "pwd",
+        "tail",
+        "head",
+        "ps",
+        "curl",
+        "wget",
+        "cd",
+        "mkdir"
+      ],
+      "deniedCommands": [
+        "rm .*",
+        "sudo .*",
+        "git commit .*",
+        "git push .*"
+      ],
+      "allowReadOnly": true
+    },
+    "fs_read": {
+      "description": "Read local files from the filesystem"
+    },
+    "@fetch/fetch_markdown": {
+      "description": "Fetch content from a URL or file in Markdown format"
+    },
+    "@fetch/fetch_html": {
+      "description": "Fetch content from a URL or file in HTML format"
+    },
+    "@fetch/fetch_json": {
+      "description": "Fetch JSON content from a URL or file"
+    },
+    "@fetch/fetch_txt": {
+      "description": "Fetch plain text content from a URL or file"
+    },
+    "@maccy-clipboard/search_clipboard": {
+      "description": "Search clipboard history"
+    },
+    "@maccy-clipboard/get_recent_items": {
+      "description": "Get most recent items from the clipboard"
+    },
+    "@maccy-clipboard/get_items_by_app": {
+      "description": "Retrieve clipboard items filtered by application"
+    },
+    "@maccy-clipboard/get_clipboard_stats": {
+      "description": "Get statistics about clipboard usage"
+    },
+    "@maccy-clipboard/export_history": {
+      "description": "Export clipboard history to a file"
+    },
+    "@database/search_docs": {
+      "description": "Search your connected database documentation"
+    },
+    "@database/list_tables": {
+      "description": "List tables in the connected database"
+    },
+    "@database/list_migrations": {
+      "description": "List database migrations"
+    },
+    "@database/list_extensions": {
+      "description": "List installed database extensions"
+    },
+    "@database/list_edge_functions": {
+      "description": "List database edge functions"
+    },
+    "@database/list_branches": {
+      "description": "List branches in the database project"
+    },
+    "@database/get_project_url": {
+      "description": "Get the URL of the database project"
+    },
+    "@database/get_logs": {
+      "description": "Retrieve database logs"
+    },
+    "@database/execute_sql": {
+      "description": "Run SQL queries against the database"
+    },
+    "@awslabs.terraform-mcp-server/SearchUserProvidedModule": {
+      "description": "Search Terraform modules provided by the user"
+    },
+    "@awslabs.terraform-mcp-server/SearchSpecificAwsIaModules": {
+      "description": "Search for specific AWS Terraform modules"
+    },
+    "@awslabs.terraform-mcp-server/SearchAwsProviderDocs": {
+      "description": "Search AWS provider documentation for Terraform"
+    },
+    "@awslabs.terraform-mcp-server/SearchAwsccProviderDocs": {
+      "description": "Search AWS Cloud Control provider documentation for Terraform"
+    },
+    "@awslabs.terraform-mcp-server/ExecuteTerraformCommand": {
+      "description": "Run Terraform commands"
+    },
+    "@awslabs.aws-api-mcp-server/call_aws": {
+      "description": "Make AWS API calls"
+    },
+    "@awslabs.aws-api-mcp-server/suggest_aws_commands": {
+      "description": "Suggest AWS CLI commands for a given task"
+    },
+    "@aws-knowledge-mcp-server/aws___search_documentation": {
+      "description": "Search AWS documentation"
+    },
+    "@aws-knowledge-mcp-server/aws___recommend": {
+      "description": "Get AWS recommendations"
+    },
+    "@aws-knowledge-mcp-server/aws___read_documentation": {
+      "description": "Read AWS documentation"
+    },
+    "@gitmcp/fetch_generic_documentation": {
+      "description": "Fetch documentation from a generic repository"
+    },
+    "@gitmcp/fetch_generic_url_content": {
+      "description": "Fetch content from a generic URL"
+    },
+    "@gitmcp/match_common_libs_owner_repo_mapping": {
+      "description": "Map common libraries to owner repositories"
+    },
+    "@gitmcp/search_generic_code": {
+      "description": "Search generic code repositories"
+    },
+    "@gitmcp/search_generic_documentation": {
+      "description": "Search generic documentation repositories"
+    },
+    "sprint-memory": {
+      "description": "Ephemeral, short-term memory for sprint notes and work-in-progress",
+      "tools": [
+        "search",
+        "get",
+        "write",
+        "update"
+      ]
+    },
+    "project-memory": {
+      "description": "Persistent, long-term memory for finalized decisions and ADRs",
+      "tools": [
+        "search",
+        "get",
+        "write",
+        "update"
+      ]
+    },
+    "sprint-memory": {
+      "description": "Ephemeral/short-term memory for temporary entities, work-in-progress, session data. Use for things you might delete after a sprint or session.",
+      "tools": [
+        "ephemeral_create_entities",
+        "ephemeral_create_relations",
+        "ephemeral_add_observations", 
+        "ephemeral_delete_entities",
+        "ephemeral_delete_observations",
+        "ephemeral_delete_relations",
+        "ephemeral_read_graph",
+        "ephemeral_search_nodes",
+        "ephemeral_open_nodes"
+      ]
+    },
+    "project-memory": {
+      "description": "Persistent memory for permanent decisions, ADRs, documentation, long-term storage. Use for finalized content that should be preserved.",
+      "tools": [
+        "memory_bank_write",
+        "memory_bank_read",
+        "memory_bank_update",
+        "list_projects",
+        "list_project_files"
+      ]
+    },
+    "graph-memory": {
+      "description": "Long-term relationship memory for permanent entities, system dependencies, architectural relationships. Use for stable system knowledge.",
+      "tools": [
+        "create_entities",
+        "create_relations",
+        "add_observations",
+        "delete_entities", 
+        "delete_observations",
+        "delete_relations",
+        "read_graph",
+        "search_nodes",
+        "open_nodes"
+      ]
+    },
+    "orchestrator": {
+      "description": "Intelligent MCP orchestrator for workflow automation and memory management",
+      "tools": [
+        "orchestrate_workflow",
+        "analyze_context",
+        "search_web",
+        "list_servers",
+        "get_server_status"
+      ]
+    }
+  },
   "useLegacyMcpJson": true
 }
