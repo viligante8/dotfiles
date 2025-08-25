@@ -38,10 +38,12 @@ return {
       auto_expand_width = true,  -- Automatically expand for long filenames
       mappings = {
         ["<cr>"] = "open",
-        ["<2-LeftMouse>"] = "open",
+        ["<2-LeftMouse>"] = "open", 
         ["l"] = "open",
         ["h"] = "close_node",
         ["<space>"] = "none",
+        ["t"] = "open_tabnew",  -- Disable tab opening
+        ["T"] = "none",         -- Disable tab opening
       },
     },
     filesystem = {

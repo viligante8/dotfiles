@@ -1,0 +1,68 @@
+{
+  "mcpServers": {
+    "database": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--read-only",
+        "--project-ref=${SUPABASE_PROJECT_REF}"
+      ],
+      "env": {
+        "SUPABASE_ACCESS_TOKEN": "${SUPABASE_ACCESS_TOKEN}",
+        "SUPABASE_PROJECT_REF": "${SUPABASE_PROJECT_REF}"
+      }
+    },
+    "awslabs.terraform-mcp-server": {
+      "command": "uvx",
+      "args": [
+        "awslabs.terraform-mcp-server@latest"
+      ]
+    },
+    "fetch": {
+      "command": "node",
+      "args": [
+        "/Users/vito.pistelli/dev/personal/fetch-mcp/dist/index.js"
+      ]
+    },
+    "aws-knowledge-mcp-server": {
+      "command": "npx",
+      "args": [
+        "mcp-remote",
+        "https://knowledge-mcp.global.api.aws"
+      ]
+    },
+    "awslabs.aws-api-mcp-server": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "--interactive",
+        "--env",
+        "AWS_REGION=us-east-1",
+        "--env",
+        "AWS_API_MCP_PROFILE_NAME=ai-readonly",
+        "--volume",
+        "/Users/vito.pistelli/.aws:/app/.aws",
+        "public.ecr.aws/awslabs-mcp/awslabs/aws-api-mcp-server:latest"
+      ],
+      "env": {}
+    },
+    "maccy-clipboard": {
+      "command": "node",
+      "args": [
+        "/Users/vito.pistelli/dev/personal/maccy-clipboard-mcp/server/index.js"
+      ],
+      "env": {},
+      "timeout": 120000,
+      "disabled": false
+    },
+    "gitmcp": {
+      "command": "npx",
+      "args": [
+        "mcp-remote",
+        "https://gitmcp.io/docs"
+      ]
+    }
+  }
+}

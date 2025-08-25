@@ -1,5 +1,11 @@
 local map = vim.keymap.set
 
+-- Buffer navigation (works with bufferline "tabs")
+map("n", "gt", "<cmd>BufferLineCycleNext<cr>", { desc = "Next buffer" })
+map("n", "gT", "<cmd>BufferLineCyclePrev<cr>", { desc = "Previous buffer" })
+map("n", "<leader>bd", "<cmd>bdelete<cr>", { desc = "Delete buffer" })
+map("n", "<leader>bo", "<cmd>BufferLineCloseOthers<cr>", { desc = "Close other buffers" })
+
 -- Better up/down
 map({ "n", "x" }, "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
 map({ "n", "x" }, "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })

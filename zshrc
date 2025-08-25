@@ -214,6 +214,9 @@ zstyle ':completion:*' menu select                       # Interactive menu
 dbdev() {
   command pgcli $DB_URL
 }
+dbprod() {
+  command pgcli $DB_URL_PROD
+}
 
 # ============================================================================
 # LAZY-LOADED TOOL COMPLETIONS
@@ -312,3 +315,6 @@ eval "$(starship init zsh)"
 
 # Amazon Q post block. Keep at the bottom of this file.
 [[ -f "${HOME}/Library/Application Support/amazon-q/shell/zshrc.post.zsh" ]] && builtin source "${HOME}/Library/Application Support/amazon-q/shell/zshrc.post.zsh"
+
+# opencode
+export PATH=/Users/vito.pistelli/.opencode/bin:$PATH
