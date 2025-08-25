@@ -27,3 +27,12 @@ Consistency Rules:
 - Always include metadata (author, date, tags, component/service) when writing memory
 
 Q should reason about which memory server is most appropriate, using the descriptions and routing rules above. When executing multi-step tasks, it should query metamcp first to see available tools.
+
+Automatic Memory Storage Rules:
+- IMMEDIATELY store any key learnings, debugging solutions, or configuration patterns discovered during sessions
+- Store debugging processes and solutions in sprint-memory for immediate reference
+- Store finalized configuration patterns and best practices in project-memory for long-term reference
+- Store relationships between tools, configurations, and processes in graph-memory
+- Always capture the context of WHY something works, not just WHAT works
+- Include specific examples, error messages, and solutions in memory entries
+- Tag entries with relevant keywords for easy retrieval

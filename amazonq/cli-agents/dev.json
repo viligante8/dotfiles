@@ -259,7 +259,7 @@
   "resources": [
     "file://README.md",
     "file://AmazonQ.md",
-    "file://.amazonq/rules/**/*.md",
+    "file://amazonq/rules/**/*.md",
     "file://docs/**/*.md",
     "file://CONTRIBUTING.md"
   ],
