@@ -1,4 +1,5 @@
 {
+  "$schema": "https://raw.githubusercontent.com/aws/amazon-q-developer-cli/refs/heads/main/schemas/agent-v1.json",
   "name": "example",
   "description": "This is an example agent config (and will not be loaded unless you change it to have .json extension)",
   "prompt": null,

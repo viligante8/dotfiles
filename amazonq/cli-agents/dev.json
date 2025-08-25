@@ -1,314 +1,220 @@
 {
-  "$schema": "https://raw.githubusercontent.com/aws/amazon-q-developer-cli/refs/heads/main/schemas/agent-v1.json",
   "name": "dev",
-  "description": "Development agent with custom clipboard tools and memory MCP stack",
-  "prompt": "You are a development assistant. Your rules are ~/.aws/amazonq/rules/**/*.md.\n\n## 3-Tier Memory Architecture & Routing Rules:\n\n### Sprint Memory (Ephemeral) - Tools: ephemeral_*\n**Purpose**: Temporary entities, work-in-progress, session data, debugging notes\n**Tools**: `ephemeral_create_entities`, `ephemeral_create_relations`, `ephemeral_add_observations`, etc.\n**When to use**: Temporary decisions, current sprint work, session context, things you might delete later\n**Database**: `/Users/vito.pistelli/dev/mcp-servers/data/sprint-memory.jsonl`\n\n### Project Memory (Persistent) - Tools: memory_bank_*\n**Purpose**: Permanent decisions, ADRs, documentation, long-term storage\n**Tools**: `memory_bank_write`, `memory_bank_read`, `memory_bank_update`, `list_projects`\n**When to use**: Finalized decisions, architecture decisions, permanent documentation\n**Database**: `/Users/vito.pistelli/dev/mcp-servers/data/project-memory/`\n\n### Graph Memory (Long-term Relationships) - Tools: create_*, search_nodes, etc.\n**Purpose**: Permanent entities, system dependencies, architectural relationships\n**Tools**: `create_entities`, `create_relations`, `search_nodes`, `read_graph`, `add_observations`\n**When to use**: Stable system knowledge, permanent relationships, architectural dependencies\n**Database**: `/Users/vito.pistelli/dev/mcp-servers/data/graph-memory.jsonl`\n\n## Memory Routing Logic:\n1. **Temporary/ephemeral content** → Sprint Memory (ephemeral_* tools)\n2. **Permanent decisions/docs** → Project Memory (memory_bank_* tools)\n3. **Stable relationships/entities** → Graph Memory (create_*, search_nodes tools)\n4. **Multi-step tasks** → Start with Graph Memory for planning, use others for execution\n\n## Tool Naming Convention:\n- **ephemeral_*** = Short-term/temporary (sprint-memory)\n- **memory_bank_*** = Persistent documents (project-memory)  \n- **create_***, **search_nodes** = Long-term relationships (graph-memory)",
-  "mcpServers": {},
+  "description": "Fully modern development agent with integrated MCP servers and memory systems",
+  "prompt": "You are a development assistant with access to memory systems, AWS tools, and comprehensive development context. Follow the 3-tier memory architecture rules and use appropriate memory systems for different types of information.",
+  "mcpServers": {
+    "sprint-memory": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-knowledge-graph",
+        "--memory-path",
+        "/Users/vito.pistelli/dev/mcp-servers/data/sprint-memory.jsonl"
+      ]
+    },
+    "project-memory": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@allpepper/memory-bank-mcp@latest"
+      ],
+      "env": {
+        "MEMORY_BANK_ROOT": "/Users/vito.pistelli/dev/mcp-servers/data/project-memory"
+      }
+    },
+    "graph-memory": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-knowledge-graph@latest",
+        "--memory-path",
+        "/Users/vito.pistelli/dev/mcp-servers/data/graph-memory.jsonl"
+      ]
+    },
+    "database": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--read-only",
+        "--project-ref=${SUPABASE_PROJECT_REF}"
+      ],
+      "env": {
+        "SUPABASE_ACCESS_TOKEN": "${SUPABASE_ACCESS_TOKEN}",
+        "SUPABASE_PROJECT_REF": "${SUPABASE_PROJECT_REF}"
+      }
+    },
+    "terraform": {
+      "command": "uvx",
+      "args": [
+        "awslabs.terraform-mcp-server@latest"
+      ]
+    },
+    "fetch": {
+      "command": "node",
+      "args": [
+        "/Users/vito.pistelli/dev/personal/fetch-mcp/dist/index.js"
+      ]
+    },
+    "aws-knowledge": {
+      "command": "npx",
+      "args": [
+        "mcp-remote",
+        "https://knowledge-mcp.global.api.aws"
+      ]
+    },
+    "aws-api": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "--interactive",
+        "--env",
+        "AWS_REGION=us-east-1",
+        "--env",
+        "AWS_API_MCP_PROFILE_NAME=ai-readonly",
+        "--volume",
+        "/Users/vito.pistelli/.aws:/app/.aws",
+        "public.ecr.aws/awslabs-mcp/awslabs/aws-api-mcp-server:latest"
+      ]
+    },
+    "clipboard": {
+      "command": "node",
+      "args": [
+        "/Users/vito.pistelli/dev/personal/maccy-clipboard-mcp/server/index.js"
+      ],
+      "timeout": 120000
+    },
+    "git": {
+      "command": "npx",
+      "args": [
+        "mcp-remote",
+        "https://gitmcp.io/docs"
+      ]
+    }
+  },
   "tools": [
     "*"
   ],
   "toolAliases": {
-    "@fetch/fetch_markdown": "fetch_md",
-    "@fetch/fetch_html": "fetch_html",
-    "@fetch/fetch_json": "fetch_json",
-    "@fetch/fetch_txt": "fetch_txt",
-    "@maccy-clipboard/search_clipboard": "clip_search",
-    "@maccy-clipboard/get_recent_items": "clip_recent",
-    "@maccy-clipboard/get_clipboard_stats": "clip_stats",
-    "@database/execute_sql": "sql",
-    "@database/list_tables": "tables",
-    "@database/search_docs": "supabase_docs",
-    "@awslabs.terraform-mcp-server/SearchAwsProviderDocs": "tf_aws_docs",
-    "@awslabs.terraform-mcp-server/SearchAwsccProviderDocs": "tf_awscc_docs",
-    "@awslabs.terraform-mcp-server/ExecuteTerraformCommand": "terraform",
-    "@awslabs.aws-api-mcp-server/call_aws": "aws",
-    "@awslabs.aws-api-mcp-server/suggest_aws_commands": "aws_suggest",
-    "@aws-knowledge-mcp-server/aws___search_documentation": "aws_search",
-    "@aws-knowledge-mcp-server/aws___read_documentation": "aws_read",
-    "@gitmcp/fetch_generic_documentation": "fetch_generic_documentation",
-    "@gitmcp/fetch_generic_url_content": "fetch_generic_url_content",
-    "@gitmcp/match_common_libs_owner_repo_mapping": "match_common_libs_owner_repo_mapping",
-    "@gitmcp/search_generic_code": "search_generic_code",
-    "@gitmcp/search_generic_documentation": "search_generic_documentation",
-    "@sprint-memory/create_entities": "ephemeral_create_entities",
-    "@sprint-memory/create_relations": "ephemeral_create_relations", 
-    "@sprint-memory/add_observations": "ephemeral_add_observations",
-    "@sprint-memory/delete_entities": "ephemeral_delete_entities",
-    "@sprint-memory/delete_observations": "ephemeral_delete_observations",
-    "@sprint-memory/delete_relations": "ephemeral_delete_relations",
-    "@sprint-memory/read_graph": "ephemeral_read_graph",
-    "@sprint-memory/search_nodes": "ephemeral_search_nodes",
-    "@sprint-memory/open_nodes": "ephemeral_open_nodes",
-    "sprint-memory": "sprint_memory",
-    "project-memory": "project_memory",
-    "graph-memory": "graph_memory",
-    "metamcp": "orchestrator"
+    "@sprint-memory/open_nodes": "sprint_open",
+    "@sprint-memory/create_entities": "sprint_create",
+    "@sprint-memory/add_observations": "sprint_add",
+    "@sprint-memory/search_nodes": "sprint_search",
+    "@sprint-memory/delete_entities": "sprint_delete",
+    "@sprint-memory/create_relations": "sprint_relate",
+    "@sprint-memory/delete_relations": "sprint_unrelate",
+    "@sprint-memory/delete_observations": "sprint_remove",
+    "@sprint-memory/read_graph": "sprint_read",
+    "@graph-memory/open_nodes": "graph_open",
+    "@graph-memory/create_entities": "graph_create",
+    "@graph-memory/add_observations": "graph_add",
+    "@graph-memory/search_nodes": "graph_search",
+    "@graph-memory/delete_entities": "graph_delete",
+    "@graph-memory/create_relations": "graph_relate",
+    "@graph-memory/delete_relations": "graph_unrelate",
+    "@graph-memory/delete_observations": "graph_remove",
+    "@graph-memory/read_graph": "graph_read",
+    "memory_bank_write": "project_write",
+    "memory_bank_read": "project_read",
+    "@git/git_status": "status",
+    "@clipboard/clip_recent": "recent_clips"
   },
   "allowedTools": [
     "fs_read",
-    "@fetch/fetch_markdown",
-    "@fetch/fetch_html",
-    "@fetch/fetch_json",
-    "@fetch/fetch_txt",
-    "@maccy-clipboard/search_clipboard",
-    "@maccy-clipboard/get_recent_items",
-    "@maccy-clipboard/get_items_by_app",
-    "@maccy-clipboard/get_clipboard_stats",
-    "@maccy-clipboard/export_history",
-    "@maccy-clipboard/copy_to_clipboard",
-    "@maccy-clipboard/pin_item",
-    "@maccy-clipboard/unpin_item",
-    "@database/search_docs",
-    "@database/list_tables",
-    "@database/list_migrations",
-    "@database/list_extensions",
-    "@database/list_edge_functions",
-    "@database/list_branches",
-    "@database/get_project_url",
-    "@database/get_logs",
-    "@database/execute_sql",
-    "@awslabs.terraform-mcp-server/SearchUserProvidedModule",
-    "@awslabs.terraform-mcp-server/SearchSpecificAwsIaModules",
-    "@awslabs.terraform-mcp-server/SearchAwsProviderDocs",
-    "@awslabs.terraform-mcp-server/SearchAwsccProviderDocs",
-    "@awslabs.terraform-mcp-server/ExecuteTerraformCommand",
-    "@awslabs.aws-api-mcp-server/suggest_aws_commands",
-    "@awslabs.aws-api-mcp-server/call_aws",
-    "@aws-knowledge-mcp-server/aws___search_documentation",
-    "@aws-knowledge-mcp-server/aws___recommend",
-    "@aws-knowledge-mcp-server/aws___read_documentation",
-    "@gitmcp/fetch_generic_documentation",
-    "@gitmcp/fetch_generic_url_content",
-    "@gitmcp/match_common_libs_owner_repo_mapping",
-    "@gitmcp/search_generic_code",
-    "@gitmcp/search_generic_documentation",
+    "knowledge",
+    "report_issue",
     "@project-memory/memory_bank_read",
-    "@project-memory/memory_bank_write",
+    "@project-memory/memory_bank_write", 
     "@project-memory/memory_bank_update",
     "@project-memory/list_projects",
     "@project-memory/list_project_files",
-    "@graph-memory/add_observations",
-    "@graph-memory/create_entities",
-    "@graph-memory/create_relations",
-    "@graph-memory/delete_entities",
-    "@graph-memory/delete_observations",
-    "@graph-memory/delete_relations",
+    "@sprint-memory/open_nodes",
+    "@sprint-memory/create_entities",
+    "@sprint-memory/add_observations",
+    "@sprint-memory/search_nodes",
+    "@sprint-memory/delete_entities",
+    "@sprint-memory/create_relations",
+    "@sprint-memory/delete_relations",
+    "@sprint-memory/delete_observations",
+    "@sprint-memory/read_graph",
     "@graph-memory/open_nodes",
-    "@graph-memory/read_graph",
+    "@graph-memory/create_entities",
+    "@graph-memory/add_observations",
     "@graph-memory/search_nodes",
-    "@orchestrator/orchestrate_workflow",
-    "@orchestrator/analyze_context",
-    "@orchestrator/search_web",
-    "@orchestrator/list_servers",
-    "@orchestrator/get_server_status",
-    "sprint-memory",
-    "project-memory",
-    "graph-memory",
-    "orchestrator"
+    "@graph-memory/delete_entities",
+    "@graph-memory/create_relations",
+    "@graph-memory/delete_relations",
+    "@graph-memory/delete_observations",
+    "@graph-memory/read_graph",
+    "use_aws",
+    "aws",
+    "aws_suggest",
+    "tf_*",
+    "SearchSpecificAwsIaModules",
+    "SearchUserProvidedModule",
+    "@clipboard/*",
+    "@fetch/*",
+    "@git/*",
+    "@database/*",
+    "@aws-api/*",
+    "@aws-knowledge/*",
+    "@terraform/*"
   ],
-  "resources": [
-    "file://AmazonQ.md",
-    "file://README.md",
-    "file:///Users/vito.pistelli/.aws/amazonq/rules/**/*.md",
-    "file:///Users/vito.pistelli/.dotfiles/",
-    "file:///Users/vito.pistelli/dev/emsi/workday-integrations/",
-    "file:///Users/vito.pistelli/dev/emsi/company-datastore/",
-    "file:///Users/vito.pistelli/dev/emsi/talent-transform/",
-    "file:///Users/vito.pistelli/dev/emsi/conduct-of-code/"
-  ],
-  "hooks": {},
   "toolsSettings": {
+    "fs_write": {
+      "allowedPaths": [
+        "~/dev/**",
+        "~/Documents/**",
+        "~/Downloads/**",
+        "~/Desktop/**",
+        "/tmp/**"
+      ],
+      "deniedPaths": [
+        "/System/**",
+        "/usr/**"
+      ]
+    },
     "execute_bash": {
       "allowedCommands": [
-        "node",
         "git status",
-        "git log --oneline -10",
-        "ls",
+        "git log.*",
+        "git diff.*",
+        "ls.*",
+        "find.*",
+        "cat.*",
+        "head.*",
+        "tail.*",
         "pwd",
-        "tail",
-        "head",
-        "ps",
-        "curl",
-        "wget",
-        "cd",
-        "mkdir"
-      ],
-      "deniedCommands": [
-        "rm .*",
-        "sudo .*",
-        "git commit .*",
-        "git push .*"
-      ],
-      "allowReadOnly": true
-    },
-    "fs_read": {
-      "description": "Read local files from the filesystem"
-    },
-    "@fetch/fetch_markdown": {
-      "description": "Fetch content from a URL or file in Markdown format"
-    },
-    "@fetch/fetch_html": {
-      "description": "Fetch content from a URL or file in HTML format"
-    },
-    "@fetch/fetch_json": {
-      "description": "Fetch JSON content from a URL or file"
-    },
-    "@fetch/fetch_txt": {
-      "description": "Fetch plain text content from a URL or file"
-    },
-    "@maccy-clipboard/search_clipboard": {
-      "description": "Search clipboard history"
-    },
-    "@maccy-clipboard/get_recent_items": {
-      "description": "Get most recent items from the clipboard"
-    },
-    "@maccy-clipboard/get_items_by_app": {
-      "description": "Retrieve clipboard items filtered by application"
-    },
-    "@maccy-clipboard/get_clipboard_stats": {
-      "description": "Get statistics about clipboard usage"
-    },
-    "@maccy-clipboard/export_history": {
-      "description": "Export clipboard history to a file"
-    },
-    "@database/search_docs": {
-      "description": "Search your connected database documentation"
-    },
-    "@database/list_tables": {
-      "description": "List tables in the connected database"
-    },
-    "@database/list_migrations": {
-      "description": "List database migrations"
-    },
-    "@database/list_extensions": {
-      "description": "List installed database extensions"
-    },
-    "@database/list_edge_functions": {
-      "description": "List database edge functions"
-    },
-    "@database/list_branches": {
-      "description": "List branches in the database project"
-    },
-    "@database/get_project_url": {
-      "description": "Get the URL of the database project"
-    },
-    "@database/get_logs": {
-      "description": "Retrieve database logs"
-    },
-    "@database/execute_sql": {
-      "description": "Run SQL queries against the database"
-    },
-    "@awslabs.terraform-mcp-server/SearchUserProvidedModule": {
-      "description": "Search Terraform modules provided by the user"
-    },
-    "@awslabs.terraform-mcp-server/SearchSpecificAwsIaModules": {
-      "description": "Search for specific AWS Terraform modules"
-    },
-    "@awslabs.terraform-mcp-server/SearchAwsProviderDocs": {
-      "description": "Search AWS provider documentation for Terraform"
-    },
-    "@awslabs.terraform-mcp-server/SearchAwsccProviderDocs": {
-      "description": "Search AWS Cloud Control provider documentation for Terraform"
-    },
-    "@awslabs.terraform-mcp-server/ExecuteTerraformCommand": {
-      "description": "Run Terraform commands"
-    },
-    "@awslabs.aws-api-mcp-server/call_aws": {
-      "description": "Make AWS API calls"
-    },
-    "@awslabs.aws-api-mcp-server/suggest_aws_commands": {
-      "description": "Suggest AWS CLI commands for a given task"
-    },
-    "@aws-knowledge-mcp-server/aws___search_documentation": {
-      "description": "Search AWS documentation"
-    },
-    "@aws-knowledge-mcp-server/aws___recommend": {
-      "description": "Get AWS recommendations"
-    },
-    "@aws-knowledge-mcp-server/aws___read_documentation": {
-      "description": "Read AWS documentation"
-    },
-    "@gitmcp/fetch_generic_documentation": {
-      "description": "Fetch documentation from a generic repository"
-    },
-    "@gitmcp/fetch_generic_url_content": {
-      "description": "Fetch content from a generic URL"
-    },
-    "@gitmcp/match_common_libs_owner_repo_mapping": {
-      "description": "Map common libraries to owner repositories"
-    },
-    "@gitmcp/search_generic_code": {
-      "description": "Search generic code repositories"
-    },
-    "@gitmcp/search_generic_documentation": {
-      "description": "Search generic documentation repositories"
-    },
-    "sprint-memory": {
-      "description": "Ephemeral, short-term memory for sprint notes and work-in-progress",
-      "tools": [
-        "search",
-        "get",
-        "write",
-        "update"
+        "which.*"
       ]
     },
-    "project-memory": {
-      "description": "Persistent, long-term memory for finalized decisions and ADRs",
-      "tools": [
-        "search",
-        "get",
-        "write",
-        "update"
-      ]
-    },
-    "sprint-memory": {
-      "description": "Ephemeral/short-term memory for temporary entities, work-in-progress, session data. Use for things you might delete after a sprint or session.",
-      "tools": [
-        "ephemeral_create_entities",
-        "ephemeral_create_relations",
-        "ephemeral_add_observations", 
-        "ephemeral_delete_entities",
-        "ephemeral_delete_observations",
-        "ephemeral_delete_relations",
-        "ephemeral_read_graph",
-        "ephemeral_search_nodes",
-        "ephemeral_open_nodes"
-      ]
-    },
-    "project-memory": {
-      "description": "Persistent memory for permanent decisions, ADRs, documentation, long-term storage. Use for finalized content that should be preserved.",
-      "tools": [
-        "memory_bank_write",
-        "memory_bank_read",
-        "memory_bank_update",
-        "list_projects",
-        "list_project_files"
-      ]
-    },
-    "graph-memory": {
-      "description": "Long-term relationship memory for permanent entities, system dependencies, architectural relationships. Use for stable system knowledge.",
-      "tools": [
-        "create_entities",
-        "create_relations",
-        "add_observations",
-        "delete_entities", 
-        "delete_observations",
-        "delete_relations",
-        "read_graph",
-        "search_nodes",
-        "open_nodes"
-      ]
-    },
-    "orchestrator": {
-      "description": "Intelligent MCP orchestrator for workflow automation and memory management",
-      "tools": [
-        "orchestrate_workflow",
-        "analyze_context",
-        "search_web",
-        "list_servers",
-        "get_server_status"
+    "use_aws": {
+      "allowedServices": [
+        "*"
       ]
     }
   },
-  "useLegacyMcpJson": true
+  "resources": [
+    "file://README.md",
+    "file://AmazonQ.md",
+    "file://.amazonq/rules/**/*.md",
+    "file://docs/**/*.md",
+    "file://CONTRIBUTING.md"
+  ],
+  "hooks": {
+    "agentSpawn": [
+      {
+        "command": "git status --porcelain"
+      },
+      {
+        "command": "pwd"
+      }
+    ],
+    "userPromptSubmit": [
+      {
+        "command": "git branch --show-current"
+      }
+    ]
+  }
 }
