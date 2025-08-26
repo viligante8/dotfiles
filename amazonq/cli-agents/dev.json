@@ -31,18 +31,23 @@
         "/Users/vito.pistelli/dev/mcp-servers/data/graph-memory.jsonl"
       ]
     },
-    "database": {
+    "git-mcp-server": {
       "command": "npx",
       "args": [
-        "-y",
-        "@supabase/mcp-server-supabase@latest",
-        "--read-only",
-        "--project-ref=${SUPABASE_PROJECT_REF}"
+        "@cyanheads/git-mcp-server"
       ],
       "env": {
-        "SUPABASE_ACCESS_TOKEN": "${SUPABASE_ACCESS_TOKEN}",
-        "SUPABASE_PROJECT_REF": "${SUPABASE_PROJECT_REF}"
+        "MCP_LOG_LEVEL": "info",
+        "GIT_SIGN_COMMITS": "false"
       }
+    },
+    "database": {
+      "command": "uv",
+      "args": [
+        "run",
+        "postgres-mcp",
+        "--access-mode=restricted"
+      ]
     },
     "terraform": {
       "command": "uvx",
@@ -92,11 +97,29 @@
       ],
       "timeout": 30000
     },
-    "git": {
+    "git_docs": {
       "command": "npx",
       "args": [
         "mcp-remote",
         "https://gitmcp.io/docs"
+      ]
+    },
+    "awslabs.aws-diagram-mcp-server": {
+      "command": "uvx",
+      "args": [
+        "awslabs.aws-diagram-mcp-server"
+      ],
+      "env": {
+        "FASTMCP_LOG_LEVEL": "ERROR"
+      }
+    },
+    "open-api-linting": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "marksivill/mcp-spectral"
       ]
     }
   },
@@ -104,43 +127,63 @@
     "*"
   ],
   "toolAliases": {
-    "@sprint-memory/open_nodes": "sprint_open",
-    "@sprint-memory/create_entities": "sprint_create",
-    "@sprint-memory/add_observations": "sprint_add",
-    "@sprint-memory/search_nodes": "sprint_search",
-    "@sprint-memory/delete_entities": "sprint_delete",
-    "@sprint-memory/create_relations": "sprint_relate",
-    "@sprint-memory/delete_relations": "sprint_unrelate",
-    "@sprint-memory/delete_observations": "sprint_remove",
-    "@sprint-memory/read_graph": "sprint_read",
-    "@graph-memory/open_nodes": "graph_open",
-    "@graph-memory/create_entities": "graph_create",
-    "@graph-memory/add_observations": "graph_add",
-    "@graph-memory/search_nodes": "graph_search",
-    "@graph-memory/delete_entities": "graph_delete",
-    "@graph-memory/create_relations": "graph_relate",
-    "@graph-memory/delete_relations": "graph_unrelate",
-    "@graph-memory/delete_observations": "graph_remove",
-    "@graph-memory/read_graph": "graph_read",
-    "memory_bank_write": "project_write",
-    "memory_bank_read": "project_read",
-    "@git/git_status": "status",
-    "@clipboard/clip_recent": "recent_clips"
+    "@sprint-memory/aim_open_nodes": "sprint_open",
+    "@sprint-memory/aim_create_entities": "sprint_create",
+    "@sprint-memory/aim_add_observations": "sprint_add",
+    "@sprint-memory/aim_search_nodes": "sprint_search",
+    "@sprint-memory/aim_delete_entities": "sprint_delete",
+    "@sprint-memory/aim_create_relations": "sprint_relate",
+    "@sprint-memory/aim_delete_relations": "sprint_unrelate",
+    "@sprint-memory/aim_delete_observations": "sprint_remove",
+    "@sprint-memory/aim_read_graph": "sprint_read",
+    "@sprint-memory/aim_list_databases": "sprint_list_dbs",
+    "@graph-memory/aim_open_nodes": "graph_open",
+    "@graph-memory/aim_create_entities": "graph_create",
+    "@graph-memory/aim_add_observations": "graph_add",
+    "@graph-memory/aim_search_nodes": "graph_search",
+    "@graph-memory/aim_delete_entities": "graph_delete",
+    "@graph-memory/aim_create_relations": "graph_relate",
+    "@graph-memory/aim_delete_relations": "graph_unrelate",
+    "@graph-memory/aim_delete_observations": "graph_remove",
+    "@graph-memory/aim_read_graph": "graph_read",
+    "@project-memory/memory_bank_write": "project_write",
+    "@project-memory/memory_bank_read": "project_read",
+    "@clipboard/clip_recent": "recent_clips",
+    "@diagram/generate_diagram": "generate_diagram",
+    "@diagram/get_diagram_examples": "get_diagram_examples",
+    "@diagram/list_icons": "list_diagram_icons",
+    "@database/analyze_db_health": "analyze_db_health",
+    "@database/analyze_query_indexes": "analyze_query_indexes",
+    "@database/analyze_workload_indexes": "analyze_workload_indexes",
+    "@database/execute_sql": "execute_sql",
+    "@database/explain_query": "explain_query",
+    "@database/get_object_details": "get_object_details",
+    "@database/get_top_queries": "get_top_queries",
+    "@database/list_objects": "list_objects",
+    "@database/list_schemas": "list_schemas",
+    "@git/git_clone": "git_clone",
+    "@git/git_diff": "git_diff",
+    "@git/git_fetch": "git_fetch",
+    "@git/git_init": "git_init",
+    "@git/git_log": "git_log",
+    "@git/git_pull": "git_pull",
+    "@git/git_set_working_dir": "git_set_working_dir",
+    "@git/git_show": "git_show",
+    "@git/git_stash": "git_stash",
+    "@git/git_status": "git_status",
+    "@git/git_tag": "git_tag",
+    "@git/git_worktree": "git_worktree",
+    "@git/git_wrapup_instructions": "git_wrapup_instructions"
   },
   "allowedTools": [
     "fs_read",
-    "fs_write",
     "report_issue",
     "use_aws",
-    "execute_bash",
-    
     "@aws-api/call_aws",
     "@aws-api/suggest_aws_commands",
-    
     "@aws-knowledge/aws___read_documentation",
     "@aws-knowledge/aws___recommend",
     "@aws-knowledge/aws___search_documentation",
-    
     "@clipboard/copy_to_clipboard",
     "@clipboard/export_history",
     "@clipboard/get_clipboard_stats",
@@ -148,14 +191,7 @@
     "@clipboard/get_recent_items",
     "@clipboard/pin_item",
     "@clipboard/search_clipboard",
-    "@clipboard/unpin_item",
-    
-    "@database/apply_migration",
-    "@database/create_branch",
-    "@database/delete_branch",
-    "@database/deploy_edge_function",
     "@database/execute_sql",
-    "@database/generate_typescript_types",
     "@database/get_advisors",
     "@database/get_anon_key",
     "@database/get_logs",
@@ -165,56 +201,59 @@
     "@database/list_extensions",
     "@database/list_migrations",
     "@database/list_tables",
-    "@database/merge_branch",
-    "@database/rebase_branch",
-    "@database/reset_branch",
     "@database/search_docs",
-    
     "@fetch/fetch_html",
     "@fetch/fetch_json",
     "@fetch/fetch_markdown",
     "@fetch/fetch_txt",
-    
-    "@git/fetch_generic_documentation",
-    "@git/fetch_generic_url_content",
-    "@git/match_common_libs_owner_repo_mapping",
-    "@git/search_generic_code",
-    "@git/search_generic_documentation",
-    
-    "@graph-memory/add_observations",
-    "@graph-memory/create_entities",
-    "@graph-memory/create_relations",
-    "@graph-memory/delete_entities",
-    "@graph-memory/delete_observations",
-    "@graph-memory/delete_relations",
-    "@graph-memory/open_nodes",
-    "@graph-memory/read_graph",
-    "@graph-memory/search_nodes",
-    
+    "@git_docs/fetch_generic_documentation",
+    "@git_docs/fetch_generic_url_content",
+    "@git_docs/match_common_libs_owner_repo_mapping",
+    "@git_docs/search_generic_code",
+    "@git_docs/search_generic_documentation",
+    "@git/git_clone",
+    "@git/git_diff",
+    "@git/git_fetch",
+    "@git/git_init",
+    "@git/git_log",
+    "@git/git_pull",
+    "@git/git_set_working_dir",
+    "@git/git_show",
+    "@git/git_stash",
+    "@git/git_status",
+    "@git/git_tag",
+    "@git/git_worktree",
+    "@git/git_wrapup_instructions",
+    "@graph-memory/aim_add_observations",
+    "@graph-memory/aim_create_entities",
+    "@graph-memory/aim_create_relations",
+    "@graph-memory/aim_delete_entities",
+    "@graph-memory/aim_delete_observations",
+    "@graph-memory/aim_delete_relations",
+    "@graph-memory/aim_list_databases",
+    "@graph-memory/aim_open_nodes",
+    "@graph-memory/aim_read_graph",
+    "@graph-memory/aim_search_nodes",
     "@project-memory/list_project_files",
     "@project-memory/list_projects",
     "@project-memory/memory_bank_read",
     "@project-memory/memory_bank_update",
     "@project-memory/memory_bank_write",
-    
-    "@sprint-memory/add_observations",
-    "@sprint-memory/create_entities",
-    "@sprint-memory/create_relations",
-    "@sprint-memory/delete_entities",
-    "@sprint-memory/delete_observations",
-    "@sprint-memory/delete_relations",
-    "@sprint-memory/open_nodes",
-    "@sprint-memory/read_graph",
-    "@sprint-memory/search_nodes",
-    
-    "@terraform/ExecuteTerraformCommand",
-    "@terraform/ExecuteTerragruntCommand",
+    "@sprint-memory/aim_add_observations",
+    "@sprint-memory/aim_create_entities",
+    "@sprint-memory/aim_create_relations",
+    "@sprint-memory/aim_delete_entities",
+    "@sprint-memory/aim_delete_observations",
+    "@sprint-memory/aim_delete_relations",
+    "@sprint-memory/aim_list_databases",
+    "@sprint-memory/aim_open_nodes",
+    "@sprint-memory/aim_read_graph",
+    "@sprint-memory/aim_search_nodes",
     "@terraform/RunCheckovScan",
     "@terraform/SearchAwsProviderDocs",
     "@terraform/SearchAwsccProviderDocs",
     "@terraform/SearchSpecificAwsIaModules",
     "@terraform/SearchUserProvidedModule",
-    
     "@utilities/add_to_clipboard",
     "@utilities/append_to_file",
     "@utilities/check_port",
@@ -237,30 +276,30 @@
     "@utilities/open_url",
     "@utilities/ping_host",
     "@utilities/read_file",
-    "@utilities/set_env_var",
     "@utilities/url_decode",
-    "@utilities/url_encode"
+    "@utilities/url_encode",
+    "@diagram/generate_diagram",
+    "@diagram/get_diagram_examples",
+    "@diagram/list_icons",
+    "@open-api-linting/lint_openapi",
+    "@open-api-linting/lint_openapi_with_ruleset",
+    "@open-api-linting/spectral_version",
+    "@database/analyze_db_health",
+    "@database/analyze_query_indexes",
+    "@database/analyze_workload_indexes",
+    "@database/execute_sql",
+    "@database/explain_query",
+    "@database/get_object_details",
+    "@database/get_top_queries",
+    "@database/list_objects",
+    "@database/list_schemas"
   ],
-  "toolsSettings": {
-    "fs_write": {
-      "allowedPaths": [
-        "~/dev/**",
-        "~/Documents/**",
-        "~/Downloads/**",
-        "~/Desktop/**",
-        "/tmp/**"
-      ],
-      "deniedPaths": [
-        "/System/**",
-        "/usr/**"
-      ]
-    }
-  },
   "resources": [
     "file://README.md",
     "file://AmazonQ.md",
     "file://amazonq/rules/**/*.md",
     "file://docs/**/*.md",
+    "file:///Users/vito.pistelli/dev/emsi/conduct-of-code/**/*",
     "file://CONTRIBUTING.md"
   ],
   "hooks": {

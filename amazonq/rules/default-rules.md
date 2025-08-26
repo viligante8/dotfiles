@@ -7,6 +7,19 @@ My dotfiles are in ~/dev/personal/dotfiles/
 My work files are in ~/dev/emsi/
 My personal repos are in ~/dev/personal/
 
+## Documentation-First Approach
+**CRITICAL RULE: Always check documentation and examples BEFORE attempting to use any tool or service**
+- For MCP tools: Use available documentation functions specific to each tool (e.g., `get_diagram_examples` for diagrams, help functions, etc.)
+- For AWS services: Use AWS documentation search tools FIRST
+- For GitHub repositories: Use `fetch_generic_documentation`, `search_generic_documentation`, or `fetch_generic_url_content` FIRST
+- For any unfamiliar tool: Search for official documentation, examples, or usage patterns FIRST
+- Never guess or use trial-and-error when documentation is available
+- Always reference working examples and official patterns before creating custom implementations
+- Document any discovered limitations or patterns in working memory for future reference
+
+## Conduct of Code Guidelines
+Always reference and follow the SEAL Team's conduct-of-code principles from the symlinked conduct-of-code directory in this rules folder. Before making any code changes or recommendations, read the relevant guidelines from these files to ensure all work aligns with the team's current standards. The conduct-of-code directory contains all current best practices and will automatically include any new guidelines added to the source.
+
 You have access to four MCP servers:
 
 1. metamcp: orchestrator/proxy that exposes all tools in a clear namespace. Use it to see available memory servers.
