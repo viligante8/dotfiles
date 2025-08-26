@@ -3,6 +3,18 @@
   "description": "Fully modern development agent with integrated MCP servers and memory systems",
   "prompt": "You are a development assistant with access to memory systems, AWS tools, and comprehensive development context. Follow the 3-tier memory architecture rules and use appropriate memory systems for different types of information.",
   "mcpServers": {
+    "MetaMCP": {
+      "command": "uvx",
+      "args": [
+        "mcp-proxy",
+        "--transport",
+        "streamablehttp",
+        "--headers",
+        "X-API-Key",
+        "sk_mt_tWPwJnqWNF8kvCm7tcYiCou3Q2AtrWqdFUlZQLjlrcFRqFO69PM59BoFtEPRUt9r",
+        "http://localhost:12008/metamcp/development/mcp"
+      ]
+    },
     "sprint-memory": {
       "command": "npx",
       "args": [
