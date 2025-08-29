@@ -10,3 +10,4 @@ amazonq/cache/
 amazonq/history/
 *.log
 wip*
+amazonq/active-user-state.json

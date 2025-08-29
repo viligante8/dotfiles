@@ -313,8 +313,8 @@ eval "$(starship init zsh)"
 # - Falls back to manual loading when using node/npm/yarn commands
 # ============================================================================
 
-# Amazon Q post block. Keep at the bottom of this file.
-[[ -f "${HOME}/Library/Application Support/amazon-q/shell/zshrc.post.zsh" ]] && builtin source "${HOME}/Library/Application Support/amazon-q/shell/zshrc.post.zsh"
-
 # opencode
 export PATH=/Users/vito.pistelli/.opencode/bin:$PATH
+
+# Amazon Q post block. Keep at the bottom of this file.
+[[ -f "${HOME}/Library/Application Support/amazon-q/shell/zshrc.post.zsh" ]] && builtin source "${HOME}/Library/Application Support/amazon-q/shell/zshrc.post.zsh"

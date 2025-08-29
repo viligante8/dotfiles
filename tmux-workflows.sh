@@ -117,46 +117,6 @@ dev-layout() {
     tmux select-pane -t 0
 }
 
-# Function to quickly open Q in current session
-q-drawer() {
-    # Check if we're in a tmux session
-    if [ -z "$TMUX" ]; then
-        echo "Not in a tmux session. Starting Q directly..."
-        q chat
-        return
-    fi
-    
-    # Check if Q window already exists
-    if tmux list-windows -F '#W' | grep -q '^q$'; then
-        echo "Switching to existing Q window..."
-        tmux select-window -t q
-    else
-        echo "Creating new Q window..."
-        tmux new-window -n 'q' -c "#{pane_current_path}"
-        tmux send-keys 'q chat' Enter
-    fi
-}
-
-# Function to quickly open LazyGit in current session
-git-drawer() {
-    # Check if we're in a tmux session
-    if [ -z "$TMUX" ]; then
-        echo "Not in a tmux session. Starting LazyGit directly..."
-        lazygit
-        return
-    fi
-    
-    # Check if git window already exists
-    if tmux list-windows -F '#W' | grep -q '^git$'; then
-        echo "Switching to existing git window..."
-        tmux select-window -t git
-    else
-        echo "Creating new git window..."
-        tmux new-window -n 'git' -c "#{pane_current_path}"
-        tmux send-keys 'lazygit' Enter
-    fi
-}
-
 # Function to kill all tmux sessions
 tmux-clean() {
     echo "Killing all tmux sessions..."
@@ -190,8 +150,6 @@ tmux-help() {
     echo "  dev-session    - Start generic development session (current directory)"
     echo ""
     echo "Utilities:"
-    echo "  q-drawer       - Open/switch to Q (Amazon Q) window"
-    echo "  git-drawer     - Open/switch to LazyGit window"
     echo "  dev-layout     - Create 3-pane development layout"
     echo "  tmux-list      - List all active sessions"
     echo "  tmux-attach    - Attach to session (most recent if no name)"
