@@ -1,0 +1,142 @@
+#!/bin/bash
+# Memory Maintenance CLI Tool
+# Automated cleanup and optimization for Q CLI memory systems
+
+set -e
+
+# Configuration
+SCRIPT_NAME="$(basename "$0")"
+DOTFILES_DIR="${DOTFILES_DIR:-$(dirname "$(dirname "$(realpath "$0")")")}"
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Usage function
+usage() {
+    cat << EOF
+${SCRIPT_NAME} - Memory maintenance tool for Q CLI memory systems
+
+USAGE:
+    ${SCRIPT_NAME} [OPTIONS] [COMMAND]
+
+COMMANDS:
+    weekly      Perform weekly cleanup (default)
+    monthly     Perform monthly optimization
+    help        Show this help message
+
+OPTIONS:
+    --dry-run   Analyze what would be done without making changes
+    -h, --help  Show this help message
+    -v, --verbose  Enable verbose output
+
+EXAMPLES:
+    ${SCRIPT_NAME}                    # Weekly cleanup
+    ${SCRIPT_NAME} weekly --dry-run   # Test weekly cleanup
+    ${SCRIPT_NAME} monthly            # Monthly optimization
+    ${SCRIPT_NAME} --dry-run monthly  # Test monthly optimization
+
+EOF
+}
+
+# Parse arguments
+DRY_RUN=false
+VERBOSE=false
+COMMAND="weekly"
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --dry-run)
+            DRY_RUN=true
+            shift
+            ;;
+        -v|--verbose)
+            VERBOSE=true
+            shift
+            ;;
+        -h|--help|help)
+            usage
+            exit 0
+            ;;
+        weekly|monthly)
+            COMMAND="$1"
+            shift
+            ;;
+        *)
+            echo -e "${RED}Error: Unknown option '$1'${NC}" >&2
+            usage >&2
+            exit 1
+            ;;
+    esac
+done
+
+# Change to dotfiles directory
+cd "$DOTFILES_DIR" || {
+    echo -e "${RED}Error: Cannot access dotfiles directory: $DOTFILES_DIR${NC}" >&2
+    exit 1
+}
+
+# Build the prompt based on command and dry-run flag
+build_prompt() {
+    local wait_instruction="Wait for all MCP servers to fully load before proceeding. "
+    
+    if [[ "$DRY_RUN" == "true" ]]; then
+        case "$COMMAND" in
+            "weekly")
+                echo "${wait_instruction}Analyze current memory systems and report what weekly cleanup would do: 1) List debugging entities >7 days old in sprint-memory 2) Find duplicate entities across systems 3) Check problem entities missing solution relationships 4) Identify items to archive 5) List solutions needing verification. Be specific with entity names."
+                ;;
+            "monthly")
+                echo "${wait_instruction}Analyze current memory systems and report what monthly optimization would do: deep entity analysis, relationship optimization, Solutions Index updates. Be specific with entity names and changes."
+                ;;
+        esac
+    else
+        case "$COMMAND" in
+            "weekly")
+                echo "${wait_instruction}Perform weekly memory cleanup: remove old debugging entities, consolidate duplicates, fix relationships, archive completed work, verify solutions. Report specific actions taken."
+                ;;
+            "monthly")
+                echo "${wait_instruction}Perform monthly memory optimization: analyze entities, optimize relationships, update Solutions Index, check system health. Report detailed changes made."
+                ;;
+        esac
+    fi
+}
+
+# Main execution
+main() {
+    local prompt
+    prompt="$(build_prompt)"
+    
+    # Output header
+    if [[ "$DRY_RUN" == "true" ]]; then
+        echo -e "${YELLOW}🧪 DRY RUN: $(echo "$COMMAND" | awk '{print toupper(substr($0,1,1)) tolower(substr($0,2))}') memory maintenance analysis${NC}"
+    else
+        case "$COMMAND" in
+            "weekly")
+                echo -e "${BLUE}🧹 Starting weekly memory maintenance...${NC}"
+                ;;
+            "monthly")
+                echo -e "${GREEN}🔧 Starting monthly memory optimization...${NC}"
+                ;;
+        esac
+    fi
+    
+    if [[ "$VERBOSE" == "true" ]]; then
+        echo -e "${YELLOW}Working directory: $DOTFILES_DIR${NC}"
+        echo -e "${YELLOW}Prompt: $prompt${NC}"
+        echo ""
+    fi
+    
+    # Execute Q CLI command with forced exit and trust all tools for automation
+    if ! echo "$prompt" | q chat --agent dev --no-interactive --trust-all-tools; then
+        echo -e "${RED}Error: Memory maintenance failed${NC}" >&2
+        exit 1
+    fi
+    
+    echo -e "${GREEN}✅ Memory maintenance completed${NC}"
+}
+
+# Run main function
+main "$@"
