@@ -195,6 +195,12 @@ bindkey "^[OB" down-line-or-beginning-search  # Down arrow (alternative)
 # ============================================================================
 # OPTIMIZED COMPLETION SYSTEM
 # ============================================================================
+# Git aliases for AI commit messages
+# ============================================================================
+alias gcm='commit-msg'
+alias gcma='commit-msg --amend'
+
+# ============================================================================
 # Load completion system with caching for faster startup
 autoload bashcompinit && bashcompinit
 autoload -Uz compinit
@@ -212,7 +218,7 @@ zstyle ':completion:*' list-colors ''                    # Colored completions
 zstyle ':completion:*' menu select                       # Interactive menu
 
 dbdev() {
-  command pgcli $DB_URL
+  command pgcli $DATABASE_URI
 }
 dbprod() {
   command pgcli $DB_URL_PROD

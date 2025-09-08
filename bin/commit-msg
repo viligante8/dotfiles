@@ -1,0 +1,43 @@
+#!/bin/bash
+
+set -e
+
+if ! git rev-parse --git-dir > /dev/null 2>&1; then
+    echo "Error: Not in a git repository"
+    exit 1
+fi
+
+if ! git diff --cached --quiet; then
+    echo "Generating commit message..."
+    
+    # Get file changes for context
+    CHANGED_FILES=$(git diff --cached --name-only | head -3 | tr '\n' ' ')
+    STATS=$(git diff --cached --stat | tail -1)
+    
+    # Simple pattern-based commit message generation
+    if echo "$CHANGED_FILES" | grep -q -E "\.(md|txt|rst)$"; then
+        TYPE="docs"
+    elif echo "$CHANGED_FILES" | grep -q -E "\.(test|spec)\.|test/|spec/"; then
+        TYPE="test"
+    elif echo "$CHANGED_FILES" | grep -q -E "package\.json|requirements\.txt|Cargo\.toml|go\.mod"; then
+        TYPE="build"
+    elif echo "$CHANGED_FILES" | grep -q -E "\.config|\.yml|\.yaml|Dockerfile"; then
+        TYPE="chore"
+    elif git diff --cached | grep -q "^+.*function\|^+.*def \|^+.*class "; then
+        TYPE="feat"
+    else
+        TYPE="fix"
+    fi
+    
+    # Generate simple commit message
+    FIRST_FILE=$(echo "$CHANGED_FILES" | cut -d' ' -f1)
+    COMMIT_MSG="$TYPE: update $FIRST_FILE"
+    
+    echo "$COMMIT_MSG" | pbcopy
+    echo "✅ $COMMIT_MSG"
+    echo "Run: git commit -m \"\$(pbpaste)\""
+    echo "Edit if needed, then commit!"
+else
+    echo "No staged changes. Run 'git add' first."
+    exit 1
+fi
