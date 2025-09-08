@@ -1,0 +1,135 @@
+{
+  "mcpServers": {
+    "postman-api-http-server": {
+      "type": "STDIO",
+      "command": "npx",
+      "args": [
+        "@postman/postman-mcp-server",
+        "--full"
+      ],
+      "env": {
+        "POSTMAN_API_KEY": ""
+      }
+    },
+    "database": {
+      "type": "STDIO",
+      "command": "uv",
+      "args": [
+        "run",
+        "postgres-mcp",
+        "--access-mode=restricted"
+      ],
+      "env": {
+        "DATABASE_URI": ""
+      }
+    },
+    "git_docs": {
+      "type": "STDIO",
+      "description": "Git documentation and help system",
+      "command": "npx",
+      "args": [
+        "mcp-remote",
+        "https://gitmcp.io/docs"
+      ]
+    },
+    "utilities": {
+      "type": "STDIO",
+      "description": "General development utilities and helper functions",
+      "command": "node",
+      "args": [
+        "/Users/vito.pistelli/dev/mcp-servers/utilities-mcp/build/index.js"
+      ]
+    },
+    "clipboard": {
+      "type": "STDIO",
+      "description": "macOS clipboard history and management (Maccy integration)",
+      "command": "node",
+      "args": [
+        "/Users/vito.pistelli/dev/mcp-servers/maccy-clipboard-mcp/server/index.js"
+      ]
+    },
+    "aws-api": {
+      "type": "STDIO",
+      "description": "AWS API operations and resource management",
+      "command": "uvx",
+      "args": [
+        "awslabs.aws-api-mcp-server@latest"
+      ],
+      "env": {
+        "AWS_REGION": "us-east-1",
+        "AWS_API_MCP_PROFILE_NAME": "ai-readonly"
+      }
+    },
+    "aws-knowledge": {
+      "type": "STDIO",
+      "description": "AWS documentation and knowledge base access",
+      "command": "npx",
+      "args": [
+        "mcp-remote",
+        "https://knowledge-mcp.global.api.aws"
+      ]
+    },
+    "fetch": {
+      "type": "STDIO",
+      "description": "Web content fetching and scraping utilities",
+      "command": "node",
+      "args": [
+        "/Users/vito.pistelli/dev/mcp-servers/fetch-mcp/dist/index.js"
+      ]
+    },
+    "terraform": {
+      "type": "STDIO",
+      "description": "Terraform infrastructure as code operations",
+      "command": "uvx",
+      "args": [
+        "awslabs.terraform-mcp-server@latest"
+      ]
+    },
+    "git-mcp-server": {
+      "type": "STDIO",
+      "description": "Git operations and repository management",
+      "command": "npx",
+      "args": [
+        "@cyanheads/git-mcp-server"
+      ],
+      "env": {
+        "MCP_LOG_LEVEL": "info",
+        "GIT_SIGN_COMMITS": "false"
+      }
+    },
+    "graph-memory": {
+      "type": "STDIO",
+      "description": "Graph-based memory system for long-term knowledge storage",
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-knowledge-graph@latest",
+        "--memory-path",
+        "/Users/vito.pistelli/dev/mcp-servers/data/graph-memory.jsonl"
+      ]
+    },
+    "project-memory": {
+      "type": "STDIO",
+      "description": "Project memory bank for persistent project-specific information",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@allpepper/memory-bank-mcp@latest"
+      ],
+      "env": {
+        "MEMORY_BANK_ROOT": "/Users/vito.pistelli/dev/mcp-servers/data/project-memory"
+      }
+    },
+    "sprint-memory": {
+      "type": "STDIO",
+      "description": "Sprint memory system using knowledge graph for short-term development context",
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-knowledge-graph",
+        "--memory-path",
+        "/Users/vito.pistelli/dev/mcp-servers/data/sprint-memory.jsonl"
+      ]
+    }
+  }
+}
