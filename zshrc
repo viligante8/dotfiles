@@ -283,6 +283,9 @@ alias cheat="cat $DOTFILES_DIR/KEYMAPS.md | head -50"  # Quick preview
 # Beautiful, fast prompt - this is actually quite fast, so keep it loaded
 eval "$(starship init zsh)"
 
+# Fix Ctrl-C interrupt issues by disabling right prompt
+RPROMPT=""
+
 # ============================================================================
 # SECRETS AND WORKFLOW INTEGRATION
 # ============================================================================
