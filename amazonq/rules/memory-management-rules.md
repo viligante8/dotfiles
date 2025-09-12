@@ -1,26 +1,26 @@
 # Memory Management Rules
 
 ## Solution-First Memory Search Rule
-**CRITICAL RULE: Always search existing solutions BEFORE attempting any fixes or implementations**
-- **FIRST**: Check Solutions Index (`dotfiles/solutions-index`) for known problem patterns
-- **SECOND**: Search project-memory for related solution files using `list_project_files` and `memory_bank_read`
-- **THIRD**: Search graph-memory for problem/solution relationships using `aim_search_nodes`
-- **FOURTH**: Search sprint-memory for recent debugging sessions
+**CRITICAL RULE: ALWAYS search existing solutions BEFORE attempting any fixes or implementations**
+- **MANDATORY FIRST STEP**: Check Solutions Index (`dotfiles/solutions-index`) for known problem patterns
+- **MANDATORY SECOND STEP**: Search project-memory for related solution files using `list_project_files` and `memory_bank_read`
+- **MANDATORY THIRD STEP**: Search graph-memory for problem/solution relationships using `aim_search_nodes`
+- **MANDATORY FOURTH STEP**: Search sprint-memory for recent debugging sessions
 - **ONLY THEN**: Attempt new solutions if no existing solution found
 - **ALWAYS**: Update Solutions Index and create relationships when solving new problems
 - **PREVENT**: Re-solving the same recurring issues multiple times
 
 ## Automatic Memory Storage Rules
-- **DEFAULT TO REMEMBERING**: Store information by default rather than asking
-- IMMEDIATELY store any key learnings, debugging solutions, or configuration patterns discovered during sessions
-- Store debugging processes and solutions in sprint-memory for immediate reference
-- Store finalized configuration patterns and best practices in project-memory for long-term reference
-- Store relationships between tools, configurations, and processes in graph-memory
-- Always capture the context of WHY something works, not just WHAT works
-- Include specific examples, error messages, and solutions in memory entries
-- Tag entries with relevant keywords for easy retrieval
-- **CREATE SOLUTION ENTRIES**: For any recurring problem, create a solution file and add it to Solutions Index
-- **ESTABLISH RELATIONSHIPS**: Link problems to solutions in graph-memory for quick discovery
+- **MANDATORY: Store information by default rather than asking**
+- **IMMEDIATELY** store any key learnings, debugging solutions, or configuration patterns discovered during sessions
+- **ALWAYS** store debugging processes and solutions in sprint-memory for immediate reference
+- **ALWAYS** store finalized configuration patterns and best practices in project-memory for long-term reference
+- **ALWAYS** store relationships between tools, configurations, and processes in graph-memory
+- **MUST** capture the context of WHY something works, not just WHAT works
+- **MUST** include specific examples, error messages, and solutions in memory entries
+- **MUST** tag entries with relevant keywords for easy retrieval
+- **MANDATORY**: For any recurring problem, create a solution file and add it to Solutions Index
+- **MANDATORY**: Link problems to solutions in graph-memory for quick discovery
 
 ## Memory Optimization Rules
 - **AVOID DUPLICATES**: Don't create identical entities across memory systems

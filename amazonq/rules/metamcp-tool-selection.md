@@ -11,19 +11,17 @@
 - Always follow: Memory search → Complexity assessment → Tool execution → Result storage
 
 ## Sequential Thinking Integration
-**When to use `sequential-thinking___sequentialthinking`:**
-- Multi-step problems requiring structured analysis
-- Unclear requirements needing clarification
-- Multiple domain involvement (dev + infra + docs)
-- Complex debugging with multiple potential causes
-- Architecture decisions with trade-offs
-- New problem patterns not in existing solutions
+**MANDATORY: Use `sequential-thinking___sequentialthinking` for EVERY REQUEST**
+- **ALWAYS START** with sequential thinking to assess complexity and requirements
+- **NO EXCEPTIONS** - even simple requests need reasoning to determine if they're actually simple
+- **REQUIRED FOR ALL**: Single commands, multi-step problems, debugging, analysis, questions
+- **REASONING FIRST**: Only through structured thinking can you determine what other tools are needed
 
-**Sequential thinking enhances the workflow by:**
-- Providing structured reasoning for complex tool selection
-- Maintaining context across multi-step problem solving
-- Allowing course correction and hypothesis testing
-- Working as "cognitive working memory" alongside persistent memory systems
+**Sequential thinking is the gateway to:**
+- Determining if memory search is needed
+- Assessing true complexity vs apparent simplicity  
+- Choosing appropriate tools and workflows
+- Preventing assumption-based responses
 
 ## MetaMCP Namespace Organization
 MetaMCP organizes MCP servers into **4 main namespaces**:

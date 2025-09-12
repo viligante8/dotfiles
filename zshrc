@@ -325,5 +325,10 @@ RPROMPT=""
 # opencode
 export PATH=/Users/vito.pistelli/.opencode/bin:$PATH
 
+# Colima Docker configuration for testcontainers
+export DOCKER_HOST=unix://${HOME}/.colima/default/docker.sock
+export TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE=/var/run/docker.sock
+export NODE_OPTIONS=--dns-result-order=ipv4first
+
 # Amazon Q post block. Keep at the bottom of this file.
 [[ -f "${HOME}/Library/Application Support/amazon-q/shell/zshrc.post.zsh" ]] && builtin source "${HOME}/Library/Application Support/amazon-q/shell/zshrc.post.zsh"

@@ -19,6 +19,11 @@ This directory contains rules that guide Amazon Q's behavior when using the CLI 
 - Wait for explicit verification
 - Store failed attempts to avoid repetition
 
+### [Context Rule Enforcement](./context-rule-enforcement.md)
+- Mandatory rule processing order
+- Context entry priority system
+- Rule compliance requirements
+
 ### [MetaMCP Tool Selection](./metamcp-tool-selection.md)
 - Automatic tool selection without user specification
 - Namespace routing patterns
