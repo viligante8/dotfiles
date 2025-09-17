@@ -1,0 +1,97 @@
+model = "gpt-5-codex"
+# Codex CLI configuration
+# Structure aligns with docs/config.md (profiles/agents schema)
+
+[profiles.default]
+# Agent used when no explicit agent is selected
+default_agent = "codex_default"
+# Resources loaded for sessions under this profile
+resources = [
+  "file://README.md",
+  "file://AGENTS.md",
+  "file://codex/rules/**/*.md",
+]
+
+[agents.codex_default]
+description = "Default Codex CLI agent configuration (uses repo mcp.json)"
+# Prefer referencing a prompt file to keep content editable
+prompt_file = "codex/prompts/system.md"
+# Full tool set available to the agent
+tools = [
+  "fs_read",
+  "fs_write",
+  "execute_bash",
+  "knowledge",
+  "thinking",
+]
+# Runtime-allowed subset (restricts what the agent can actually call)
+allowed_tools = [
+  "fs_read",
+  "knowledge",
+]
+# Agent-specific resources (in addition to profile resources)
+resources = [
+  "file://README.md",
+  "file://AGENTS.md",
+  "file://codex/rules/**/*.md",
+]
+
+[agents.codex_default.tools_settings.execute_bash]
+allowReadOnly = true
+
+[agents.codex_default.hooks]
+agentSpawn = []
+userPromptSubmit = []
+
+# Optional: project trust overrides (keep as-is if you rely on this)
+[projects."/Users/vito.pistelli/dev/personal/dotfiles"]
+trust_level = "trusted"
+
+[projects."/Users/vito.pistelli/dev/emsi/company-datastore"]
+trust_level = "trusted"
+
+
+# Agent hooks
+[[ hooks.agentSpawn ]]
+command = "sh"
+args = ["-c","git status --porcelain | wc -l | sed 's/^/📝 changes: /'"]
+
+[[ hooks.agentSpawn ]]
+command = "pwd"
+
+[[ hooks.agentSpawn ]]
+command = "sh"
+args = ["-c","if [ -f yarn.lock ]; then echo '📦 yarn'; elif [ -f bun.lockb ]; then echo '📦 bun'; elif [ -f package-lock.json ]; then echo '📦 npm'; elif [ -f package.json ]; then echo '📦 npm (no lock)'; fi"]
+
+[[ hooks.agentSpawn ]]
+command = "sh"
+args = ["-c","if [ -f .nvmrc ]; then echo \"⚡ node: $(cat .nvmrc) (required)\"; else echo \"⚡ node: $(node -v 2>/dev/null || echo 'not installed') (current)\"; fi"]
+
+[[ hooks.agentSpawn ]]
+command = "sh"
+args = ["-c","lsof -ti:3000,8000,8080,5173,4200,12008 2>/dev/null | wc -l | sed 's/^/🚀 dev servers: /'"]
+
+[[ hooks.userPromptSubmit ]]
+command = "sh"
+args = ["-c","pwd && git branch --show-current 2>/dev/null || echo '🚫 git failed'"]
+
+[[ hooks.userPromptSubmit ]]
+command = "sh"
+args = ["-c","echo \"🔄 last exit: $?\""]
+
+[mcp_servers.development]
+command = "uvx"
+args = ["mcp-proxy", "--transport", "streamablehttp", "http://localhost:12008/metamcp/development/mcp"]
+
+[mcp_servers.infrastructure]
+command = "uvx"
+args = ["mcp-proxy", "--transport", "streamablehttp", "http://localhost:12008/metamcp/infrastructure/mcp"]
+
+[mcp_servers.documentation]
+command = "uvx"
+args = ["mcp-proxy", "--transport", "streamablehttp", "http://localhost:12008/metamcp/documentation/mcp"]
+
+[mcp_servers.memory]
+command = "uvx"
+args = ["mcp-proxy", "--transport", "streamablehttp", "http://localhost:12008/metamcp/memory/mcp"]
+

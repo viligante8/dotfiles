@@ -6,26 +6,35 @@ autocmd("FileType", {
   pattern = "qf",
   group = augroup("QuickfixSettings", { clear = true }),
   callback = function()
-    -- Map <CR> in quickfix to open file in full window
+    -- Map <CR> in quickfix to jump without closing the list
     vim.keymap.set("n", "<CR>", function()
-      -- Get the current quickfix item
       local qf_idx = vim.fn.line('.')
       local qf_item = vim.fn.getqflist()[qf_idx]
-      
+
       if qf_item and qf_item.bufnr ~= 0 then
-        -- Close quickfix
-        vim.cmd('cclose')
-        -- Go to main window and make it only window
+        -- Jump to the location in the previous (non-quickfix) window
         vim.cmd('wincmd p')
-        vim.cmd('only')
-        -- Open the file
         vim.cmd('buffer ' .. qf_item.bufnr)
-        -- Go to the line
         if qf_item.lnum > 0 then
-          vim.api.nvim_win_set_cursor(0, {qf_item.lnum, qf_item.col > 0 and qf_item.col - 1 or 0})
+          vim.api.nvim_win_set_cursor(0, { qf_item.lnum, qf_item.col > 0 and qf_item.col - 1 or 0 })
         end
       end
-    end, { buffer = true, desc = "Open file in full window" })
+    end, { buffer = true, desc = "Quickfix jump (keep list open)" })
+
+    -- Optional: 'o' to jump and close quickfix (like Trouble's jump_close)
+    vim.keymap.set("n", "o", function()
+      local qf_idx = vim.fn.line('.')
+      local qf_item = vim.fn.getqflist()[qf_idx]
+
+      if qf_item and qf_item.bufnr ~= 0 then
+        vim.cmd('cclose')
+        vim.cmd('wincmd p')
+        vim.cmd('buffer ' .. qf_item.bufnr)
+        if qf_item.lnum > 0 then
+          vim.api.nvim_win_set_cursor(0, { qf_item.lnum, qf_item.col > 0 and qf_item.col - 1 or 0 })
+        end
+      end
+    end, { buffer = true, desc = "Quickfix jump and close" })
   end,
   desc = "Configure quickfix to open files in full window"
 })

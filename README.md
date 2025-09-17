@@ -74,6 +74,7 @@ This shows all changed files with line addition/deletion stats, helping you prio
 In the quickfix window:
 - `j/k` - Move up/down through files
 - `Enter` - Open file at cursor
+- `o` - Open file and close quickfix list
 - `<C-w><C-w>` - Switch between quickfix and file windows
 
 #### 3. **Interactive File Browsing**

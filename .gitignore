@@ -11,3 +11,12 @@ amazonq/history/
 *.log
 wip*
 amazonq/active-user-state.json
+
+# Codex CLI runtime/state (do not commit)
+codex/auth.json
+codex/version.json
+codex/history.jsonl
+codex/history/
+codex/log/
+codex/sessions/
+codex/*.log

@@ -1,0 +1,34 @@
+{
+  "name": "codex_default",
+  "description": "Default Codex CLI agent configuration (uses repo mcp.json)",
+  "mcpServers": {},
+  "tools": [
+    "fs_read",
+    "fs_write",
+    "execute_bash",
+    "knowledge",
+    "thinking"
+  ],
+  "allowedTools": [
+    "fs_read",
+    "knowledge"
+  ],
+  "toolsSettings": {
+    "execute_bash": {
+      "allowReadOnly": true
+    }
+  },
+  "resources": [
+    "file://README.md",
+    "file://AGENTS.md",
+    "file://codex/rules/**/*.md"
+  ],
+  "prompt": "You are a Codex CLI engineering assistant running locally. Follow the rules in codex/rules, use MCP tools via mcp.json, and prefer sequential thinking and documentation-first workflows. Work only in source-controlled directories.",
+  "toolAliases": {},
+  "useLegacyMcpJson": true,
+  "hooks": {
+    "agentSpawn": [],
+    "userPromptSubmit": []
+  }
+}
+
