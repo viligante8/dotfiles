@@ -53,3 +53,6 @@ opt.updatetime = 250
 opt.timeoutlen = 300
 opt.mouse = "a"
 opt.clipboard = "unnamedplus"  -- Re-enabled for yanky + maccy integration
+
+-- Disable Neovim notifications entirely to keep the UI quiet
+vim.notify = function() end

@@ -82,6 +82,7 @@ return {
 						["<C-u>"] = actions.preview_scrolling_up,
 						["<C-d>"] = actions.preview_scrolling_down,
 						["<C-q>"] = actions.send_to_qflist + actions.open_qflist,
+						["<C-M-q>"] = actions.send_selected_to_qflist + actions.open_qflist,
 					},
 					n = {
 						["<C-CR>"] = actions.to_fuzzy_refine,
@@ -90,6 +91,7 @@ return {
 						["<C-x>"] = actions.select_horizontal,
 						["<C-v>"] = actions.select_vertical,
 						["<C-q>"] = actions.send_to_qflist + actions.open_qflist,
+						["<C-M-q>"] = actions.send_selected_to_qflist + actions.open_qflist,
 						["j"] = actions.move_selection_next,
 						["k"] = actions.move_selection_previous,
 					},
