@@ -1,0 +1,45 @@
+{
+  "permissions": {
+    "allow": [
+      "*",
+      "Shell(bun run)",
+      "Shell(ls)",
+      "Shell(cat)"
+    ],
+    "deny": [
+      "Shell(rm)",
+      "Shell(mkdir)",
+      "Shell(touch)"
+    ]
+  },
+  "version": 1,
+  "editor": {
+    "vimMode": true
+  },
+  "display": {
+    "showLineNumbers": false
+  },
+  "model": {
+    "modelId": "claude-4.5-sonnet-thinking",
+    "displayModelId": "sonnet-4.5-thinking",
+    "displayName": "Claude 4.5 Sonnet (Thinking)",
+    "displayNameShort": "Sonnet 4.5 (Thinking)",
+    "aliases": [
+      "sonnet-4.5-thinking"
+    ]
+  },
+  "hasChangedDefaultModel": true,
+  "privacyCache": {
+    "ghostMode": true,
+    "privacyMode": 2,
+    "updatedAt": 1760657185865
+  },
+  "network": {
+    "useHttp1ForAgent": false
+  },
+  "approvalMode": "allowlist",
+  "sandbox": {
+    "mode": "enabled",
+    "networkAccess": "allowlist"
+  }
+}

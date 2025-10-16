@@ -20,3 +20,12 @@ codex/history/
 codex/log/
 codex/sessions/
 codex/*.log
+
+# Cursor runtime/state (do not commit)
+cursor/extensions/
+cursor/chats/
+cursor/projects/
+cursor/prompt_history.json
+cursor/ide_state.json
+cursor/blocklist
+cursor/unified_repo_list.json

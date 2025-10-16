@@ -10,14 +10,21 @@ A modern, performance-optimized development environment setup featuring a blazin
 
 ```bash
 # Clone the repository
-git clone <your-repo-url> <dotfiles-directory>
+git clone <your-repo-url> ~/dev/personal/dotfiles
+cd ~/dev/personal/dotfiles
 
-# Link configurations (adjust paths as needed)
-ln -sf <dotfiles-directory>/zshrc ~/.zshrc
-ln -sf <dotfiles-directory>/nvim ~/.config/nvim
+# Link shell and editor configurations
+ln -sf $(pwd)/zshrc ~/.zshrc
+ln -sf $(pwd)/nvim ~/.config/nvim
+ln -sf $(pwd)/tmux.conf ~/.tmux.conf
+
+# Link AI IDE configurations
+ln -sf $(pwd)/cursor ~/.cursor
+ln -sf $(pwd)/amazonq ~/.amazonq
+ln -sf $(pwd)/codex ~/.codex
 
 # Install dependencies
-brew install starship fzf
+brew install starship fzf lazygit ripgrep fd
 ```
 
 ## 📁 Repository Structure
@@ -46,8 +53,51 @@ dotfiles/
 │           ├── avante.lua      # AI coding assistant
 │           ├── dap.lua         # Debug Adapter Protocol
 │           └── ...             # 25+ other plugin configs
+├── amazonq/                    # Amazon Q CLI configuration (symlinked)
+│   ├── rules/                  # Custom agent rules
+│   └── cli-agents/             # Agent configurations
+├── codex/                      # Codex CLI configuration (symlinked)
+│   ├── rules/                  # Custom agent rules
+│   └── cli-agents/             # Agent configurations
+├── cursor/                     # Cursor IDE configuration (symlinked)
+│   ├── mcp.json                # Model Context Protocol settings
+│   ├── cli-config.json         # CLI configuration
+│   └── argv.json               # Launch arguments
 └── README.md                   # This file
 ```
+
+## 🤖 AI IDE Configurations
+
+This repository includes version-controlled configurations for multiple AI-powered development tools:
+
+### Symlinked Configurations
+```bash
+# These directories are symlinked to your home directory:
+~/.cursor -> ~/dev/personal/dotfiles/cursor
+~/.amazonq -> ~/dev/personal/dotfiles/amazonq  
+~/.codex -> ~/dev/personal/dotfiles/codex
+```
+
+### What's Tracked
+- **Configuration files**: MCP settings, CLI config, agent rules
+- **Agent definitions**: Custom agent configurations and prompts
+- **Rules**: Workspace-specific rules and guidelines
+
+### What's Ignored (Runtime Data)
+- Extensions, plugins, and their caches
+- Chat history and conversation data
+- Project-specific state and databases
+- Log files and temporary data
+
+### Setting Up New Machines
+```bash
+# After cloning this repo, create symlinks:
+ln -sf ~/dev/personal/dotfiles/cursor ~/.cursor
+ln -sf ~/dev/personal/dotfiles/amazonq ~/.amazonq
+ln -sf ~/dev/personal/dotfiles/codex ~/.codex
+```
+
+This approach keeps your AI IDE configurations in sync across machines while excluding sensitive or machine-specific data.
 
 ## 🔍 PR Review Workflow
 
