@@ -18,10 +18,8 @@ ln -sf $(pwd)/zshrc ~/.zshrc
 ln -sf $(pwd)/nvim ~/.config/nvim
 ln -sf $(pwd)/tmux.conf ~/.tmux.conf
 
-# Link AI IDE configurations
+# Link Cursor IDE configuration
 ln -sf $(pwd)/cursor ~/.cursor
-ln -sf $(pwd)/amazonq ~/.amazonq
-ln -sf $(pwd)/codex ~/.codex
 
 # Install dependencies
 brew install starship fzf lazygit ripgrep fd
@@ -53,12 +51,6 @@ dotfiles/
 │           ├── avante.lua      # AI coding assistant
 │           ├── dap.lua         # Debug Adapter Protocol
 │           └── ...             # 25+ other plugin configs
-├── amazonq/                    # Amazon Q CLI configuration (symlinked)
-│   ├── rules/                  # Custom agent rules
-│   └── cli-agents/             # Agent configurations
-├── codex/                      # Codex CLI configuration (symlinked)
-│   ├── rules/                  # Custom agent rules
-│   └── cli-agents/             # Agent configurations
 ├── cursor/                     # Cursor IDE configuration (symlinked)
 │   ├── mcp.json                # Model Context Protocol settings
 │   ├── cli-config.json         # CLI configuration
@@ -66,38 +58,35 @@ dotfiles/
 └── README.md                   # This file
 ```
 
-## 🤖 AI IDE Configurations
+## 🤖 Cursor IDE Configuration
 
-This repository includes version-controlled configurations for multiple AI-powered development tools:
+This repository includes version-controlled configuration for Cursor IDE:
 
-### Symlinked Configurations
+### Symlinked Configuration
 ```bash
-# These directories are symlinked to your home directory:
+# Cursor config is symlinked to your home directory:
 ~/.cursor -> ~/dev/personal/dotfiles/cursor
-~/.amazonq -> ~/dev/personal/dotfiles/amazonq  
-~/.codex -> ~/dev/personal/dotfiles/codex
 ```
 
 ### What's Tracked
-- **Configuration files**: MCP settings, CLI config, agent rules
-- **Agent definitions**: Custom agent configurations and prompts
-- **Rules**: Workspace-specific rules and guidelines
+- **Configuration files**: MCP settings, CLI config, launch arguments
+- **Essential settings**: Model Context Protocol and IDE preferences
 
 ### What's Ignored (Runtime Data)
-- Extensions, plugins, and their caches
+- Extensions and their caches
 - Chat history and conversation data
-- Project-specific state and databases
+- Project-specific state
 - Log files and temporary data
 
 ### Setting Up New Machines
 ```bash
-# After cloning this repo, create symlinks:
+# After cloning this repo, create the symlink:
 ln -sf ~/dev/personal/dotfiles/cursor ~/.cursor
-ln -sf ~/dev/personal/dotfiles/amazonq ~/.amazonq
-ln -sf ~/dev/personal/dotfiles/codex ~/.codex
 ```
 
-This approach keeps your AI IDE configurations in sync across machines while excluding sensitive or machine-specific data.
+This approach keeps your Cursor configuration in sync across machines while excluding sensitive or machine-specific data.
+
+> **Note**: Previous Amazon Q and Codex CLI configurations have been moved to the `archive/old-ai-tools` branch for historical reference.
 
 ## 🔍 PR Review Workflow
 

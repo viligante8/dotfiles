@@ -6,20 +6,8 @@ zshrc.secrets
 
 spell/
 lazy-lock.json
-amazonq/cache/
-amazonq/history/
 *.log
 wip*
-amazonq/active-user-state.json
-
-# Codex CLI runtime/state (do not commit)
-codex/auth.json
-codex/version.json
-codex/history.jsonl
-codex/history/
-codex/log/
-codex/sessions/
-codex/*.log
 
 # Cursor runtime/state (do not commit)
 cursor/extensions/
