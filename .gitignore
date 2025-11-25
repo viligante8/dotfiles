@@ -17,3 +17,9 @@ cursor/prompt_history.json
 cursor/ide_state.json
 cursor/blocklist
 cursor/unified_repo_list.json
+
+amazonq/history/
+amazonq/cache/
+amazonq/mcpAdmin/
+amazonq/active-user-state.json
+
