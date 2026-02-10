@@ -33,9 +33,28 @@ if ! git diff --cached --quiet; then
     FIRST_FILE=$(echo "$CHANGED_FILES" | cut -d' ' -f1)
     COMMIT_MSG="$TYPE: update $FIRST_FILE"
     
-    echo "$COMMIT_MSG" | pbcopy
-    echo "✅ $COMMIT_MSG"
-    echo "Run: git commit -m \"\$(pbpaste)\""
+    # Cross-platform clipboard copy
+    if command -v pbcopy >/dev/null 2>&1; then
+        # macOS
+        echo "$COMMIT_MSG" | pbcopy
+        echo "✅ $COMMIT_MSG"
+        echo "Run: git commit -m \"\$(pbpaste)\""
+    elif command -v xclip >/dev/null 2>&1; then
+        # Linux with xclip
+        echo "$COMMIT_MSG" | xclip -selection clipboard
+        echo "✅ $COMMIT_MSG"
+        echo "Run: git commit -m \"\$(xclip -selection clipboard -o)\""
+    elif command -v xsel >/dev/null 2>&1; then
+        # Linux with xsel
+        echo "$COMMIT_MSG" | xsel --clipboard --input
+        echo "✅ $COMMIT_MSG"
+        echo "Run: git commit -m \"\$(xsel --clipboard --output)\""
+    else
+        # Fallback: just print the message
+        echo "✅ $COMMIT_MSG"
+        echo "Run: git commit -m \"$COMMIT_MSG\""
+        echo "Note: Install pbcopy (macOS), xclip, or xsel (Linux) for clipboard integration"
+    fi
     echo "Edit if needed, then commit!"
 else
     echo "No staged changes. Run 'git add' first."

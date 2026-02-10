@@ -1,5 +1,23 @@
-# Kiro CLI pre block. Keep at the top of this file.
-[[ -f "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.pre.zsh" ]] && builtin source "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.pre.zsh"
+# ============================================================================
+# OS DETECTION
+# ============================================================================
+# Detect operating system for cross-platform compatibility
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    OS="macos"
+    # macOS-specific paths
+    HOMEBREW_PREFIX="/opt/homebrew"  # Apple Silicon default
+    if [[ ! -d "$HOMEBREW_PREFIX" ]]; then
+        HOMEBREW_PREFIX="/usr/local"  # Intel Mac fallback
+    fi
+elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    OS="linux"
+    # Linux: use system package managers (apt/yum/pacman/etc.)
+    HOMEBREW_PREFIX=""  # Not used on Linux
+else
+    OS="unknown"
+    HOMEBREW_PREFIX=""
+fi
+
 # ============================================================================
 # OPTIMIZED ZSHRC - Fast Startup with Smart Auto-Switching
 # ============================================================================
@@ -21,14 +39,36 @@
 # DOTFILES DIRECTORY SETUP
 # ============================================================================
 # Define dotfiles directory early so it can be used in PATH exports
-DOTFILES_DIR="$(dirname "$(readlink ~/.zshrc)")"
+# Handle both symlinked and direct .zshrc files (cross-platform)
+if [[ -L ~/.zshrc ]]; then
+    # Symlinked: resolve the symlink
+    # Use readlink (works on both macOS and Linux, though behavior differs)
+    LINK_TARGET=$(readlink ~/.zshrc 2>/dev/null)
+    if [[ -n "$LINK_TARGET" ]]; then
+        # If link target is relative, resolve it relative to ~
+        if [[ "$LINK_TARGET" != /* ]]; then
+            LINK_TARGET="${HOME}/${LINK_TARGET}"
+        fi
+        DOTFILES_DIR="$(cd "$(dirname "$LINK_TARGET")" && pwd)"
+    else
+        # Fallback: try to get absolute path of symlink target
+        DOTFILES_DIR="$(cd "$(dirname "$(readlink ~/.zshrc)")" && pwd 2>/dev/null || echo "${HOME}/.dotfiles")"
+    fi
+elif [[ -f ~/.zshrc ]]; then
+    # Direct file: use the file's directory
+    DOTFILES_DIR="$(cd "$(dirname ~/.zshrc)" && pwd)"
+else
+    # Fallback: assume standard location
+    DOTFILES_DIR="${HOME}/.dotfiles"
+fi
 
 # ============================================================================
 # COMPLETION SYSTEM SETUP
 # ============================================================================
-# Add custom completion paths (lightweight)
-if [[ ":$FPATH:" != *":/Users/vito.pistelli/completions:"* ]]; then 
-  export FPATH="/Users/vito.pistelli/completions:$FPATH"
+# Add custom completion paths (lightweight) - use $HOME instead of hardcoded path
+CUSTOM_COMPLETIONS_DIR="${HOME}/completions"
+if [[ -d "$CUSTOM_COMPLETIONS_DIR" ]] && [[ ":$FPATH:" != *":${CUSTOM_COMPLETIONS_DIR}:"* ]]; then 
+    export FPATH="${CUSTOM_COMPLETIONS_DIR}:$FPATH"
 fi
 
 # ============================================================================
@@ -66,8 +106,15 @@ load_nvm_if_needed() {
   # Only load NVM if we're in a Node project
   if is_node_project; then
     echo "🚀 Loading NVM (Node project detected)..."
-    [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
-    [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
+    
+    # Load NVM from standard installation location
+    if [[ -s "$NVM_DIR/nvm.sh" ]]; then
+      \. "$NVM_DIR/nvm.sh"
+    elif [[ "$OS" == "macos" ]] && [[ -n "$HOMEBREW_PREFIX" ]] && [[ -s "${HOMEBREW_PREFIX}/opt/nvm/nvm.sh" ]]; then
+      # macOS Homebrew installation (fallback)
+      \. "${HOMEBREW_PREFIX}/opt/nvm/nvm.sh"
+      [[ -s "${HOMEBREW_PREFIX}/opt/nvm/etc/bash_completion.d/nvm" ]] && \. "${HOMEBREW_PREFIX}/opt/nvm/etc/bash_completion.d/nvm"
+    fi
     
     # Now do the auto-switching
     load_nvmrc_version
@@ -119,8 +166,16 @@ load_nvm_if_needed
 # Lazy load NVM command itself
 nvm() {
   unset -f nvm
-  [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
-  [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
+  
+  # Load NVM from standard installation location
+  if [[ -s "$NVM_DIR/nvm.sh" ]]; then
+    \. "$NVM_DIR/nvm.sh"
+  elif [[ "$OS" == "macos" ]] && [[ -n "$HOMEBREW_PREFIX" ]] && [[ -s "${HOMEBREW_PREFIX}/opt/nvm/nvm.sh" ]]; then
+    # macOS Homebrew installation (fallback)
+    \. "${HOMEBREW_PREFIX}/opt/nvm/nvm.sh"
+    [[ -s "${HOMEBREW_PREFIX}/opt/nvm/etc/bash_completion.d/nvm" ]] && \. "${HOMEBREW_PREFIX}/opt/nvm/etc/bash_completion.d/nvm"
+  fi
+  
   nvm "$@"
 }
 
@@ -259,7 +314,7 @@ terraform() {
 # Essential path exports and environment variables
 
 # Add current directory and local bin to PATH
-export PATH=".:$PATH:/Users/vito.pistelli/.local/bin"
+export PATH=".:$PATH:${HOME}/.local/bin"
 
 # Add dotfiles bin directory to PATH
 export PATH="$DOTFILES_DIR/bin:$PATH"
@@ -267,7 +322,7 @@ export PATH="$DOTFILES_DIR/bin:$PATH"
 # Bun setup (JavaScript runtime - lightweight)
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
-[ -s "/Users/vito.pistelli/.bun/_bun" ] && source "/Users/vito.pistelli/.bun/_bun"
+[[ -s "${HOME}/.bun/_bun" ]] && source "${HOME}/.bun/_bun"
 
 # Development environment variables
 # export NODE_TLS_REJECT_UNAUTHORIZED=0  # For development with self-signed certs
@@ -322,13 +377,15 @@ RPROMPT=""
 # - Falls back to manual loading when using node/npm/yarn commands
 # ============================================================================
 
-# opencode
-export PATH=/Users/vito.pistelli/.opencode/bin:$PATH
+# opencode (if installed)
+if [[ -d "${HOME}/.opencode/bin" ]]; then
+    export PATH="${HOME}/.opencode/bin:$PATH"
+fi
 
-# Colima Docker configuration for testcontainers
-export DOCKER_HOST=unix://${HOME}/.colima/default/docker.sock
-export TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE=/var/run/docker.sock
+# Colima Docker configuration for testcontainers (macOS/Linux with Colima)
+if [[ -d "${HOME}/.colima/default" ]]; then
+    export DOCKER_HOST=unix://${HOME}/.colima/default/docker.sock
+    export TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE=/var/run/docker.sock
+fi
 export NODE_OPTIONS=--dns-result-order=ipv4first
 
-# Kiro CLI post block. Keep at the bottom of this file.
-[[ -f "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.post.zsh" ]] && builtin source "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.post.zsh"

@@ -22,7 +22,16 @@ ln -sf $(pwd)/tmux.conf ~/.tmux.conf
 ln -sf $(pwd)/cursor ~/.cursor
 
 # Install dependencies
+# macOS (Homebrew)
 brew install starship fzf lazygit ripgrep fd
+
+# Linux (package manager varies by distribution)
+# Ubuntu/Debian:
+# sudo apt-get install starship fzf lazygit ripgrep fd-find
+# Arch Linux:
+# sudo pacman -S starship fzf lazygit ripgrep fd
+# Or use Homebrew on Linux (Linuxbrew):
+# brew install starship fzf lazygit ripgrep fd
 ```
 
 ## 📁 Repository Structure
@@ -357,16 +366,28 @@ Both plugins are designed to integrate seamlessly with this configuration and de
 ### Required
 - **Neovim** (>= 0.9.0)
 - **Git**
-- **Node.js** (via NVM)
-- **Starship** (`brew install starship`)
-- **FZF** (`brew install fzf`)
+- **Node.js** (via NVM - installs automatically or via Homebrew/Linuxbrew)
+- **Starship** - Cross-platform prompt
+  - macOS: `brew install starship`
+  - Linux: See [Starship installation](https://starship.rs/guide/#%F0%9F%9A%80-installation)
+- **FZF** - Fuzzy finder
+  - macOS: `brew install fzf`
+  - Linux: See [FZF installation](https://github.com/junegunn/fzf#installation)
 
 ### Optional but Recommended
-- **LazyGit** (`brew install lazygit`)
-- **Ripgrep** (`brew install ripgrep`) - for better grep performance
-- **fd** (`brew install fd`) - for better file finding
-- **Terraform** (`brew install terraform`)
-- **AWS CLI** (`brew install awscli`)
+- **LazyGit** - Git TUI
+  - macOS: `brew install lazygit`
+  - Linux: See [LazyGit installation](https://github.com/jesseduffield/lazygit#installation)
+- **Ripgrep** - Fast grep (`brew install ripgrep` or distro package manager)
+- **fd** - Fast file finder (`brew install fd` or distro package manager)
+- **Terraform** - Infrastructure as code (`brew install terraform` or distro package manager)
+- **AWS CLI** - AWS command line (`brew install awscli` or distro package manager)
+
+### Platform-Specific Notes
+- **macOS**: Uses Homebrew paths (`/opt/homebrew` for Apple Silicon, `/usr/local` for Intel)
+- **Linux**: Supports both Linuxbrew and standard package managers
+- **NVM**: Auto-detects installation method (Homebrew/Linuxbrew vs standard install script)
+- **Clipboard**: Uses `pbcopy` on macOS, `xclip` or `xsel` on Linux
 
 ## 🎯 Design Philosophy
 

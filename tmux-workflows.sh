@@ -29,9 +29,9 @@ tmux-dev-session() {
     # Window 2: Terminal
     tmux new-window -t "$session_name:2" -n 'terminal' -c "$project_path"
     
-    # Window 3: Q (Amazon Q AI Assistant)
-    tmux new-window -t "$session_name:3" -n 'q' -c "$project_path"
-    tmux send-keys -t "$session_name:3" 'q chat' Enter
+    # Window 3: AI (AI Assistant)
+    tmux new-window -t "$session_name:3" -n 'ai' -c "$project_path"
+    tmux send-keys -t "$session_name:3" 'cursor-agent' Enter
     
     # Window 4: LazyGit
     tmux new-window -t "$session_name:4" -n 'git' -c "$project_path"
@@ -85,8 +85,8 @@ dev-session() {
     tmux send-keys -t $session_name:2 'clear' Enter
     
     # Window 3: Q (Amazon Q AI Assistant)
-    tmux new-window -t $session_name:3 -n 'q' -c "$current_dir"
-    tmux send-keys -t $session_name:3 'q chat' Enter
+    tmux new-window -t $session_name:3 -n 'ai' -c "$current_dir"
+    tmux send-keys -t $session_name:3 'cursor-agent' Enter
     
     # Window 4: LazyGit
     tmux new-window -t $session_name:4 -n 'git' -c "$current_dir"
@@ -157,7 +157,7 @@ tmux-help() {
     echo "  tmux-help      - Show this help"
     echo ""
     echo "Tmux Key Bindings (Prefix: Ctrl-a):"
-    echo "  Ctrl-a Q       - Quick Q drawer"
+    echo "  Ctrl-a Q       - Quick AI drawer"
     echo "  Ctrl-a G       - Quick LazyGit drawer"
     echo "  Ctrl-a D       - Quick dev layout"
     echo "  Ctrl-a |       - Split horizontally"
@@ -167,7 +167,7 @@ tmux-help() {
     echo "Window Layout:"
     echo "  1. editor      - Neovim"
     echo "  2. terminal    - Command line"
-    echo "  3. q           - Amazon Q AI Assistant"
+    echo "  3. qi          - AI Assistant"
     echo "  4. git         - LazyGit"
     echo "  5. dbdev       - Database development (dbdev pre-typed)"
 }
