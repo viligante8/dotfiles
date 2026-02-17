@@ -10,16 +10,23 @@ lazy-lock.json
 wip*
 
 # Cursor runtime/state (do not commit)
-cursor/extensions/
-cursor/chats/
-cursor/projects/
-cursor/prompt_history.json
-cursor/ide_state.json
-cursor/blocklist
-cursor/unified_repo_list.json
+cursor/extensions/**/*
+cursor/chats/**/*
+cursor/ai-tracking/**/*
+cursor/plans/**/*
+cursor/projects/**/*
+cursor/blocklist/**/*
+cursor/*.json
 
 amazonq/history/
 amazonq/cache/
 amazonq/mcpAdmin/
 amazonq/active-user-state.json
 
+codex/sessions/**/*
+codex/shell_snapshots/**/*
+codex/skills/**/*
+codex/tmp/**/*
+codex/.*
+codex/*.json
+codex/*.jsonl

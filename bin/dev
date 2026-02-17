@@ -6,6 +6,10 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CONFIG_FILE="$SCRIPT_DIR/../project-dirs.conf"
 
+sanitize_session_name() {
+    echo "$1" | sed 's/[^a-zA-Z0-9]/-/g'
+}
+
 # Check if config file exists
 if [ ! -f "$CONFIG_FILE" ]; then
     echo "Error: Config file not found at $CONFIG_FILE"
@@ -53,7 +57,7 @@ done < "$CONFIG_FILE"
 for project in "${all_projects[@]}"; do
     project_name=$(echo "$project" | cut -d' ' -f1)
     # Convert project name to session name format (replace special chars with dashes)
-    session_name=$(echo "$project_name" | sed 's/[^a-zA-Z0-9]/-/g')
+    session_name=$(sanitize_session_name "$project_name")
     
     # Check if this project has an existing session
     if echo "$existing_sessions" | grep -q "^${session_name}$"; then
@@ -81,8 +85,80 @@ fi
 project_name=$(echo "$selected" | sed 's/^🔄 //' | cut -d' ' -f1)
 project_path=$(echo "$selected" | sed 's/^🔄 //' | cut -d'>' -f2 | xargs)
 
+# If this is a git repo with multiple worktrees, ask which one to use
+worktree_paths=()
+repo_name="${project_name%.git}"
+current_worktree_path=""
+current_is_bare=0
+
+while IFS= read -r line || [ -n "$line" ]; do
+    case "$line" in
+        worktree\ *)
+            current_worktree_path="${line#worktree }"
+            current_is_bare=0
+            ;;
+        bare)
+            current_is_bare=1
+            ;;
+        "")
+            if [ -n "$current_worktree_path" ] && [ "$current_is_bare" -eq 0 ] && [ -d "$current_worktree_path" ]; then
+                worktree_paths+=("$current_worktree_path")
+            fi
+            current_worktree_path=""
+            current_is_bare=0
+            ;;
+    esac
+done < <(git -C "$project_path" worktree list --porcelain 2>/dev/null || true)
+
+if [ -n "$current_worktree_path" ] && [ "$current_is_bare" -eq 0 ] && [ -d "$current_worktree_path" ]; then
+    worktree_paths+=("$current_worktree_path")
+fi
+
+if [ ${#worktree_paths[@]} -gt 1 ]; then
+    WORKTREE_TEMP_FILE=$(mktemp)
+    WORKTREE_EXISTING_SESSIONS_FILE=$(mktemp)
+    WORKTREE_ALL_FILE=$(mktemp)
+
+    for worktree_path in "${worktree_paths[@]}"; do
+        worktree_name=$(basename "$worktree_path")
+
+        if [ "$worktree_name" = "$repo_name" ]; then
+            worktree_session_base="$repo_name"
+        else
+            worktree_session_base="${repo_name}-${worktree_name}"
+        fi
+        worktree_session_name=$(sanitize_session_name "$worktree_session_base")
+
+        worktree_entry="$worktree_name -> $worktree_path"
+
+        if echo "$existing_sessions" | grep -Fxq "$worktree_session_name"; then
+            echo "🔄 $worktree_entry" >> "$WORKTREE_EXISTING_SESSIONS_FILE"
+        else
+            echo "$worktree_entry" >> "$WORKTREE_ALL_FILE"
+        fi
+    done
+
+    cat "$WORKTREE_EXISTING_SESSIONS_FILE" "$WORKTREE_ALL_FILE" > "$WORKTREE_TEMP_FILE"
+    selected_worktree=$(cat "$WORKTREE_TEMP_FILE" | fzf --height=40% --layout=reverse --border --prompt="Select worktree: ")
+
+    rm "$WORKTREE_TEMP_FILE" "$WORKTREE_EXISTING_SESSIONS_FILE" "$WORKTREE_ALL_FILE"
+
+    if [ -z "$selected_worktree" ]; then
+        exit 0
+    fi
+
+    selected_worktree_name=$(echo "$selected_worktree" | sed 's/^🔄 //' | cut -d' ' -f1)
+
+    if [ "$selected_worktree_name" = "$repo_name" ]; then
+        project_name="$repo_name"
+    else
+        project_name="${repo_name}-${selected_worktree_name}"
+    fi
+    project_path=$(echo "$selected_worktree" | sed 's/^🔄 //' | cut -d'>' -f2 | xargs)
+fi
+
 # Create session name (replace dots and special chars with dashes)
-session_name=$(echo "$project_name" | sed 's/[^a-zA-Z0-9]/-/g')
+session_name=$(sanitize_session_name "$project_name")
 
 # Use the existing tmux-workflows.sh script to create the session
 exec "$SCRIPT_DIR/../tmux-workflows.sh" "$session_name" "$project_path"

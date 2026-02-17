@@ -1,54 +1,64 @@
 # 🚀 Development Environment Keymaps & Commands
 
-## Tmux Keymaps (Prefix: `Ctrl-a`)
+## Tmux Keymaps (Prefix: `M-space`)
 
 ### 📋 Quick Reference
-Press `Ctrl-a` then `?` to see tmux-which-key menu with your custom shortcuts!
+Press `M-space` then `?` to see tmux's built-in key list/help.
 
-### 🏗️ Project Sessions (Instant Development Environments)
+### 🏗️ Development Workflows
 | Key | Action | Description |
 |-----|--------|-------------|
-| `Ctrl-a W` | **Workday Dev** | Create/attach workday-integrations session (4 windows) |
-| `Ctrl-a C` | **Company Datastore** | Create/attach company-datastore session (4 windows) |
-| `Ctrl-a T` | **Talent Transform** | Create/attach talent-transform session (4 windows) |
+| `M-space W` | **Project Picker** | Open `dev` project picker in a popup |
+| `M-space V` | **Editor Drawer** | Open/switch to `editor` window (`nvim`) |
+| `M-space Q` | **AI Drawer** | Open/switch to `ai` window (`codex`) |
+| `M-space G` | **Git Drawer** | Open/switch to `git` window (`lazygit`) |
+| `M-space D` | **Dev Layout** | Create 3-pane layout (nvim + 2 terminals) |
 
 **Session Layout:**
-- Window 1: Main (usually nvim)
-- Window 2: Terminal 
-- Window 3: Amazon Q (`q chat`)
-- Window 4: LazyGit
+`dev` picker session:
+- Window 1: `editor` (`nvim`)
+- Window 2: `terminal`
+- Window 3: `ai` (`codex`)
+- Window 4: `git` (`lazygit`)
+- Window 5: `dbdev` (pre-types `dbdev`)
+
+`dev-session`:
+- Window 1: `editor` (`nvim`)
+- Window 2: `terminal`
+- Window 3: `ai` (`codex`)
+- Window 4: `git` (`lazygit`)
 
 ### 🪟 Window & Pane Management
 | Key | Action | Description |
 |-----|--------|-------------|
-| `Ctrl-a c` | **New Window** | Create window in current directory |
-| `Ctrl-a \|` | **Split Horizontal** | Split pane left/right |
-| `Ctrl-a -` | **Split Vertical** | Split pane top/bottom |
-| `Ctrl-a D` | **Dev Layout** | 3-pane development layout |
+| `M-space c` | **New Window** | Create window in current directory |
+| `M-space \|` | **Split Horizontal** | Split pane left/right |
+| `M-space -` | **Split Vertical** | Split pane top/bottom |
+| `M-space h/j/k/l` | **Vim Panes** | Navigate panes (left/down/up/right) |
+| `M-space H/J/K/L` | **Resize Panes** | Resize panes (hold and repeat) |
 
 ### 🧭 Navigation (No Prefix Needed)
 | Key | Action | Description |
 |-----|--------|-------------|
-| `Alt-1/2/3/4` | **Quick Windows** | Jump to window 1, 2, 3, or 4 |
+| `Alt-1..9` | **Quick Windows** | Jump directly to window 1 through 9 |
 | `Alt-←/→/↑/↓` | **Quick Panes** | Navigate panes with arrow keys |
-
-### 🧭 Navigation (With Prefix)
-| Key | Action | Description |
-|-----|--------|-------------|
-| `Ctrl-a h/j/k/l` | **Vim Panes** | Navigate panes (left/down/up/right) |
-| `Ctrl-a H/J/K/L` | **Resize Panes** | Resize panes (hold and repeat) |
+| `Alt-q` / `Alt-e` | **Session Prev/Next** | Switch tmux sessions |
+| `Alt-w` | **Session Picker** | Open session chooser |
+| `Alt-Shift-h/l` | **Window Prev/Next** | Previous/next window |
+| `Alt-h` | **Previous Window** | Jump to previous window |
 
 ### 🛠️ Quick Tools
 | Key | Action | Description |
 |-----|--------|-------------|
-| `Ctrl-a Q` | **Amazon Q** | Open/switch to Q chat window |
-| `Ctrl-a G` | **LazyGit** | Open/switch to git window |
-| `Ctrl-a r` | **Reload Config** | Reload tmux configuration |
+| `M-space r` | **Reload Config** | Reload tmux configuration |
+| `M-space d` | **Detach** | Detach from current session |
+| `M-space s` | **List Sessions** | Show tmux sessions |
+| `M-space ,` | **Rename Window** | Rename current window |
 
 ### 📋 Copy Mode (Vim-style)
 | Key | Action | Description |
 |-----|--------|-------------|
-| `Ctrl-a [` | **Enter Copy Mode** | Start text selection |
+| `M-space [` | **Enter Copy Mode** | Start text selection |
 | `v` | **Visual Select** | Start selection (in copy mode) |
 | `y` | **Copy** | Copy selection to clipboard |
 | `r` | **Rectangle** | Toggle rectangle selection |
@@ -129,10 +139,10 @@ Press `Ctrl-a` then `?` to see tmux-which-key menu with your custom shortcuts!
 ## 💡 Pro Tips
 
 ### Tmux Workflow
-1. **Start with project sessions**: Use `Ctrl-a W/C/T` instead of manual setup
-2. **Use Alt keys**: `Alt-1/2/3/4` and `Alt-arrows` work without prefix
-3. **Quick tools**: `Ctrl-a Q` for AI, `Ctrl-a G` for git
-4. **Development layout**: `Ctrl-a D` creates instant 3-pane setup
+1. **Start with project picker**: Use `M-space W` to pick/create project sessions
+2. **Use Alt keys**: `Alt-1..9` and `Alt-arrows` work without prefix
+3. **Quick drawers**: `M-space V` (editor), `M-space Q` (AI), `M-space G` (git)
+4. **Development layout**: `M-space D` creates instant 3-pane setup
 
 ### Shell Optimization
 - **Auto NVM switching**: Just `cd` into project directories
@@ -145,10 +155,10 @@ Press `Ctrl-a` then `?` to see tmux-which-key menu with your custom shortcuts!
 - **LSP**: `g*` commands for code navigation
 
 ### Memory Aids
-- **Tmux prefix**: `Ctrl-a` (easier than `Ctrl-b`)
+- **Tmux prefix**: `M-space` (Alt/Option + Space)
 - **Neovim leader**: `Space` (easy to reach)
-- **Project sessions**: `W`orkday, `C`ompany, `T`alent
-- **Quick tools**: `Q` for AI, `G` for Git
+- **Project flow**: `W` picker, `V` editor, `Q` AI, `G` git
+- **Quick tools**: `r` reload config, `D` dev layout
 
 ---
 
@@ -156,11 +166,11 @@ Press `Ctrl-a` then `?` to see tmux-which-key menu with your custom shortcuts!
 
 | Context | Command | Description |
 |---------|---------|-------------|
-| **Tmux** | `Ctrl-a ?` | Show which-key menu |
+| **Tmux** | `M-space ?` | Show tmux key list/help |
 | **Neovim** | `:WhichKey` | Show keybinding help |
 | **Shell** | `q --help` | Amazon Q CLI help |
 | **Git** | `?` (in LazyGit) | LazyGit help |
 
 ---
 
-*This cheat sheet is automatically updated when you modify your configurations.*
+*This cheat sheet reflects the current dotfiles configuration.*

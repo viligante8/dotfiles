@@ -31,7 +31,7 @@ tmux-dev-session() {
     
     # Window 3: AI (AI Assistant)
     tmux new-window -t "$session_name:3" -n 'ai' -c "$project_path"
-    tmux send-keys -t "$session_name:3" 'cursor-agent' Enter
+    tmux send-keys -t "$session_name:3" 'codex' Enter
     
     # Window 4: LazyGit
     tmux new-window -t "$session_name:4" -n 'git' -c "$project_path"
@@ -84,9 +84,9 @@ dev-session() {
     tmux new-window -t $session_name:2 -n 'terminal' -c "$current_dir"
     tmux send-keys -t $session_name:2 'clear' Enter
     
-    # Window 3: Q (Amazon Q AI Assistant)
+    # Window 3: AI assistant
     tmux new-window -t $session_name:3 -n 'ai' -c "$current_dir"
-    tmux send-keys -t $session_name:3 'cursor-agent' Enter
+    tmux send-keys -t $session_name:3 'codex' Enter
     
     # Window 4: LazyGit
     tmux new-window -t $session_name:4 -n 'git' -c "$current_dir"
@@ -156,20 +156,31 @@ tmux-help() {
     echo "  tmux-clean     - Kill all tmux sessions"
     echo "  tmux-help      - Show this help"
     echo ""
-    echo "Tmux Key Bindings (Prefix: Ctrl-a):"
-    echo "  Ctrl-a Q       - Quick AI drawer"
-    echo "  Ctrl-a G       - Quick LazyGit drawer"
-    echo "  Ctrl-a D       - Quick dev layout"
-    echo "  Ctrl-a |       - Split horizontally"
-    echo "  Ctrl-a -       - Split vertically"
-    echo "  Alt-1 to Alt-5 - Switch windows 1-5"
+    echo "Tmux Key Bindings (Prefix: M-space):"
+    echo "  M-space W      - Open project picker popup"
+    echo "  M-space V      - Quick editor drawer (nvim)"
+    echo "  M-space Q      - Quick AI drawer (codex)"
+    echo "  M-space G      - Quick LazyGit drawer"
+    echo "  M-space D      - Quick 3-pane dev layout"
+    echo "  M-space c      - New window in current path"
+    echo "  M-space | / -  - Split horizontally / vertically"
+    echo "  M-space r      - Reload tmux config"
+    echo "  Alt-1 to Alt-9 - Switch windows 1-9"
+    echo "  Alt-arrows     - Switch panes"
+    echo "  Alt-q/e/w      - Prev session / next session / session picker"
     echo ""
-    echo "Window Layout:"
-    echo "  1. editor      - Neovim"
-    echo "  2. terminal    - Command line"
-    echo "  3. qi          - AI Assistant"
-    echo "  4. git         - LazyGit"
-    echo "  5. dbdev       - Database development (dbdev pre-typed)"
+    echo "Window Layouts:"
+    echo "  dev picker session:"
+    echo "    1. editor    - Neovim"
+    echo "    2. terminal  - Command line"
+    echo "    3. ai        - AI Assistant"
+    echo "    4. git       - LazyGit"
+    echo "    5. dbdev     - Database development (dbdev pre-typed)"
+    echo "  dev-session:"
+    echo "    1. editor    - Neovim"
+    echo "    2. terminal  - Command line"
+    echo "    3. ai        - AI Assistant"
+    echo "    4. git       - LazyGit"
 }
 
 # Functions are automatically available in zsh once defined

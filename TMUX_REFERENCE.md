@@ -1,172 +1,130 @@
-# Tmux Quick Reference - EMSI Projects
+# Tmux Reference (Current Dotfiles Config)
 
-## Key Bindings (Prefix: Ctrl-a)
+Source of truth for this document:
+- `tmux.conf`
+- `tmux-workflows.sh`
+- `zshrc` (sources `tmux-workflows.sh`)
+- `bin/dev`
 
-### Session Management
-- `Ctrl-a d` - Detach from session
-- `Ctrl-a s` - List sessions
-- `Ctrl-a $` - Rename session
+## Prefix and Core Behavior
 
-### Window Management
-- `Ctrl-a c` - Create new window
-- `Ctrl-a ,` - Rename window
-- `Ctrl-a n` - Next window
-- `Ctrl-a p` - Previous window
-- `Ctrl-a 1-9` - Switch to window by number
-- `Alt-1` to `Alt-4` - Quick switch to windows 1-4
+- Prefix is `M-space` (Alt/Option + Space).
+- `C-b` is unbound.
+- Press `M-space` then `M-space` to send a literal prefix (useful for nested tmux).
+- Mouse support is enabled.
+- Windows and panes start at index `1`.
+- New panes/windows created by custom bindings start in `#{pane_current_path}`.
 
-### Pane Management
-- `Ctrl-a |` - Split horizontally
-- `Ctrl-a -` - Split vertically
-- `Ctrl-a h/j/k/l` - Navigate panes (vim-style)
-- `Alt-Arrow` - Navigate panes (no prefix needed)
-- `Ctrl-a H/J/K/L` - Resize panes
-- `Ctrl-a x` - Close pane
-- `Ctrl-a z` - Zoom/unzoom pane
+## Custom Key Bindings (Prefix: `M-space`)
 
-### Copy Mode
-- `Ctrl-a [` - Enter copy mode
-- `v` - Start selection (in copy mode)
-- `y` - Copy selection (in copy mode)
-- `Ctrl-a ]` - Paste
+### Core
+- `M-space r` - Reload `~/.tmux.conf` and show a confirmation message.
+- `M-space c` - Create a new window in current pane path.
+- `M-space |` - Split horizontally in current pane path.
+- `M-space -` - Split vertically in current pane path.
 
-### Project-Specific Shortcuts
-- `Ctrl-a W` - Start Workday Integrations development session
-- `Ctrl-a C` - Start Company Datastore development session
-- `Ctrl-a T` - Start Talent Transform development session
-- `Ctrl-a Q` - Open/switch to Q (Amazon Q) drawer
-- `Ctrl-a D` - Create development layout (3 panes) in current window
+### Pane Navigation and Resize
+- `M-space h/j/k/l` - Select pane left/down/up/right.
+- `M-space H/J/K/L` - Resize pane left/down/up/right by 5 cells (repeatable).
 
-### General Shortcuts
-- `Ctrl-a r` - Reload config
+### Workflow Shortcuts
+- `M-space W` - Open project picker popup (`bin/dev`).
+- `M-space V` - Open/switch to `editor` window; if missing, create it and start `nvim`.
+- `M-space Q` - Open/switch to `ai` window; if missing, create it and run `codex`.
+- `M-space G` - Open/switch to `git` window; if missing, create it and run `lazygit`.
+- `M-space D` - Build a 3-pane dev layout: open `nvim` in pane 1, clear panes 2 and 3.
 
-## Shell Functions
+## Custom Key Bindings (No Prefix)
 
-### Project Development Sessions
-- `workday-dev` - Start Workday Integrations development session
-- `datastore-dev` - Start Company Datastore development session  
-- `talent-dev` - Start Talent Transform development session
-- `dev-session` - Start generic development session (current directory)
+- `Alt-Left/Right/Up/Down` - Pane navigation.
+- `Alt-1` through `Alt-9` - Jump to window 1..9.
+- `Alt-q` - Previous session.
+- `Alt-e` - Next session.
+- `Alt-w` - Session chooser.
+- `Alt-Shift-h` - Previous window.
+- `Alt-Shift-l` - Next window.
+- `Alt-h` - Previous window.
 
-### Workflow Utilities
-- `switch-project` - Interactive project session switcher
-- `q-drawer` - Open/switch to Q (Amazon Q) window in current session
-- `dev-layout` - Create 3-pane development layout in current window
-- `tmux-help` - Show all available shortcuts and functions
+## Useful tmux Defaults Still Active (Now Using `M-space` Prefix)
 
-### Session Management
-- `tmux-list` - List all active sessions
-- `tmux-attach [session-name]` - Attach to session (most recent if no name)
-- `tmux-clean` - Kill all tmux sessions
+- `M-space d` - Detach session.
+- `M-space s` - List sessions.
+- `M-space $` - Rename session.
+- `M-space ,` - Rename window.
+- `M-space n` / `M-space p` - Next/previous window.
+- `M-space 1..9` - Select window by number.
+- `M-space x` - Kill pane.
+- `M-space z` - Toggle pane zoom.
+- `M-space [` - Enter copy mode.
+- `M-space ]` - Paste copied text.
 
-## Project Session Layouts
+Notes:
+- Default split bindings `"` and `%` are unbound intentionally.
+- `M-space ?` is tmux's default key list/help screen.
 
-Each project session creates 4 windows:
+## Copy Mode
 
-### All Projects (`workday-dev`, `datastore-dev`, `talent-dev`)
-1. **editor** - nvim opened in project root
-2. **terminal** - General terminal work
-3. **q** - Amazon Q AI Assistant (`q chat`) - Your agentic AI drawer
+- Copy mode uses vi keys (`mode-keys vi`).
+In copy mode:
+- `v` - Begin selection.
+- `y` - Copy selection to macOS clipboard via `pbcopy`, then exit copy mode.
+- `r` - Toggle rectangle selection.
 
-### Generic Development Session (`dev-session`)
-1. **editor** - nvim opened in current directory
-2. **terminal** - General terminal work
-3. **q** - Amazon Q AI Assistant (`q chat`) - Your agentic AI drawer
+## Shell Commands and Functions
 
-## Plugin Management (TPM)
+`zshrc` adds `$DOTFILES_DIR/bin` to `PATH` and sources `tmux-workflows.sh`, so these are available in shell:
 
-### Install Plugins
-1. Add plugin to `.tmux.conf`
-2. Press `Ctrl-a I` (capital i) to install
+- `dev` - Interactive tmux project picker (from `bin/dev`).
+- `dev-session` - Create/attach a generic session for current directory (`dev-<dirname>`).
+- `dev-layout` - Create the same 3-pane layout as `M-space D`.
+- `tmux-list` - List active sessions.
+- `tmux-attach [session]` - Attach to most recent session or a named one.
+- `tmux-clean` - Kill all tmux sessions.
+- `tmux-help` - Print helper text.
 
-### Update Plugins
-- `Ctrl-a U` - Update all plugins
+Internal wrapper:
+- `tmux-dev-session <session_name> <project_path>` - Used by `bin/dev`/keybinding flow.
 
-### Uninstall Plugins
-1. Remove plugin from `.tmux.conf`
-2. Press `Ctrl-a alt-u` to uninstall
+## Session Layouts
 
-## Common Workflows
+### `dev` picker flow (`bin/dev` -> `tmux-dev-session`)
+Creates or attaches a named project session with 5 windows:
+1. `editor` (`nvim`)
+2. `terminal`
+3. `ai` (`codex`)
+4. `git` (`lazygit`)
+5. `dbdev` (pre-types `dbdev`, does not press Enter)
 
-### Starting a Development Session
-```bash
-# Option 1: Use project-specific functions
-workday-dev      # For Workday Integrations
-datastore-dev    # For Company Datastore
-talent-dev       # For Talent Transform
+### `dev-session`
+Creates or attaches `dev-<dirname>` with 4 windows:
+1. `editor` (`nvim`)
+2. `terminal` (`clear`)
+3. `ai` (`codex`)
+4. `git` (`lazygit`)
 
-# Option 2: Use interactive switcher
-switch-project
+## Project Picker (`dev`) Notes
 
-# Option 3: Use tmux key bindings
-# Ctrl-a W (Workday), Ctrl-a C (Datastore), Ctrl-a T (Talent)
-```
+- Reads roots from `project-dirs.conf`.
+- Scans subdirectories as projects.
+- Existing tmux sessions are shown first.
+- If selected project is a git repo with multiple non-bare worktrees, prompts for worktree.
+- Session names are sanitized to alphanumeric with dashes.
 
-### Working with Multiple Projects
-```bash
-# Start sessions for multiple projects
-workday-dev &
-datastore-dev &
+## Plugins (TPM)
 
-# Switch between them
-tmux attach-session -t workday-dev
-# Detach with Ctrl-a d, then:
-tmux attach-session -t datastore-dev
+Configured plugins in `tmux.conf`:
+- `tmux-plugins/tpm`
+- `tmux-plugins/tmux-sensible`
+- `tmux-plugins/tmux-yank`
+- `tmux-plugins/tmux-resurrect`
+- `tmux-plugins/tmux-continuum`
 
-# Or use the interactive switcher
-switch-project
-```
+TPM commands (use tmux prefix, now `M-space`):
+- `M-space I` - Install plugins.
+- `M-space U` - Update plugins.
+- `M-space Alt-u` - Remove unused plugins.
 
-### Quick Development Layout
-```bash
-# In any directory, create a 3-pane layout
-dev-layout
+## Known Mismatches in Other Docs
 
-# Or use the key binding
-# Ctrl-a D
-```
-
-### Session Management
-```bash
-# List all sessions
-tmux-list
-
-# Attach to most recent session
-tmux-attach
-
-# Attach to specific session
-tmux-attach workday-dev
-
-# Kill all sessions (clean slate)
-tmux-clean
-```
-
-## Tips
-
-1. **Mouse Support**: Click to switch panes, drag to resize, scroll to navigate history
-2. **Copy to System Clipboard**: Selections automatically copy to macOS clipboard
-3. **Vim Integration**: All key bindings work well with nvim
-4. **Session Persistence**: Sessions survive computer restarts (tmux-resurrect plugin)
-5. **Path Awareness**: New panes/windows open in current directory
-6. **Project Switching**: Use `switch-project` for easy navigation between projects
-
-## Troubleshooting
-
-### Colors Not Working
-Make sure your terminal supports true color and has `TERM` set correctly.
-
-### Plugins Not Loading
-1. Make sure TPM is installed: `git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm`
-2. Reload config: `Ctrl-a r`
-3. Install plugins: `Ctrl-a I`
-
-### Key Bindings Not Working
-1. Check if another application is intercepting the keys
-2. Reload config: `Ctrl-a r`
-3. Restart tmux: `tmux kill-server` then start new session
-
-### Project Directory Not Found
-Make sure the project paths exist:
-- `~/dev/emsi/workday-integrations`
-- `~/dev/emsi/company-datastore`
-- `~/dev/emsi/talent-transform`
+- Some older docs still mention `Ctrl-a`; actual prefix is `M-space`.
+- `tmux.conf` includes `@tmux-which-key-*` options, but no `tmux-which-key` plugin is currently declared.
