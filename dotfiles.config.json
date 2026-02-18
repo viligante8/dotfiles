@@ -1,0 +1,93 @@
+{
+  "projectRoots": [
+    "~/dev/personal",
+    "~/dev/emsi"
+  ],
+  "dependencies": {
+    "base": [
+      "bash",
+      "git",
+      "python3",
+      "fzf"
+    ]
+  },
+  "features": {
+    "coreShell": {
+      "enabled": true,
+      "description": "Zsh shell configuration and prompt",
+      "dependencies": [
+        "starship"
+      ]
+    },
+    "tmux": {
+      "enabled": true,
+      "description": "Tmux workflows and keybindings",
+      "dependencies": [
+        "tmux"
+      ]
+    },
+    "editor": {
+      "enabled": true,
+      "description": "Editor window and Neovim config",
+      "windowName": "editor",
+      "command": "nvim",
+      "sendEnter": true,
+      "includeInDevSession": true,
+      "dependencies": [
+        "neovim",
+        "ripgrep",
+        "fd"
+      ]
+    },
+    "ai": {
+      "enabled": true,
+      "description": "AI assistant window",
+      "windowName": "ai",
+      "command": "opencode",
+      "sendEnter": true,
+      "includeInDevSession": true,
+      "dependencies": []
+    },
+    "gitUi": {
+      "enabled": true,
+      "description": "Git UI window",
+      "windowName": "git",
+      "command": "lazygit",
+      "sendEnter": true,
+      "includeInDevSession": true,
+      "dependencies": [
+        "lazygit"
+      ]
+    },
+    "database": {
+      "enabled": true,
+      "description": "Database helper window",
+      "windowName": "dbdev",
+      "command": "dbdev",
+      "sendEnter": false,
+      "includeInDevSession": false,
+      "dependencies": [
+        "pgcli"
+      ]
+    }
+  },
+  "bootstrap": {
+    "symlinks": [
+      {
+        "source": "zshrc",
+        "target": "~/.zshrc",
+        "feature": "coreShell"
+      },
+      {
+        "source": "tmux.conf",
+        "target": "~/.tmux.conf",
+        "feature": "tmux"
+      },
+      {
+        "source": "nvim",
+        "target": "~/.config/nvim",
+        "feature": "editor"
+      }
+    ]
+  }
+}

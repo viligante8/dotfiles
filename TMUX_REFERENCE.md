@@ -30,9 +30,9 @@ Source of truth for this document:
 ### Workflow Shortcuts
 - `M-space W` - Open project picker popup (`bin/dev`).
 - `M-space B` - Pick/type branch and create or switch repo worktree (`bin/dev-worktree`).
-- `M-space V` - Open/switch to `editor` window; if missing, create it and start `nvim`.
-- `M-space Q` - Open/switch to `ai` window; if missing, create it and run `codex`.
-- `M-space G` - Open/switch to `git` window; if missing, create it and run `lazygit`.
+- `M-space V` - Open/switch to `editor` window; if missing, create it using configured editor command.
+- `M-space Q` - Open/switch to `ai` window; if missing, create it using configured AI command.
+- `M-space G` - Open/switch to `git` window; if missing, create it using configured Git UI command.
 - `M-space D` - Build a 3-pane dev layout: open `nvim` in pane 1, clear panes 2 and 3.
 
 ## Custom Key Bindings (No Prefix)
@@ -91,22 +91,22 @@ Internal wrapper:
 
 ### `dev` picker flow (`bin/dev` -> `tmux-dev-session`)
 Creates or attaches a named project session with 5 windows:
-1. `editor` (`nvim`)
+1. `editor` (configured editor command; default `nvim`)
 2. `terminal`
-3. `ai` (`codex`)
-4. `git` (`lazygit`)
-5. `dbdev` (pre-types `dbdev`, does not press Enter)
+3. `ai` (configured command; default `opencode`)
+4. `git` (configured command; default `lazygit`)
+5. `dbdev` (configured command; default `dbdev`, no Enter)
 
 ### `dev-session`
 Creates or attaches `dev-<dirname>` with 4 windows:
-1. `editor` (`nvim`)
+1. `editor` (configured editor command; default `nvim`)
 2. `terminal` (`clear`)
-3. `ai` (`codex`)
-4. `git` (`lazygit`)
+3. `ai` (configured command; default `opencode`)
+4. `git` (configured command; default `lazygit`)
 
 ## Project Picker (`dev`) Notes
 
-- Reads roots from `project-dirs.conf`.
+- Reads roots from `dotfiles.config.json` (with optional `dotfiles.local.json` overrides).
 - Scans subdirectories as projects.
 - Existing tmux sessions are shown first.
 - If selected project is a git repo with multiple non-bare worktrees, prompts for worktree.

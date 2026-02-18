@@ -3,6 +3,7 @@ test.sh
 
 .DS_Store
 zshrc.secrets
+dotfiles.local.json
 
 spell/
 lazy-lock.json

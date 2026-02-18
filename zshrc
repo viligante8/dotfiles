@@ -32,9 +32,9 @@ fi
 # ============================================================================
 
 # ============================================================================
-# AMAZON Q INTEGRATION (Pre-block)
+# AI INTEGRATION (Pre-block)
 # ============================================================================
-# Amazon Q shell integration - must be at the top
+# AI shell integration - must be at the top
 # ============================================================================
 # DOTFILES DIRECTORY SETUP
 # ============================================================================
@@ -351,9 +351,9 @@ RPROMPT=""
 [ -f "$DOTFILES_DIR/tmux-workflows.sh" ] && source "$DOTFILES_DIR/tmux-workflows.sh"
 
 # ============================================================================
-# AMAZON Q INTEGRATION (Post-block)
+# AI INTEGRATION (Post-block)
 # ============================================================================
-# Amazon Q shell integration - must be at the bottom
+# AI shell integration - must be at the bottom
 # ============================================================================
 # PERFORMANCE NOTES
 # ============================================================================
@@ -363,7 +363,7 @@ RPROMPT=""
 # - Starship prompt initialization
 # - Basic PATH setup
 # - Tenv completion (small file)
-# - Amazon Q integration
+# - AI CLI integration
 #
 # What's lazy-loaded (only when needed):
 # - NVM and Node.js ecosystem
@@ -388,4 +388,3 @@ if [[ -d "${HOME}/.colima/default" ]]; then
     export TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE=/var/run/docker.sock
 fi
 export NODE_OPTIONS=--dns-result-order=ipv4first
-

@@ -1,0 +1,145 @@
+#!/bin/bash
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DOTFILES_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+CONFIG_FILE="$DOTFILES_DIR/dotfiles.config.json"
+LOCAL_FILE="$DOTFILES_DIR/dotfiles.local.json"
+
+if [ ! -f "$CONFIG_FILE" ]; then
+    echo "Error: missing config file at $CONFIG_FILE" >&2
+    exit 1
+fi
+
+python3 - "$CONFIG_FILE" "$LOCAL_FILE" "$@" <<'PY'
+import json
+import os
+import sys
+
+
+def fail(message: str, code: int = 1) -> None:
+    print(f"Error: {message}", file=sys.stderr)
+    raise SystemExit(code)
+
+
+def load_json(path: str, required: bool) -> dict:
+    if not os.path.exists(path):
+        if required:
+            fail(f"missing required file: {path}")
+        return {}
+    try:
+        with open(path, "r", encoding="utf-8") as fh:
+            data = json.load(fh)
+    except json.JSONDecodeError as exc:
+        fail(f"invalid JSON in {path}: {exc}")
+    if not isinstance(data, dict):
+        fail(f"top-level JSON in {path} must be an object")
+    return data
+
+
+def merge(base: dict, override: dict) -> dict:
+    out = dict(base)
+    for key, value in override.items():
+        if key in out and isinstance(out[key], dict) and isinstance(value, dict):
+            out[key] = merge(out[key], value)
+        else:
+            out[key] = value
+    return out
+
+
+def feature(config: dict, name: str) -> dict:
+    features = config.get("features")
+    if not isinstance(features, dict):
+        fail("missing or invalid 'features' object")
+    if name not in features or not isinstance(features[name], dict):
+        fail(f"unknown feature: {name}")
+    return features[name]
+
+
+def as_bool(value) -> str:
+    return "true" if bool(value) else "false"
+
+
+def list_values(value):
+    if not isinstance(value, list):
+        fail("expected array value")
+    for item in value:
+        print(item)
+
+
+def expanded_path(value: str) -> str:
+    return os.path.expanduser(os.path.expandvars(value))
+
+
+config_path = sys.argv[1]
+local_path = sys.argv[2]
+argv = sys.argv[3:]
+
+if not argv:
+    fail("usage: dotfiles-config <command> [args]")
+
+base = load_json(config_path, required=True)
+local = load_json(local_path, required=False)
+merged = merge(base, local)
+
+command = argv[0]
+args = argv[1:]
+
+if command == "dump-json":
+    print(json.dumps(merged, indent=2))
+elif command == "project-roots":
+    roots = merged.get("projectRoots")
+    if not isinstance(roots, list):
+        fail("missing or invalid 'projectRoots' array")
+    for root in roots:
+        print(expanded_path(str(root)))
+elif command == "feature-list":
+    features = merged.get("features")
+    if not isinstance(features, dict):
+        fail("missing or invalid 'features' object")
+    for name in features.keys():
+        print(name)
+elif command == "feature-enabled":
+    if len(args) != 1:
+        fail("usage: feature-enabled <feature>")
+    print(as_bool(feature(merged, args[0]).get("enabled", False)))
+elif command == "feature-command":
+    if len(args) != 1:
+        fail("usage: feature-command <feature>")
+    print(str(feature(merged, args[0]).get("command", "")))
+elif command == "feature-window":
+    if len(args) != 1:
+        fail("usage: feature-window <feature>")
+    print(str(feature(merged, args[0]).get("windowName", args[0])))
+elif command == "feature-send-enter":
+    if len(args) != 1:
+        fail("usage: feature-send-enter <feature>")
+    print(as_bool(feature(merged, args[0]).get("sendEnter", True)))
+elif command == "feature-in-dev-session":
+    if len(args) != 1:
+        fail("usage: feature-in-dev-session <feature>")
+    print(as_bool(feature(merged, args[0]).get("includeInDevSession", True)))
+elif command == "feature-dependencies":
+    if len(args) != 1:
+        fail("usage: feature-dependencies <feature>")
+    list_values(feature(merged, args[0]).get("dependencies", []))
+elif command == "dependencies-base":
+    deps = merged.get("dependencies", {}).get("base", [])
+    list_values(deps)
+elif command == "symlinks":
+    links = merged.get("bootstrap", {}).get("symlinks", [])
+    if not isinstance(links, list):
+        fail("bootstrap.symlinks must be an array")
+    for entry in links:
+        if not isinstance(entry, dict):
+            fail("each symlink entry must be an object")
+        source = str(entry.get("source", "")).strip()
+        target = str(entry.get("target", "")).strip()
+        feature_name = str(entry.get("feature", "")).strip()
+        if not source or not target:
+            fail("symlink entry requires 'source' and 'target'")
+        print(f"{source}\t{target}\t{feature_name}")
+else:
+    fail(f"unknown command: {command}")
+PY

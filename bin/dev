@@ -1,19 +1,18 @@
 #!/bin/bash
 
 # Universal project picker for tmux
-# Reads project directories from config file and shows existing sessions at the top
+# Reads project directories from dotfiles.config.json and shows existing sessions at the top
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CONFIG_FILE="$SCRIPT_DIR/../project-dirs.conf"
+CONFIG_TOOL="$SCRIPT_DIR/dotfiles-config"
 
 sanitize_session_name() {
     echo "$1" | sed 's/[^a-zA-Z0-9]/-/g'
 }
 
-# Check if config file exists
-if [ ! -f "$CONFIG_FILE" ]; then
-    echo "Error: Config file not found at $CONFIG_FILE"
-    echo "Create it with one project directory per line."
+# Check config helper
+if [ ! -x "$CONFIG_TOOL" ]; then
+    echo "Error: Config helper not found or not executable at $CONFIG_TOOL"
     exit 1
 fi
 
@@ -29,13 +28,18 @@ existing_sessions=$(tmux list-sessions -F "#{session_name}" 2>/dev/null || true)
 # Collect all project directories from config
 all_projects=()
 
-while IFS= read -r line || [ -n "$line" ]; do
-    # Skip empty lines and comments
-    [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]] && continue
-    
-    # Expand ~ and environment variables
-    expanded_dir=$(eval echo "$line")
-    
+project_roots=()
+while IFS= read -r root || [ -n "$root" ]; do
+    [ -z "$root" ] && continue
+    project_roots+=("$root")
+done < <("$CONFIG_TOOL" project-roots)
+
+if [ ${#project_roots[@]} -eq 0 ]; then
+    echo "Error: no project roots configured in dotfiles.config.json"
+    exit 1
+fi
+
+for expanded_dir in "${project_roots[@]}"; do
     if [ -d "$expanded_dir" ]; then
         # Scan subdirectories
         for dir in "$expanded_dir"/*; do
@@ -51,7 +55,7 @@ while IFS= read -r line || [ -n "$line" ]; do
             fi
         done
     fi
-done < "$CONFIG_FILE"
+done
 
 # Separate existing sessions from new projects
 for project in "${all_projects[@]}"; do

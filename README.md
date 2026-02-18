@@ -1,7 +1,3 @@
-hello world
-
-hello world
-
 # Personal Dotfiles
 
 A modern, performance-optimized development environment setup featuring a blazing-fast shell configuration and a modular Neovim setup.
@@ -13,36 +9,57 @@ A modern, performance-optimized development environment setup featuring a blazin
 git clone <your-repo-url> ~/dev/personal/dotfiles
 cd ~/dev/personal/dotfiles
 
-# Link shell and editor configurations
-ln -sf $(pwd)/zshrc ~/.zshrc
-ln -sf $(pwd)/nvim ~/.config/nvim
-ln -sf $(pwd)/tmux.conf ~/.tmux.conf
+# Bootstrap dependencies + symlinks (interactive)
+bin/bootstrap-dotfiles
 
-# Link Cursor IDE configuration
-ln -sf $(pwd)/cursor ~/.cursor
+# Or preview first
+bin/bootstrap-dotfiles --dry-run
+```
 
-# Install dependencies
-# macOS (Homebrew)
-brew install starship fzf lazygit ripgrep fd
+The setup is fully config-driven:
+- Shared defaults: `dotfiles.config.json`
+- Per-user overrides (gitignored): `dotfiles.local.json`
 
-# Linux (package manager varies by distribution)
-# Ubuntu/Debian:
-# sudo apt-get install starship fzf lazygit ripgrep fd-find
-# Arch Linux:
-# sudo pacman -S starship fzf lazygit ripgrep fd
-# Or use Homebrew on Linux (Linuxbrew):
-# brew install starship fzf lazygit ripgrep fd
+### Config Examples
+
+Shared defaults (`dotfiles.config.json`):
+```json
+{
+  "projectRoots": ["~/dev/personal", "~/dev/emsi"],
+  "features": {
+    "editor": { "enabled": true, "command": "nvim" },
+    "ai": { "enabled": true, "command": "opencode" },
+    "gitUi": { "enabled": true, "command": "lazygit" },
+    "database": { "enabled": true, "command": "dbdev" }
+  }
+}
+```
+
+Local overrides (`dotfiles.local.json`):
+```json
+{
+  "projectRoots": ["~/code"],
+  "features": {
+    "editor": { "command": "emacs -nw" },
+    "gitUi": { "enabled": false },
+    "database": { "command": "usql" }
+  }
+}
 ```
 
 ## 📁 Repository Structure
 
 ```
 dotfiles/
+├── dotfiles.config.json         # Shared feature/dependency/project-root config
+├── dotfiles.local.json          # Local overrides (gitignored)
 ├── zshrc                       # Optimized Zsh configuration with Starship
 ├── .zshrc.secrets              # Private environment variables (gitignored)
 ├── tmux.conf                   # Tmux configuration with development workflows
-├── tmux-which-key.yaml         # Tmux which-key keybinding descriptions
 ├── tmux-workflows.sh           # Development session automation scripts
+├── bin/bootstrap-dotfiles      # Feature-aware installer/bootstrap script
+├── bin/dotfiles-config         # Config reader (merged shared + local)
+├── bin/tmux-feature-drawer     # Feature-aware tmux drawer launcher
 ├── nvim/                       # Neovim configuration
 │   ├── init.lua                # Main entry point
 │   ├── lazy-lock.json          # Plugin version lockfile
@@ -57,45 +74,11 @@ dotfiles/
 │           ├── completion.lua  # Autocompletion setup
 │           ├── treesitter.lua  # Syntax highlighting
 │           ├── dashboard.lua   # Start screen
-│           ├── avante.lua      # AI coding assistant
+│           ├── script-runner.lua # Project script helper
 │           ├── dap.lua         # Debug Adapter Protocol
 │           └── ...             # 25+ other plugin configs
-├── cursor/                     # Cursor IDE configuration (symlinked)
-│   ├── mcp.json                # Model Context Protocol settings
-│   ├── cli-config.json         # CLI configuration
-│   └── argv.json               # Launch arguments
 └── README.md                   # This file
 ```
-
-## 🤖 Cursor IDE Configuration
-
-This repository includes version-controlled configuration for Cursor IDE:
-
-### Symlinked Configuration
-```bash
-# Cursor config is symlinked to your home directory:
-~/.cursor -> ~/dev/personal/dotfiles/cursor
-```
-
-### What's Tracked
-- **Configuration files**: MCP settings, CLI config, launch arguments
-- **Essential settings**: Model Context Protocol and IDE preferences
-
-### What's Ignored (Runtime Data)
-- Extensions and their caches
-- Chat history and conversation data
-- Project-specific state
-- Log files and temporary data
-
-### Setting Up New Machines
-```bash
-# After cloning this repo, create the symlink:
-ln -sf ~/dev/personal/dotfiles/cursor ~/.cursor
-```
-
-This approach keeps your Cursor configuration in sync across machines while excluding sensitive or machine-specific data.
-
-> **Note**: Previous Amazon Q and Codex CLI configurations have been moved to the `archive/old-ai-tools` branch for historical reference.
 
 ## 🔍 PR Review Workflow
 
@@ -191,7 +174,7 @@ This workflow transforms PR review from a tedious process into an efficient, key
 - **NVM with .nvmrc auto-switching**: Automatically switches Node versions
 - **Comprehensive autocompletion**: AWS CLI, Terraform, Git, npm, and more
 - **FZF integration**: Fuzzy finding for files and command history
-- **Amazon Q integration**: Built-in AI assistant support
+- **Opencode-ready PATH setup**: Uses `~/.opencode/bin` when installed
 
 ### Tools & Completions
 - **AWS CLI**: Full autocompletion support
@@ -232,9 +215,9 @@ Modern Neovim setup using **Lazy.nvim** plugin manager with individual plugin fi
 - **Trouble**: Beautiful diagnostics and quickfix lists
 
 #### 🤖 AI Integration
-- **Amazon Q**: Integrated development assistant with beautiful sidebar UI
-- **Custom plugin**: Built specifically for this configuration
-- **AWS-aware**: Understands AWS services and best practices
+- **Tmux-driven workflow**: AI opens in tmux `ai` window
+- **Configurable command**: Set `features.ai.command` in `dotfiles.config.json`
+- **Local override support**: Override per-machine in `dotfiles.local.json`
 
 #### 🛠️ Development Tools
 - **LazyGit**: Terminal UI for Git operations
@@ -272,10 +255,8 @@ Modern Neovim setup using **Lazy.nvim** plugin manager with individual plugin fi
 - `<leader>gb` - Git blame
 
 **AI Assistant**
-- `<leader>aa` - Toggle Amazon Q sidebar
-- `<leader>ac` - Amazon Q with context
-- `<leader>as` - Amazon Q simple chat
-- `<leader>av` - Add selection to context (visual mode)
+- AI is launched from tmux via `M-space Q`
+- Command is configurable in `dotfiles.config.json` (`features.ai.command`)
 
 **Navigation**
 - `<C-h/j/k/l>` - Window navigation
@@ -307,7 +288,7 @@ Modern Neovim setup using **Lazy.nvim** plugin manager with individual plugin fi
 | **Git Integration** | ✅ LazyGit + gitsigns | ✅ LazyGit + gitsigns | ✅ gitsigns only |
 | **Debugging (DAP)** | ✅ | ✅ | ❌ |
 | **Testing** | ✅ Neotest | ✅ Neotest | ❌ |
-| **AI Integration** | ✅ **Amazon Q only** | ✅ Copilot/Codeium/Supermaven | ❌ |
+| **AI Integration** | ✅ tmux + configurable CLI | ✅ Copilot/Codeium/Supermaven | ❌ |
 | **Beautiful UI** | ✅ Dashboard + Noice | ✅ Dashboard + Noice | ❌ |
 | **Terminal** | ✅ Integrated | ✅ Integrated | ❌ |
 | **Session Management** | ✅ Persistence | ✅ Persistence | ❌ |
@@ -325,7 +306,7 @@ Modern Neovim setup using **Lazy.nvim** plugin manager with individual plugin fi
 - 📚 **Learning opportunity**: Understand how each piece works
 - 🎨 **Aesthetic preservation**: Keep the beautiful UI without the hidden complexity
 - ⚡ **Performance**: Only load what you actually need
-- 🤖 **Amazon Q integration**: Focused AI assistance with AWS expertise (not available in LazyVim)
+- 🤖 **Configurable AI CLI**: Change tools without rewriting tmux workflows
 
 **Advantages over Kickstart.nvim:**
 - 🎨 **Rich UI**: Beautiful dashboard, notifications, and interface elements
@@ -341,19 +322,8 @@ Modern Neovim setup using **Lazy.nvim** plugin manager with individual plugin fi
 ## 🔧 Development Workflow
 
 ### Custom Plugin Development
-This setup serves as a testing ground for two custom Neovim plugins in active development:
-
-1. **[amazon-q.nvim](~/dev/personal/amazon-q.nvim)**: Integration with Amazon Q AI assistant
-   - Terminal-based chat interface
-   - Code context awareness
-   - Seamless workflow integration
-
-2. **[script-runner.nvim](~/dev/personal/script-runner.nvim)**: Enhanced script execution and management
-   - Project-aware script detection
-   - Multiple execution contexts
-   - Terminal integration
-
-Both plugins are designed to integrate seamlessly with this configuration and demonstrate how custom tooling can enhance the development experience.
+This setup is a testing ground for custom Neovim tooling, including `script-runner.nvim`.
+The plugin flow is modular, with one plugin config per file under `nvim/lua/plugins`.
 
 ### Project Structure Support
 - **Automatic Node version switching** with .nvmrc files
@@ -363,29 +333,20 @@ Both plugins are designed to integrate seamlessly with this configuration and de
 
 ## 📦 Dependencies
 
-### Required
-- **Neovim** (>= 0.9.0)
-- **Git**
-- **Node.js** (via NVM - installs automatically or via Homebrew/Linuxbrew)
-- **Starship** - Cross-platform prompt
-  - macOS: `brew install starship`
-  - Linux: See [Starship installation](https://starship.rs/guide/#%F0%9F%9A%80-installation)
-- **FZF** - Fuzzy finder
-  - macOS: `brew install fzf`
-  - Linux: See [FZF installation](https://github.com/junegunn/fzf#installation)
+Dependencies are installed by feature selection in `bin/bootstrap-dotfiles`.
 
-### Optional but Recommended
-- **LazyGit** - Git TUI
-  - macOS: `brew install lazygit`
-  - Linux: See [LazyGit installation](https://github.com/jesseduffield/lazygit#installation)
-- **Ripgrep** - Fast grep (`brew install ripgrep` or distro package manager)
-- **fd** - Fast file finder (`brew install fd` or distro package manager)
-- **Terraform** - Infrastructure as code (`brew install terraform` or distro package manager)
-- **AWS CLI** - AWS command line (`brew install awscli` or distro package manager)
+- Base dependencies come from `dependencies.base` in `dotfiles.config.json`.
+- Each feature declares its own dependencies in `features.<name>.dependencies`.
+- If a feature is disabled, its dependencies are not installed and its tmux window is not created.
+
+Common examples:
+- `editor` feature: `neovim`, `ripgrep`, `fd`
+- `gitUi` feature: `lazygit`
+- `database` feature: `pgcli`
 
 ### Platform-Specific Notes
 - **macOS**: Uses Homebrew paths (`/opt/homebrew` for Apple Silicon, `/usr/local` for Intel)
-- **Linux**: Supports both Linuxbrew and standard package managers
+- **Linux**: Installer supports `apt` and `pacman`
 - **NVM**: Auto-detects installation method (Homebrew/Linuxbrew vs standard install script)
 - **Clipboard**: Uses `pbcopy` on macOS, `xclip` or `xsel` on Linux
 

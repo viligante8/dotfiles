@@ -1,0 +1,326 @@
+#!/bin/bash
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DOTFILES_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+CONFIG_TOOL="$SCRIPT_DIR/dotfiles-config"
+LOCAL_CONFIG="$DOTFILES_DIR/dotfiles.local.json"
+
+DRY_RUN=false
+NON_INTERACTIVE=false
+WRITE_LOCAL=true
+FEATURES_CSV=""
+
+usage() {
+    cat <<'EOF'
+bootstrap-dotfiles - install dependencies and link dotfiles by feature
+
+Usage:
+  bootstrap-dotfiles [options]
+
+Options:
+  --dry-run            Show actions without making changes
+  --non-interactive    Do not prompt; use enabled features from config
+  --features CSV       Use exact features (comma-separated)
+  --no-write-local     Do not write dotfiles.local.json
+  -h, --help           Show this help
+EOF
+}
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --dry-run)
+            DRY_RUN=true
+            shift
+            ;;
+        --non-interactive)
+            NON_INTERACTIVE=true
+            shift
+            ;;
+        --features)
+            FEATURES_CSV="${2:-}"
+            shift 2
+            ;;
+        --no-write-local)
+            WRITE_LOCAL=false
+            shift
+            ;;
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        *)
+            echo "Unknown option: $1" >&2
+            usage >&2
+            exit 1
+            ;;
+    esac
+done
+
+if [ ! -x "$CONFIG_TOOL" ]; then
+    echo "Error: missing executable $CONFIG_TOOL" >&2
+    exit 1
+fi
+
+detect_package_manager() {
+    if command -v brew >/dev/null 2>&1; then
+        echo "brew"
+    elif command -v apt-get >/dev/null 2>&1; then
+        echo "apt"
+    elif command -v pacman >/dev/null 2>&1; then
+        echo "pacman"
+    else
+        echo ""
+    fi
+}
+
+translate_package() {
+    local manager="$1"
+    local pkg="$2"
+
+    case "$manager:$pkg" in
+        apt:fd)
+            echo "fd-find"
+            ;;
+        *)
+            echo "$pkg"
+            ;;
+    esac
+}
+
+run_or_print() {
+    if [ "$DRY_RUN" = "true" ]; then
+        echo "[dry-run] $*"
+    else
+        eval "$*"
+    fi
+}
+
+ALL_FEATURES=()
+while IFS= read -r feature_name || [ -n "$feature_name" ]; do
+    [ -z "$feature_name" ] && continue
+    ALL_FEATURES+=("$feature_name")
+done < <("$CONFIG_TOOL" feature-list)
+
+contains_feature() {
+    local target="$1"
+    shift
+    for item in "$@"; do
+        if [ "$item" = "$target" ]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
+SELECTED_FEATURES=()
+COMMAND_OVERRIDE_LINES=()
+
+if [ -n "$FEATURES_CSV" ]; then
+    IFS=',' read -r -a parsed_features <<< "$FEATURES_CSV"
+    for feature in "${parsed_features[@]}"; do
+        trimmed="$(echo "$feature" | xargs)"
+        [ -z "$trimmed" ] && continue
+        if ! contains_feature "$trimmed" "${ALL_FEATURES[@]}"; then
+            echo "Error: unknown feature '$trimmed'" >&2
+            exit 1
+        fi
+        SELECTED_FEATURES+=("$trimmed")
+    done
+elif [ "$NON_INTERACTIVE" = "true" ]; then
+    for feature in "${ALL_FEATURES[@]}"; do
+        enabled="$($CONFIG_TOOL feature-enabled "$feature")"
+        if [ "$enabled" = "true" ]; then
+            SELECTED_FEATURES+=("$feature")
+        fi
+    done
+else
+    echo "Select features to set up (press Enter to accept default):"
+    for feature in "${ALL_FEATURES[@]}"; do
+        description="$(python3 - "$DOTFILES_DIR/dotfiles.config.json" "$DOTFILES_DIR/dotfiles.local.json" "$feature" <<'PY'
+import json
+import os
+import sys
+
+def load(path):
+    if not os.path.exists(path):
+        return {}
+    with open(path, 'r', encoding='utf-8') as fh:
+        return json.load(fh)
+
+def merge(a, b):
+    out = dict(a)
+    for k, v in b.items():
+        if isinstance(out.get(k), dict) and isinstance(v, dict):
+            out[k] = merge(out[k], v)
+        else:
+            out[k] = v
+    return out
+
+base = load(sys.argv[1])
+local = load(sys.argv[2])
+feature = sys.argv[3]
+cfg = merge(base, local)
+print(cfg.get('features', {}).get(feature, {}).get('description', ''))
+PY
+)"
+
+        enabled="$($CONFIG_TOOL feature-enabled "$feature")"
+        default_answer="y"
+        if [ "$enabled" != "true" ]; then
+            default_answer="n"
+        fi
+
+        prompt="  - $feature"
+        if [ -n "$description" ]; then
+            prompt="$prompt ($description)"
+        fi
+        prompt="$prompt [$default_answer]: "
+
+        read -r -p "$prompt" answer
+        answer="${answer:-$default_answer}"
+        answer="$(echo "$answer" | tr '[:upper:]' '[:lower:]')"
+
+        if [ "$answer" = "y" ] || [ "$answer" = "yes" ]; then
+            SELECTED_FEATURES+=("$feature")
+
+            current_command="$($CONFIG_TOOL feature-command "$feature")"
+            if [ -n "$current_command" ]; then
+                read -r -p "    command [$current_command]: " new_command
+                new_command="${new_command:-$current_command}"
+                if [ "$new_command" != "$current_command" ]; then
+                    COMMAND_OVERRIDE_LINES+=("$feature=$new_command")
+                fi
+            fi
+        fi
+    done
+fi
+
+if [ ${#SELECTED_FEATURES[@]} -eq 0 ]; then
+    echo "No features selected. Nothing to do."
+    exit 0
+fi
+
+if [ "$WRITE_LOCAL" = "true" ] && [ "$NON_INTERACTIVE" = "false" ] && [ -z "$FEATURES_CSV" ]; then
+    selected_joined="$(IFS=, ; echo "${SELECTED_FEATURES[*]}")"
+    all_features_joined="$(IFS=, ; echo "${ALL_FEATURES[*]}")"
+    override_lines=""
+    for override_line in "${COMMAND_OVERRIDE_LINES[@]}"; do
+        override_lines+="$override_line\n"
+    done
+
+    if [ "$DRY_RUN" = "true" ]; then
+        echo "[dry-run] would write local overrides to $LOCAL_CONFIG"
+    else
+        python3 - "$LOCAL_CONFIG" "$selected_joined" "$all_features_joined" "$override_lines" <<'PY'
+import json
+import os
+import sys
+
+path = sys.argv[1]
+selected = set([x for x in sys.argv[2].split(',') if x])
+all_features = [x for x in sys.argv[3].split(',') if x]
+override_lines = [line for line in sys.argv[4].split('\n') if line.strip()]
+
+data = {}
+if os.path.exists(path):
+    with open(path, 'r', encoding='utf-8') as fh:
+        loaded = json.load(fh)
+        if isinstance(loaded, dict):
+            data = loaded
+
+features = data.setdefault('features', {})
+for name in list(features.keys()):
+    if not isinstance(features[name], dict):
+        features[name] = {}
+
+all_feature_names = set(features.keys()) | set(all_features)
+for name in all_feature_names:
+    obj = features.setdefault(name, {})
+    obj['enabled'] = name in selected
+
+for line in override_lines:
+    name, command = line.split('=', 1)
+    obj = features.setdefault(name, {})
+    obj['command'] = command
+
+with open(path, 'w', encoding='utf-8') as fh:
+    json.dump(data, fh, indent=2)
+    fh.write('\n')
+PY
+        echo "Wrote local overrides to $LOCAL_CONFIG"
+    fi
+fi
+
+selected_csv="$(IFS=, ; echo "${SELECTED_FEATURES[*]}")"
+
+BASE_DEPS=()
+while IFS= read -r dep || [ -n "$dep" ]; do
+    [ -z "$dep" ] && continue
+    BASE_DEPS+=("$dep")
+done < <("$CONFIG_TOOL" dependencies-base)
+
+ALL_DEPS=("${BASE_DEPS[@]}")
+
+for feature in "${SELECTED_FEATURES[@]}"; do
+    while IFS= read -r dep; do
+        [ -z "$dep" ] && continue
+        ALL_DEPS+=("$dep")
+    done < <("$CONFIG_TOOL" feature-dependencies "$feature")
+done
+
+UNIQUE_DEPS=()
+for dep in "${ALL_DEPS[@]}"; do
+    if ! contains_feature "$dep" "${UNIQUE_DEPS[@]-}"; then
+        UNIQUE_DEPS+=("$dep")
+    fi
+done
+
+PACKAGE_MANAGER="$(detect_package_manager)"
+if [ -z "$PACKAGE_MANAGER" ]; then
+    echo "Warning: no supported package manager detected (brew/apt/pacman). Skipping dependency install."
+else
+    INSTALL_DEPS=()
+    for dep in "${UNIQUE_DEPS[@]-}"; do
+        if [ "$dep" = "bash" ]; then
+            continue
+        fi
+        INSTALL_DEPS+=("$(translate_package "$PACKAGE_MANAGER" "$dep")")
+    done
+
+    if [ ${#INSTALL_DEPS[@]} -gt 0 ]; then
+        echo "Installing dependencies via $PACKAGE_MANAGER: ${INSTALL_DEPS[*]}"
+        case "$PACKAGE_MANAGER" in
+            brew)
+                run_or_print "brew install ${INSTALL_DEPS[*]}"
+                ;;
+            apt)
+                run_or_print "sudo apt-get update"
+                run_or_print "sudo apt-get install -y ${INSTALL_DEPS[*]}"
+                ;;
+            pacman)
+                run_or_print "sudo pacman -Sy --noconfirm ${INSTALL_DEPS[*]}"
+                ;;
+        esac
+    fi
+fi
+
+echo "Creating symlinks"
+while IFS=$'\t' read -r source target feature; do
+    [ -z "$source" ] && continue
+
+    if [ -n "$feature" ] && ! contains_feature "$feature" "${SELECTED_FEATURES[@]}"; then
+        continue
+    fi
+
+    source_path="$DOTFILES_DIR/$source"
+    target_path="${target/#\~/$HOME}"
+    target_dir="$(dirname "$target_path")"
+
+    run_or_print "mkdir -p \"$target_dir\""
+    run_or_print "ln -sfn \"$source_path\" \"$target_path\""
+done < <("$CONFIG_TOOL" symlinks)
+
+echo "Bootstrap complete."
+echo "Enabled features: $selected_csv"

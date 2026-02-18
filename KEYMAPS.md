@@ -10,24 +10,24 @@ Press `M-space` then `?` to see tmux's built-in key list/help.
 |-----|--------|-------------|
 | `M-space W` | **Project Picker** | Open `dev` project picker in a popup |
 | `M-space B` | **Branch Worktree** | Pick/type branch and create/switch worktree |
-| `M-space V` | **Editor Drawer** | Open/switch to `editor` window (`nvim`) |
-| `M-space Q` | **AI Drawer** | Open/switch to `ai` window (`codex`) |
-| `M-space G` | **Git Drawer** | Open/switch to `git` window (`lazygit`) |
+| `M-space V` | **Editor Drawer** | Open/switch to configured editor window command |
+| `M-space Q` | **AI Drawer** | Open/switch to configured AI window command |
+| `M-space G` | **Git Drawer** | Open/switch to configured Git UI window command |
 | `M-space D` | **Dev Layout** | Create 3-pane layout (nvim + 2 terminals) |
 
 **Session Layout:**
 `dev` picker session:
-- Window 1: `editor` (`nvim`)
+- Window 1: `editor` (configured command, default `nvim`)
 - Window 2: `terminal`
-- Window 3: `ai` (`codex`)
-- Window 4: `git` (`lazygit`)
+- Window 3: `ai` (configured command, default `opencode`)
+- Window 4: `git` (configured command, default `lazygit`)
 - Window 5: `dbdev` (pre-types `dbdev`)
 
 `dev-session`:
-- Window 1: `editor` (`nvim`)
+- Window 1: `editor` (configured command, default `nvim`)
 - Window 2: `terminal`
-- Window 3: `ai` (`codex`)
-- Window 4: `git` (`lazygit`)
+- Window 3: `ai` (configured command, default `opencode`)
+- Window 4: `git` (configured command, default `lazygit`)
 
 ### 🪟 Window & Pane Management
 | Key | Action | Description |
@@ -68,13 +68,10 @@ Press `M-space` then `?` to see tmux's built-in key list/help.
 
 ## Neovim Keymaps (Leader: `Space`)
 
-### 🤖 AI Assistant (Amazon Q)
+### 🤖 AI Assistant
 | Key | Action | Description |
 |-----|--------|-------------|
-| `<leader>aa` | **Toggle Q Sidebar** | Open/close Amazon Q sidebar |
-| `<leader>ac` | **Q with Context** | Amazon Q with current buffer context |
-| `<leader>as` | **Q Simple Chat** | Simple Amazon Q chat |
-| `<leader>av` | **Add to Context** | Add visual selection to Q context |
+| *(No dedicated Neovim AI keymaps)* | **Use tmux drawer** | Use `M-space Q` to open AI drawer from tmux |
 
 ### 📁 File Operations
 | Key | Action | Description |
@@ -114,7 +111,7 @@ Press `M-space` then `?` to see tmux's built-in key list/help.
 ### 🚀 Quick Development
 | Command | Description |
 |---------|-------------|
-| `q chat` | **Amazon Q CLI** | Start AI assistant chat |
+| `opencode` | **AI CLI** | Start AI assistant chat |
 | `lazygit` | **Git UI** | Terminal-based git interface |
 | `nvim` | **Neovim** | Your configured editor |
 
@@ -152,7 +149,6 @@ Press `M-space` then `?` to see tmux's built-in key list/help.
 - **Fast startup**: New shells start in ~0.2s instead of 1.6s
 
 ### Neovim Integration
-- **Amazon Q**: Built-in AI assistance with `<leader>a*` commands
 - **Telescope**: `<leader>f*` for all file/search operations
 - **LSP**: `g*` commands for code navigation
 
@@ -170,7 +166,7 @@ Press `M-space` then `?` to see tmux's built-in key list/help.
 |---------|---------|-------------|
 | **Tmux** | `M-space ?` | Show tmux key list/help |
 | **Neovim** | `:WhichKey` | Show keybinding help |
-| **Shell** | `q --help` | Amazon Q CLI help |
+| **Shell** | `opencode --help` | AI CLI help |
 | **Git** | `?` (in LazyGit) | LazyGit help |
 
 ---

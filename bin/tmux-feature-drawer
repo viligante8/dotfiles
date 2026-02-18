@@ -1,0 +1,48 @@
+#!/bin/bash
+
+set -euo pipefail
+
+if [ $# -lt 1 ]; then
+    echo "Usage: tmux-feature-drawer <feature> [path]" >&2
+    exit 1
+fi
+
+FEATURE_NAME="$1"
+CURRENT_PATH="${2:-}"
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CONFIG_TOOL="$SCRIPT_DIR/dotfiles-config"
+
+if [ ! -x "$CONFIG_TOOL" ]; then
+    tmux display-message "dotfiles-config not found or not executable"
+    exit 1
+fi
+
+enabled="$($CONFIG_TOOL feature-enabled "$FEATURE_NAME" 2>/dev/null || echo false)"
+if [ "$enabled" != "true" ]; then
+    tmux display-message "Feature '$FEATURE_NAME' is disabled"
+    exit 0
+fi
+
+window_name="$($CONFIG_TOOL feature-window "$FEATURE_NAME")"
+command_to_run="$($CONFIG_TOOL feature-command "$FEATURE_NAME")"
+send_enter="$($CONFIG_TOOL feature-send-enter "$FEATURE_NAME")"
+
+if [ -z "$CURRENT_PATH" ]; then
+    CURRENT_PATH="$(tmux display-message -p "#{pane_current_path}")"
+fi
+
+if tmux list-windows -F "#W" | grep -Fxq "$window_name"; then
+    tmux select-window -t "$window_name"
+    exit 0
+fi
+
+tmux new-window -n "$window_name" -c "$CURRENT_PATH"
+
+if [ -n "$command_to_run" ]; then
+    if [ "$send_enter" = "true" ]; then
+        tmux send-keys -t "$window_name" "$command_to_run" Enter
+    else
+        tmux send-keys -t "$window_name" "$command_to_run"
+    fi
+fi
