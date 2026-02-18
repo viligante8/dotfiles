@@ -29,6 +29,7 @@ Source of truth for this document:
 
 ### Workflow Shortcuts
 - `M-space W` - Open project picker popup (`bin/dev`).
+- `M-space B` - Pick/type branch and create or switch repo worktree (`bin/dev-worktree`).
 - `M-space V` - Open/switch to `editor` window; if missing, create it and start `nvim`.
 - `M-space Q` - Open/switch to `ai` window; if missing, create it and run `codex`.
 - `M-space G` - Open/switch to `git` window; if missing, create it and run `lazygit`.
@@ -75,6 +76,7 @@ In copy mode:
 `zshrc` adds `$DOTFILES_DIR/bin` to `PATH` and sources `tmux-workflows.sh`, so these are available in shell:
 
 - `dev` - Interactive tmux project picker (from `bin/dev`).
+- `dev-worktree [path]` - Branch picker for current repo; creates/switches centralized worktrees.
 - `dev-session` - Create/attach a generic session for current directory (`dev-<dirname>`).
 - `dev-layout` - Create the same 3-pane layout as `M-space D`.
 - `tmux-list` - List active sessions.
@@ -109,6 +111,14 @@ Creates or attaches `dev-<dirname>` with 4 windows:
 - Existing tmux sessions are shown first.
 - If selected project is a git repo with multiple non-bare worktrees, prompts for worktree.
 - Session names are sanitized to alphanumeric with dashes.
+
+## Branch Worktree Picker (`dev-worktree`) Notes
+
+- Intended for use from inside a repo (or with an explicit path argument).
+- Opens a branch picker; typed input creates a new branch from current `HEAD`.
+- Stores worktrees under `~/dev/worktrees/<repo>/<sanitized-branch>`.
+- Branch names with `/` are sanitized for directory/session names (for example, `feature/foo` -> `feature-foo`).
+- Reuses existing worktree paths when a branch is already checked out.
 
 ## Plugins (TPM)
 

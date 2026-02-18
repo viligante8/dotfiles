@@ -1,0 +1,276 @@
+#!/bin/bash
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+sanitize_session_name() {
+    echo "$1" | sed 's/[^a-zA-Z0-9]/-/g'
+}
+
+sanitize_branch_dir() {
+    echo "$1" \
+        | sed 's#[/[:space:]]#-#g' \
+        | sed 's/[^a-zA-Z0-9._-]/-/g' \
+        | sed 's/-\{2,\}/-/g' \
+        | sed 's/^[-.]\+//' \
+        | sed 's/[-.]\+$//'
+}
+
+format_age() {
+    local ref_epoch="$1"
+    local now_epoch="$2"
+    local age
+
+    if [ -z "$ref_epoch" ] || [ "$ref_epoch" -le 0 ] 2>/dev/null; then
+        echo "?"
+        return
+    fi
+
+    age=$((now_epoch - ref_epoch))
+    if [ "$age" -lt 0 ]; then
+        age=0
+    fi
+
+    if [ "$age" -lt 60 ]; then
+        echo "${age}s"
+    elif [ "$age" -lt 3600 ]; then
+        echo "$((age / 60))m"
+    elif [ "$age" -lt 86400 ]; then
+        echo "$((age / 3600))h"
+    elif [ "$age" -lt 2592000 ]; then
+        echo "$((age / 86400))d"
+    elif [ "$age" -lt 31536000 ]; then
+        echo "$((age / 2592000))M"
+    else
+        echo "$((age / 31536000))y"
+    fi
+}
+
+find_remote_branch_source() {
+    local repo_root="$1"
+    local branch="$2"
+
+    if git -C "$repo_root" show-ref --verify --quiet "refs/remotes/origin/$branch"; then
+        echo "origin/$branch"
+        return
+    fi
+
+    git -C "$repo_root" for-each-ref --format='%(refname:short)' refs/remotes 2>/dev/null \
+        | sed '/\/HEAD$/d' \
+        | awk -v branch="$branch" '
+            {
+                slash = index($0, "/")
+                if (slash <= 0) {
+                    next
+                }
+                candidate = substr($0, slash + 1)
+                if (candidate == branch) {
+                    print $0
+                    exit
+                }
+            }
+        '
+}
+
+target_path="${1:-$(pwd)}"
+repo_root="$(git -C "$target_path" rev-parse --show-toplevel 2>/dev/null || true)"
+git_common_dir="$(git -C "$target_path" rev-parse --path-format=absolute --git-common-dir 2>/dev/null || true)"
+
+if [ -z "$repo_root" ]; then
+    echo "Error: '$target_path' is not inside a git repository."
+    exit 1
+fi
+
+if [ -z "$git_common_dir" ]; then
+    repo_name="$(basename "$repo_root")"
+else
+    common_basename="$(basename "$git_common_dir")"
+    if [ "$common_basename" = ".git" ]; then
+        repo_name="$(basename "$(dirname "$git_common_dir")")"
+    else
+        repo_name="$common_basename"
+    fi
+fi
+
+if [ -z "$repo_name" ]; then
+    repo_name="$(basename "$repo_root")"
+fi
+
+repo_name="${repo_name%.git}"
+
+worktrees_root="${DEV_WORKTREES_DIR:-$HOME/dev/worktrees}"
+repo_worktrees_dir="$worktrees_root/$repo_name"
+
+mkdir -p "$repo_worktrees_dir"
+
+current_branch="$(git -C "$repo_root" branch --show-current 2>/dev/null || true)"
+
+branch_rows="$(git -C "$repo_root" for-each-ref --format=$'%(refname)\t%(refname:short)\t%(committerdate:unix)' refs/heads refs/remotes 2>/dev/null \
+    | awk -F'\t' '
+        {
+            ref = $1
+            short = $2
+            ts = $3 + 0
+
+            branch = ""
+            if (ref ~ /^refs\/heads\//) {
+                branch = short
+            } else if (ref ~ /^refs\/remotes\//) {
+                slash = index(short, "/")
+                if (slash <= 0) {
+                    next
+                }
+                branch = substr(short, slash + 1)
+                if (branch == "HEAD") {
+                    next
+                }
+            } else {
+                next
+            }
+
+            if (branch == "") {
+                next
+            }
+
+            if (!(branch in max_ts) || ts > max_ts[branch]) {
+                max_ts[branch] = ts
+            }
+        }
+        END {
+            for (branch in max_ts) {
+                print branch "\t" max_ts[branch]
+            }
+        }
+    ' \
+    | sort -t $'\t' -k2,2nr)"
+
+branch_entries=()
+now_epoch="$(date +%s)"
+while IFS=$'\t' read -r branch branch_ts; do
+    [ -z "$branch" ] && continue
+    meta_parts=()
+
+    if [ -n "$current_branch" ] && [ "$branch" = "$current_branch" ]; then
+        meta_parts+=("current")
+    fi
+
+    if git -C "$repo_root" show-ref --verify --quiet "refs/heads/$branch"; then
+        meta_parts+=("local")
+    fi
+
+    remote_source="$(find_remote_branch_source "$repo_root" "$branch" || true)"
+
+    if [ -n "$remote_source" ]; then
+        meta_parts+=("remote")
+    fi
+
+    meta=""
+    if [ ${#meta_parts[@]} -gt 0 ]; then
+        meta="$(IFS=, ; echo "${meta_parts[*]}")"
+    fi
+
+    age_label="$(format_age "$branch_ts" "$now_epoch")"
+    if [ -n "$meta" ]; then
+        branch_entries+=("$branch [$age_label] [$meta]")
+    else
+        branch_entries+=("$branch [$age_label]")
+    fi
+done < <(printf '%s\n' "$branch_rows")
+
+selected_output=""
+if [ ${#branch_entries[@]} -gt 0 ]; then
+    selected_output="$(printf '%s\n' "${branch_entries[@]}" | fzf --height=40% --layout=reverse --border --prompt="Select branch (or type new): " --print-query || true)"
+else
+    selected_output="$(printf '' | fzf --height=40% --layout=reverse --border --prompt="Type branch name: " --print-query || true)"
+fi
+
+if [ -z "$selected_output" ]; then
+    exit 0
+fi
+
+typed_query="$(printf '%s\n' "$selected_output" | sed -n '1p' | xargs)"
+selected_line="$(printf '%s\n' "$selected_output" | sed -n '2p')"
+
+if [ -n "$selected_line" ]; then
+    selected_branch="$(printf '%s' "$selected_line" | awk '{print $1}' | xargs)"
+else
+    selected_branch="$typed_query"
+fi
+
+if [ -z "$selected_branch" ]; then
+    exit 0
+fi
+
+if ! git check-ref-format --branch "$selected_branch" >/dev/null 2>&1; then
+    echo "Error: '$selected_branch' is not a valid branch name."
+    exit 1
+fi
+
+existing_worktree_path=""
+wt_path=""
+wt_branch_ref=""
+
+while IFS= read -r line || [ -n "$line" ]; do
+    case "$line" in
+        worktree\ *)
+            wt_path="${line#worktree }"
+            ;;
+        branch\ *)
+            wt_branch_ref="${line#branch }"
+            ;;
+        "")
+            if [ -n "$wt_path" ] && [ "$wt_branch_ref" = "refs/heads/$selected_branch" ] && [ -d "$wt_path" ]; then
+                existing_worktree_path="$wt_path"
+                break
+            fi
+            wt_path=""
+            wt_branch_ref=""
+            ;;
+    esac
+done < <(git -C "$repo_root" worktree list --porcelain 2>/dev/null || true)
+
+if [ -z "$existing_worktree_path" ] && [ -n "$wt_path" ] && [ "$wt_branch_ref" = "refs/heads/$selected_branch" ] && [ -d "$wt_path" ]; then
+    existing_worktree_path="$wt_path"
+fi
+
+branch_dir="$(sanitize_branch_dir "$selected_branch")"
+if [ -z "$branch_dir" ]; then
+    branch_dir="branch"
+fi
+
+worktree_path="$repo_worktrees_dir/$branch_dir"
+
+if [ -n "$existing_worktree_path" ]; then
+    if [ -n "${TMUX:-}" ]; then
+        tmux display-message "Using existing worktree: $selected_branch -> $existing_worktree_path"
+    fi
+    project_path="$existing_worktree_path"
+else
+    if [ -e "$worktree_path" ]; then
+        echo "Error: worktree path already exists and is not linked: $worktree_path"
+        exit 1
+    fi
+
+    if git -C "$repo_root" show-ref --verify --quiet "refs/heads/$selected_branch"; then
+        git -C "$repo_root" worktree add "$worktree_path" "$selected_branch"
+    else
+        remote_source="$(find_remote_branch_source "$repo_root" "$selected_branch" || true)"
+
+        if [ -n "$remote_source" ]; then
+            git -C "$repo_root" worktree add -b "$selected_branch" "$worktree_path" "$remote_source"
+        else
+            git -C "$repo_root" worktree add -b "$selected_branch" "$worktree_path"
+        fi
+    fi
+
+    if [ -n "${TMUX:-}" ]; then
+        tmux display-message "Created worktree: $selected_branch -> $worktree_path"
+    fi
+
+    project_path="$worktree_path"
+fi
+
+session_name="$(sanitize_session_name "${repo_name}-${branch_dir}")"
+
+exec "$SCRIPT_DIR/../tmux-workflows.sh" "$session_name" "$project_path"

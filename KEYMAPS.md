@@ -9,6 +9,7 @@ Press `M-space` then `?` to see tmux's built-in key list/help.
 | Key | Action | Description |
 |-----|--------|-------------|
 | `M-space W` | **Project Picker** | Open `dev` project picker in a popup |
+| `M-space B` | **Branch Worktree** | Pick/type branch and create/switch worktree |
 | `M-space V` | **Editor Drawer** | Open/switch to `editor` window (`nvim`) |
 | `M-space Q` | **AI Drawer** | Open/switch to `ai` window (`codex`) |
 | `M-space G` | **Git Drawer** | Open/switch to `git` window (`lazygit`) |
@@ -140,9 +141,10 @@ Press `M-space` then `?` to see tmux's built-in key list/help.
 
 ### Tmux Workflow
 1. **Start with project picker**: Use `M-space W` to pick/create project sessions
-2. **Use Alt keys**: `Alt-1..9` and `Alt-arrows` work without prefix
-3. **Quick drawers**: `M-space V` (editor), `M-space Q` (AI), `M-space G` (git)
-4. **Development layout**: `M-space D` creates instant 3-pane setup
+2. **Create worktree fast**: Use `M-space B` in a repo to pick/type a branch worktree
+3. **Use Alt keys**: `Alt-1..9` and `Alt-arrows` work without prefix
+4. **Quick drawers**: `M-space V` (editor), `M-space Q` (AI), `M-space G` (git)
+5. **Development layout**: `M-space D` creates instant 3-pane setup
 
 ### Shell Optimization
 - **Auto NVM switching**: Just `cd` into project directories
@@ -157,7 +159,7 @@ Press `M-space` then `?` to see tmux's built-in key list/help.
 ### Memory Aids
 - **Tmux prefix**: `M-space` (Alt/Option + Space)
 - **Neovim leader**: `Space` (easy to reach)
-- **Project flow**: `W` picker, `V` editor, `Q` AI, `G` git
+- **Project flow**: `W` picker, `B` branch worktree, `V` editor, `Q` AI, `G` git
 - **Quick tools**: `r` reload config, `D` dev layout
 
 ---
