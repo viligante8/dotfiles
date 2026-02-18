@@ -31,7 +31,7 @@ tmux-dev-session() {
     
     # Window 3: AI (AI Assistant)
     tmux new-window -t "$session_name:3" -n 'ai' -c "$project_path"
-    tmux send-keys -t "$session_name:3" 'codex' Enter
+    tmux send-keys -t "$session_name:3" 'opencode' Enter
     
     # Window 4: LazyGit
     tmux new-window -t "$session_name:4" -n 'git' -c "$project_path"
@@ -86,7 +86,7 @@ dev-session() {
     
     # Window 3: AI assistant
     tmux new-window -t $session_name:3 -n 'ai' -c "$current_dir"
-    tmux send-keys -t $session_name:3 'codex' Enter
+    tmux send-keys -t $session_name:3 'opencode' Enter
     
     # Window 4: LazyGit
     tmux new-window -t $session_name:4 -n 'git' -c "$current_dir"
@@ -147,6 +147,7 @@ tmux-help() {
     echo ""
     echo "Project Sessions:"
     echo "  dev            - Use your tmux dev picker (recommended)"
+    echo "  dev-worktree   - Create/switch branch worktree from current repo"
     echo "  dev-session    - Start generic development session (current directory)"
     echo ""
     echo "Utilities:"
@@ -158,8 +159,9 @@ tmux-help() {
     echo ""
     echo "Tmux Key Bindings (Prefix: M-space):"
     echo "  M-space W      - Open project picker popup"
+    echo "  M-space B      - Create/switch branch worktree popup"
     echo "  M-space V      - Quick editor drawer (nvim)"
-    echo "  M-space Q      - Quick AI drawer (codex)"
+    echo "  M-space Q      - Quick AI drawer (opencode)"
     echo "  M-space G      - Quick LazyGit drawer"
     echo "  M-space D      - Quick 3-pane dev layout"
     echo "  M-space c      - New window in current path"
