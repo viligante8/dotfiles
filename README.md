@@ -60,6 +60,7 @@ dotfiles/
 ├── bin/bootstrap-dotfiles      # Feature-aware installer/bootstrap script
 ├── bin/dotfiles-config         # Config reader (merged shared + local)
 ├── bin/tmux-feature-drawer     # Feature-aware tmux drawer launcher
+├── opencode/                   # AI CLI configuration (linked to ~/.config/opencode)
 ├── nvim/                       # Neovim configuration
 │   ├── init.lua                # Main entry point
 │   ├── lazy-lock.json          # Plugin version lockfile
@@ -335,9 +336,9 @@ The plugin flow is modular, with one plugin config per file under `nvim/lua/plug
 
 Dependencies are installed by feature selection in `bin/bootstrap-dotfiles`.
 
-- Base dependencies come from `dependencies.base` in `dotfiles.config.json`.
-- Each feature declares its own dependencies in `features.<name>.dependencies`.
+- Every dependency is declared at feature level in `features.<name>.dependencies`.
 - If a feature is disabled, its dependencies are not installed and its tmux window is not created.
+- The `ai` feature installs `opencode` and links the `opencode` config directory.
 
 Common examples:
 - `editor` feature: `neovim`, `ripgrep`, `fd`

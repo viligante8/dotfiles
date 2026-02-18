@@ -124,9 +124,6 @@ elif command == "feature-dependencies":
     if len(args) != 1:
         fail("usage: feature-dependencies <feature>")
     list_values(feature(merged, args[0]).get("dependencies", []))
-elif command == "dependencies-base":
-    deps = merged.get("dependencies", {}).get("base", [])
-    list_values(deps)
 elif command == "symlinks":
     links = merged.get("bootstrap", {}).get("symlinks", [])
     if not isinstance(links, list):

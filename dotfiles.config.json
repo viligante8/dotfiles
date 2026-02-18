@@ -3,19 +3,15 @@
     "~/dev/personal",
     "~/dev/emsi"
   ],
-  "dependencies": {
-    "base": [
-      "bash",
-      "git",
-      "python3",
-      "fzf"
-    ]
-  },
   "features": {
     "coreShell": {
       "enabled": true,
       "description": "Zsh shell configuration and prompt",
       "dependencies": [
+        "bash",
+        "git",
+        "python3",
+        "fzf",
         "starship"
       ]
     },
@@ -46,7 +42,9 @@
       "command": "opencode",
       "sendEnter": true,
       "includeInDevSession": true,
-      "dependencies": []
+      "dependencies": [
+        "opencode"
+      ]
     },
     "gitUi": {
       "enabled": true,
@@ -87,6 +85,11 @@
         "source": "nvim",
         "target": "~/.config/nvim",
         "feature": "editor"
+      },
+      {
+        "source": "opencode",
+        "target": "~/.config/opencode",
+        "feature": "ai"
       }
     ]
   }

@@ -255,13 +255,7 @@ fi
 
 selected_csv="$(IFS=, ; echo "${SELECTED_FEATURES[*]}")"
 
-BASE_DEPS=()
-while IFS= read -r dep || [ -n "$dep" ]; do
-    [ -z "$dep" ] && continue
-    BASE_DEPS+=("$dep")
-done < <("$CONFIG_TOOL" dependencies-base)
-
-ALL_DEPS=("${BASE_DEPS[@]}")
+ALL_DEPS=()
 
 for feature in "${SELECTED_FEATURES[@]}"; do
     while IFS= read -r dep; do
