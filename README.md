@@ -53,13 +53,24 @@ Local overrides (`dotfiles.local.json`):
 dotfiles/
 ├── dotfiles.config.json         # Shared feature/dependency/project-root config
 ├── dotfiles.local.json          # Local overrides (gitignored)
+├── zprofile                     # Login-shell setup (Homebrew and user bin)
 ├── zshrc                       # Optimized Zsh configuration with Starship
 ├── .zshrc.secrets              # Private environment variables (gitignored)
 ├── tmux.conf                   # Tmux configuration with development workflows
-├── tmux-workflows.sh           # Development session automation scripts
+├── tmux-workflows.sh           # Legacy compatibility shim for old workflow functions
+├── bin/dev                     # Zoxide-based project picker
+├── bin/dev-worktree            # Branch-first worktree picker
+├── bin/dev-session             # Generic development session launcher
+├── bin/tmux-dev-session        # Shared session creator/switcher
+├── bin/dev-layout              # Quick 3-pane dev layout
+├── bin/tmux-feature-drawer     # Feature-aware tmux drawer launcher
+├── bin/tmux-list               # List active tmux sessions
+├── bin/tmux-attach             # Attach/switch to tmux sessions
+├── bin/tmux-clean              # Kill all tmux sessions
+├── bin/tmux-help               # Tmux workflow command help
 ├── bin/bootstrap-dotfiles      # Feature-aware installer/bootstrap script
 ├── bin/dotfiles-config         # Config reader (merged shared + local)
-├── bin/tmux-feature-drawer     # Feature-aware tmux drawer launcher
+├── bin/lib/tmux-session-lib.sh # Shared tmux session layout helpers
 ├── opencode/                   # AI CLI configuration (linked to ~/.config/opencode)
 ├── nvim/                       # Neovim configuration
 │   ├── init.lua                # Main entry point

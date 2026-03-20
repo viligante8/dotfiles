@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+sessions="$(tmux list-sessions -F '#S' 2>/dev/null || true)"
+
+if [ -z "$sessions" ]; then
+    echo "No tmux sessions to kill."
+    exit 0
+fi
+
+echo "Killing all tmux sessions..."
+while IFS= read -r session_name || [ -n "$session_name" ]; do
+    [ -z "$session_name" ] && continue
+    tmux kill-session -t "$session_name"
+done <<< "$sessions"
+echo "All sessions killed."

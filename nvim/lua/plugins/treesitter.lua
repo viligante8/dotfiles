@@ -11,6 +11,7 @@ return {
     ensure_installed = {
       "bash", "diff", "html", "javascript", "jsdoc", "json", "jsonc",
       "lua", "luadoc", "luap", "markdown", "markdown_inline",
+      "go", "gomod", "gowork", "gosum",
       "query", "regex", "toml", "tsx", "typescript", "vim", "vimdoc", "yaml",
     },
     incremental_selection = {

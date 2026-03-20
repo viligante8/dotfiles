@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [ $# -gt 1 ]; then
+    echo "Usage: dev-session [path]" >&2
+    exit 1
+fi
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=bin/lib/tmux-session-lib.sh
+. "$SCRIPT_DIR/lib/tmux-session-lib.sh"
+
+target_path="${1:-$PWD}"
+
+if [ ! -d "$target_path" ]; then
+    echo "Error: directory not found: $target_path" >&2
+    exit 1
+fi
+
+project_path="$(cd "$target_path" && pwd)"
+project_name="$(basename "$project_path")"
+session_name="$(tmux_sanitize_session_name project_name)"
+
+exec "$SCRIPT_DIR/tmux-dev-session" "$session_name" "$project_path" "dev"

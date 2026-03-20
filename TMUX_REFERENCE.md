@@ -2,9 +2,10 @@
 
 Source of truth for this document:
 - `tmux.conf`
-- `tmux-workflows.sh`
-- `zshrc` (sources `tmux-workflows.sh`)
 - `bin/dev`
+- `bin/dev-worktree`
+- `bin/tmux-dev-session`
+- `bin/lib/tmux-session-lib.sh`
 
 ## Prefix and Core Behavior
 
@@ -73,23 +74,23 @@ In copy mode:
 
 ## Shell Commands and Functions
 
-`zshrc` adds `$DOTFILES_DIR/bin` to `PATH` and sources `tmux-workflows.sh`, so these are available in shell:
+`zshrc` adds `$DOTFILES_DIR/bin` to `PATH`, so these standalone commands are available in shell:
 
 - `dev` - Interactive tmux project picker (from `bin/dev`).
 - `dev-worktree [path]` - Branch picker for current repo; creates/switches centralized worktrees.
-- `dev-session` - Create/attach a generic session for current directory (`dev-<dirname>`).
+- `dev-session [path]` - Create/attach a generic session (`dev-<dirname>`).
 - `dev-layout` - Create the same 3-pane layout as `M-space D`.
 - `tmux-list` - List active sessions.
-- `tmux-attach [session]` - Attach to most recent session or a named one.
+- `tmux-attach [session]` - Attach (or switch, if already in tmux) to most recent or named session.
 - `tmux-clean` - Kill all tmux sessions.
 - `tmux-help` - Print helper text.
 
-Internal wrapper:
-- `tmux-dev-session <session_name> <project_path>` - Used by `bin/dev`/keybinding flow.
+Internal command:
+- `tmux-dev-session <session_name> <project_path> [picker|dev]` - Used by `bin/dev`, `bin/dev-worktree`, and `bin/dev-session`.
 
 ## Session Layouts
 
-### `dev` picker flow (`bin/dev` -> `tmux-dev-session`)
+### `dev` picker flow (`bin/dev` -> `bin/tmux-dev-session`)
 Creates or attaches a named project session with 5 windows:
 1. `editor` (configured editor command; default `nvim`)
 2. `terminal`

@@ -273,4 +273,4 @@ fi
 
 session_name="$(sanitize_session_name "${repo_name}-${branch_dir}")"
 
-exec "$SCRIPT_DIR/../tmux-workflows.sh" "$session_name" "$project_path"
+exec "$SCRIPT_DIR/tmux-dev-session" "$session_name" "$project_path" "picker"

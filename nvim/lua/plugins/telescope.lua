@@ -4,6 +4,7 @@ return {
 	dependencies = {
 		"nvim-lua/plenary.nvim",
 		"nvim-telescope/telescope-ui-select.nvim",
+		"benfowler/telescope-luasnip.nvim",
 		"nvim-tree/nvim-web-devicons",
 	},
 	keys = {
@@ -18,6 +19,7 @@ return {
 		{ "<leader>sc", "<cmd>Telescope command_history<cr>", desc = "Command History" },
 		{ "<leader>sh", "<cmd>Telescope help_tags<cr>", desc = "Help Pages" },
 		{ "<leader>sk", "<cmd>Telescope keymaps<cr>", desc = "Key Maps" },
+		{ "<leader>sn", "<cmd>Telescope luasnip<cr>", desc = "Snippets" },
 		{ "<leader>sC", "<cmd>Telescope commands<cr>", desc = "Commands" },
 		-- LSP/Symbols (complement aerial and trouble)
 		{ "<leader>ss", "<cmd>Telescope lsp_document_symbols<cr>", desc = "Document Symbols" },
@@ -130,6 +132,7 @@ return {
 		})
 
 		pcall(telescope.load_extension, "ui-select")
+		pcall(telescope.load_extension, "luasnip")
 
 		-- ui-select extension handles vim.ui.select automatically
 	end,

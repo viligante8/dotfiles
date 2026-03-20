@@ -1,93 +1,65 @@
 #!/bin/bash
 
 # Universal project picker for tmux
-# Reads project directories from dotfiles.config.json and shows existing sessions at the top
+# Reads directories from zoxide sorted by score
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CONFIG_TOOL="$SCRIPT_DIR/dotfiles-config"
 
 sanitize_session_name() {
     echo "$1" | sed 's/[^a-zA-Z0-9]/-/g'
 }
 
-# Check config helper
-if [ ! -x "$CONFIG_TOOL" ]; then
-    echo "Error: Config helper not found or not executable at $CONFIG_TOOL"
+# Check zoxide availability
+if ! command -v zoxide >/dev/null 2>&1; then
+    echo "Error: zoxide is not installed or not in PATH"
     exit 1
 fi
 
 # Create temporary files for the menu
 TEMP_FILE=$(mktemp)
-EXISTING_SESSIONS_FILE=$(mktemp)
-ALL_PROJECTS_FILE=$(mktemp)
-SEEN_PATHS_FILE=$(mktemp)
 
 # Get list of existing tmux sessions
 existing_sessions=$(tmux list-sessions -F "#{session_name}" 2>/dev/null || true)
 
-# Collect all project directories from config
-all_projects=()
+# Build picker entries from zoxide with score and path.
+# Keep zoxide order so the list stays weight-sorted.
+while IFS= read -r line || [ -n "$line" ]; do
+    [ -z "$line" ] && continue
 
-project_roots=()
-while IFS= read -r root || [ -n "$root" ]; do
-    [ -z "$root" ] && continue
-    project_roots+=("$root")
-done < <("$CONFIG_TOOL" project-roots)
+    IFS=$' \t' read -r score dir_path <<< "$line"
+    [ -z "$dir_path" ] && continue
+    [ ! -d "$dir_path" ] && continue
 
-if [ ${#project_roots[@]} -eq 0 ]; then
-    echo "Error: no project roots configured in dotfiles.config.json"
+    project_name=$(basename "$dir_path")
+    session_name=$(sanitize_session_name "$project_name")
+
+    if echo "$existing_sessions" | grep -Fxq -- "$session_name"; then
+        printf '%s\t%s\t%s\n' "$score" "*" "$dir_path" >> "$TEMP_FILE"
+    else
+        printf '%s\t%s\t%s\n' "$score" " " "$dir_path" >> "$TEMP_FILE"
+    fi
+done < <(zoxide query -ls 2>/dev/null || true)
+
+if [ ! -s "$TEMP_FILE" ]; then
+    echo "Error: zoxide list is empty"
+    rm "$TEMP_FILE"
     exit 1
 fi
 
-for expanded_dir in "${project_roots[@]}"; do
-    if [ -d "$expanded_dir" ]; then
-        # Scan subdirectories
-        for dir in "$expanded_dir"/*; do
-            if [ -d "$dir" ]; then
-                basename_dir=$(basename "$dir")
-                real_path=$(realpath "$dir" 2>/dev/null || echo "$dir")
-                
-                # Check if we've seen this path before
-                if ! grep -Fxq "$real_path" "$SEEN_PATHS_FILE"; then
-                    echo "$real_path" >> "$SEEN_PATHS_FILE"
-                    all_projects+=("$basename_dir -> $dir")
-                fi
-            fi
-        done
-    fi
-done
-
-# Separate existing sessions from new projects
-for project in "${all_projects[@]}"; do
-    project_name=$(echo "$project" | cut -d' ' -f1)
-    # Convert project name to session name format (replace special chars with dashes)
-    session_name=$(sanitize_session_name "$project_name")
-    
-    # Check if this project has an existing session
-    if echo "$existing_sessions" | grep -q "^${session_name}$"; then
-        echo "🔄 $project" >> "$EXISTING_SESSIONS_FILE"
-    else
-        echo "$project" >> "$ALL_PROJECTS_FILE"
-    fi
-done
-
-# Combine files: existing sessions first, then all other projects
-cat "$EXISTING_SESSIONS_FILE" "$ALL_PROJECTS_FILE" > "$TEMP_FILE"
-
 # Use fzf to show the picker
-selected=$(cat "$TEMP_FILE" | fzf --height=40% --layout=reverse --border --prompt="Select project: ")
+selected=$(cat "$TEMP_FILE" | fzf --height=40% --layout=reverse --border --prompt="Select project: " --delimiter=$'\t' --with-nth=1,2,3)
 
 # Clean up temp files
-rm "$TEMP_FILE" "$EXISTING_SESSIONS_FILE" "$ALL_PROJECTS_FILE" "$SEEN_PATHS_FILE"
+rm "$TEMP_FILE"
 
 # Exit if nothing selected
 if [ -z "$selected" ]; then
     exit 0
 fi
 
-# Extract project name and path (remove emoji prefix if present)
-project_name=$(echo "$selected" | sed 's/^🔄 //' | cut -d' ' -f1)
-project_path=$(echo "$selected" | sed 's/^🔄 //' | cut -d'>' -f2 | xargs)
+# Extract project path from selected zoxide entry
+project_path=$(printf '%s' "$selected" | cut -f3)
+project_name=$(basename "$project_path")
 
 # If this is a git repo with multiple worktrees, ask which one to use
 worktree_paths=()
@@ -135,7 +107,7 @@ if [ ${#worktree_paths[@]} -gt 1 ]; then
 
         worktree_entry="$worktree_name -> $worktree_path"
 
-        if echo "$existing_sessions" | grep -Fxq "$worktree_session_name"; then
+        if echo "$existing_sessions" | grep -Fxq -- "$worktree_session_name"; then
             echo "🔄 $worktree_entry" >> "$WORKTREE_EXISTING_SESSIONS_FILE"
         else
             echo "$worktree_entry" >> "$WORKTREE_ALL_FILE"
@@ -164,5 +136,5 @@ fi
 # Create session name (replace dots and special chars with dashes)
 session_name=$(sanitize_session_name "$project_name")
 
-# Use the existing tmux-workflows.sh script to create the session
-exec "$SCRIPT_DIR/../tmux-workflows.sh" "$session_name" "$project_path"
+# Use tmux-dev-session to create or switch the session
+exec "$SCRIPT_DIR/tmux-dev-session" "$session_name" "$project_path" "picker"

@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+echo "Active tmux sessions:"
+tmux list-sessions 2>/dev/null || echo "No active sessions"

@@ -17,6 +17,7 @@ return {
 		dependencies = {
 			"mason.nvim",
 			"mason-lspconfig.nvim",
+			"hrsh7th/cmp-nvim-lsp",
 		},
 		config = function()
 			-- LSP keymaps (applied when LSP attaches to buffer)
@@ -40,8 +41,8 @@ return {
 
 			-- Enhanced capabilities for completion
 			local capabilities = vim.lsp.protocol.make_client_capabilities()
-			if pcall(require, "blink.cmp") then
-				capabilities = require("blink.cmp").get_lsp_capabilities(capabilities)
+			if pcall(require, "cmp_nvim_lsp") then
+				capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
 			end
 
 			-- List of LSP servers to install and configure
@@ -49,6 +50,7 @@ return {
 				"lua_ls",
 				"ts_ls",
 				"pyright", -- Python
+				"gopls", -- Go
 				"rust_analyzer", -- Rust
 				"clangd", -- C/C++
 				"bashls", -- Bash
@@ -87,4 +89,3 @@ return {
 		end,
 	},
 }
-

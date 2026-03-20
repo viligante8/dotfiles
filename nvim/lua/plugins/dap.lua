@@ -9,6 +9,7 @@ return {
 			"rcarriga/nvim-dap-ui",
 			"nvim-neotest/nvim-nio",
 			"jay-babu/mason-nvim-dap.nvim",
+			"leoluz/nvim-dap-go",
 			"nvim-telescope/telescope.nvim",
 			"nvim-telescope/telescope-ui-select.nvim",
 		},
@@ -87,6 +88,20 @@ return {
 					desc = "DAP UI",
 				},
 				{
+					"<leader>dgt",
+					function()
+						require("dap-go").debug_test()
+					end,
+					desc = "Debug Go Test",
+				},
+				{
+					"<leader>dgl",
+					function()
+						require("dap-go").debug_last_test()
+					end,
+					desc = "Debug Last Go Test",
+				},
+				{
 					"<leader>de",
 					function()
 						dapui.eval()
@@ -99,8 +114,6 @@ return {
 		config = function()
 			local dap = require("dap")
 			local dapui = require("dapui")
-			local vscode = require("dap.ext.vscode")
-
 			-- Make dap config & process selection use Telescope dropdown
 			require("telescope").setup({
 				extensions = {
@@ -121,10 +134,16 @@ return {
 				dapui.close({})
 			end
 
-			-- Install js-debug-adapter
+			-- Install JS and Go debug adapters
 			require("mason-nvim-dap").setup({
-				ensure_installed = { "js-debug-adapter" },
+				ensure_installed = { "js-debug-adapter", "delve" },
 				automatic_installation = true,
+			})
+
+			require("dap-go").setup({
+				delve = {
+					path = vim.fn.stdpath("data") .. "/mason/bin/dlv",
+				},
 			})
 
 			-- Path to js-debug-adapter installed by Mason

@@ -1,3 +1,4 @@
+typeset -U path PATH
 # ============================================================================
 # OS DETECTION
 # ============================================================================
@@ -155,7 +156,7 @@ autoload -U add-zsh-hook
 add-zsh-hook chpwd load_nvm_if_needed
 
 # Check on shell startup (for tmux sessions that start in project directories)
-load_nvm_if_needed
+# load_nvm_if_needed
 
 # ============================================================================
 # LAZY-LOADED NODE COMMANDS
@@ -179,47 +180,6 @@ nvm() {
   nvm "$@"
 }
 
-# Lazy load Node.js
-node() {
-  unset -f node
-  load_nvm_if_needed
-  command node "$@"
-}
-
-# Lazy load npm
-npm() {
-  unset -f npm  
-  load_nvm_if_needed
-  command npm "$@"
-}
-
-# Lazy load npx
-npx() {
-  unset -f npx
-  load_nvm_if_needed
-  command npx "$@"
-}
-
-# Lazy load yarn
-yarn() {
-  unset -f yarn
-  load_nvm_if_needed
-  command yarn "$@"
-}
-
-# Lazy load bun
-bun() {
-  unset -f bun
-  load_nvm_if_needed
-  command bun "$@"
-}
-
-# Lazy load bunx
-bunx() {
-  unset -f bunx
-  load_nvm_if_needed
-  command bunx "$@"
-}
 
 # ============================================================================
 # FZF INTEGRATION
@@ -347,8 +307,8 @@ RPROMPT=""
 # Load private environment variables (API keys, tokens, etc.)
 [ -f "$DOTFILES_DIR/zshrc.secrets" ] && source "$DOTFILES_DIR/zshrc.secrets"
 
-# Load tmux workflow functions (your custom session management)
-[ -f "$DOTFILES_DIR/tmux-workflows.sh" ] && source "$DOTFILES_DIR/tmux-workflows.sh"
+# Tmux workflow commands are standalone scripts in $DOTFILES_DIR/bin
+# (dev, dev-session, dev-worktree, tmux-help, etc.)
 
 # ============================================================================
 # AI INTEGRATION (Post-block)
@@ -388,3 +348,5 @@ if [[ -d "${HOME}/.colima/default" ]]; then
     export TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE=/var/run/docker.sock
 fi
 export NODE_OPTIONS=--dns-result-order=ipv4first
+
+eval "$(zoxide init zsh --cmd cd)"

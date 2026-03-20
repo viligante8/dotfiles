@@ -77,6 +77,11 @@
         "feature": "coreShell"
       },
       {
+        "source": "zprofile",
+        "target": "~/.zprofile",
+        "feature": "coreShell"
+      },
+      {
         "source": "tmux.conf",
         "target": "~/.tmux.conf",
         "feature": "tmux"
