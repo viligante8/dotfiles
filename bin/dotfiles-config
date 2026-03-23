@@ -68,10 +68,6 @@ def list_values(value):
         print(item)
 
 
-def expanded_path(value: str) -> str:
-    return os.path.expanduser(os.path.expandvars(value))
-
-
 config_path = sys.argv[1]
 local_path = sys.argv[2]
 argv = sys.argv[3:]
@@ -88,12 +84,6 @@ args = argv[1:]
 
 if command == "dump-json":
     print(json.dumps(merged, indent=2))
-elif command == "project-roots":
-    roots = merged.get("projectRoots")
-    if not isinstance(roots, list):
-        fail("missing or invalid 'projectRoots' array")
-    for root in roots:
-        print(expanded_path(str(root)))
 elif command == "feature-list":
     features = merged.get("features")
     if not isinstance(features, dict):

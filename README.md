@@ -25,7 +25,6 @@ The setup is fully config-driven:
 Shared defaults (`dotfiles.config.json`):
 ```json
 {
-  "projectRoots": ["~/dev/personal", "~/dev/emsi"],
   "features": {
     "editor": { "enabled": true, "command": "nvim" },
     "ai": { "enabled": true, "command": "opencode" },
@@ -38,7 +37,6 @@ Shared defaults (`dotfiles.config.json`):
 Local overrides (`dotfiles.local.json`):
 ```json
 {
-  "projectRoots": ["~/code"],
   "features": {
     "editor": { "command": "emacs -nw" },
     "gitUi": { "enabled": false },
@@ -51,23 +49,15 @@ Local overrides (`dotfiles.local.json`):
 
 ```
 dotfiles/
-├── dotfiles.config.json         # Shared feature/dependency/project-root config
+├── dotfiles.config.json         # Shared feature and dependency config
 ├── dotfiles.local.json          # Local overrides (gitignored)
 ├── zprofile                     # Login-shell setup (Homebrew and user bin)
 ├── zshrc                       # Optimized Zsh configuration with Starship
 ├── .zshrc.secrets              # Private environment variables (gitignored)
 ├── tmux.conf                   # Tmux configuration with development workflows
-├── tmux-workflows.sh           # Legacy compatibility shim for old workflow functions
-├── bin/dev                     # Zoxide-based project picker
+├── bin/dev                     # Main dev workspace launcher for current directory
 ├── bin/dev-worktree            # Branch-first worktree picker
-├── bin/dev-session             # Generic development session launcher
-├── bin/tmux-dev-session        # Shared session creator/switcher
-├── bin/dev-layout              # Quick 3-pane dev layout
 ├── bin/tmux-feature-drawer     # Feature-aware tmux drawer launcher
-├── bin/tmux-list               # List active tmux sessions
-├── bin/tmux-attach             # Attach/switch to tmux sessions
-├── bin/tmux-clean              # Kill all tmux sessions
-├── bin/tmux-help               # Tmux workflow command help
 ├── bin/bootstrap-dotfiles      # Feature-aware installer/bootstrap script
 ├── bin/dotfiles-config         # Config reader (merged shared + local)
 ├── bin/lib/tmux-session-lib.sh # Shared tmux session layout helpers

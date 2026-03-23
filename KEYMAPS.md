@@ -8,7 +8,7 @@ Press `M-space` then `?` to see tmux's built-in key list/help.
 ### 🏗️ Development Workflows
 | Key | Action | Description |
 |-----|--------|-------------|
-| `M-space W` | **Project Picker** | Open `dev` project picker in a popup |
+| `M-space W` | **Dev Session** | Start/switch `dev` for current pane path |
 | `M-space B` | **Branch Worktree** | Pick/type branch and create/switch worktree |
 | `M-space V` | **Editor Drawer** | Open/switch to configured editor window command |
 | `M-space Q` | **AI Drawer** | Open/switch to configured AI window command |
@@ -16,18 +16,12 @@ Press `M-space` then `?` to see tmux's built-in key list/help.
 | `M-space D` | **Dev Layout** | Create 3-pane layout (nvim + 2 terminals) |
 
 **Session Layout:**
-`dev` picker session:
+`dev`:
 - Window 1: `editor` (configured command, default `nvim`)
 - Window 2: `terminal`
 - Window 3: `ai` (configured command, default `opencode`)
 - Window 4: `git` (configured command, default `lazygit`)
-- Window 5: `dbdev` (pre-types `dbdev`)
-
-`dev-session`:
-- Window 1: `editor` (configured command, default `nvim`)
-- Window 2: `terminal`
-- Window 3: `ai` (configured command, default `opencode`)
-- Window 4: `git` (configured command, default `lazygit`)
+- Additional feature windows are included only if `includeInDevSession` is enabled.
 
 ### 🪟 Window & Pane Management
 | Key | Action | Description |
@@ -137,7 +131,7 @@ Press `M-space` then `?` to see tmux's built-in key list/help.
 ## 💡 Pro Tips
 
 ### Tmux Workflow
-1. **Start with project picker**: Use `M-space W` to pick/create project sessions
+1. **Start from your current directory**: Use `M-space W` (or `dev`) to open your dev session
 2. **Create worktree fast**: Use `M-space B` in a repo to pick/type a branch worktree
 3. **Use Alt keys**: `Alt-1..9` and `Alt-arrows` work without prefix
 4. **Quick drawers**: `M-space V` (editor), `M-space Q` (AI), `M-space G` (git)
@@ -155,7 +149,7 @@ Press `M-space` then `?` to see tmux's built-in key list/help.
 ### Memory Aids
 - **Tmux prefix**: `M-space` (Alt/Option + Space)
 - **Neovim leader**: `Space` (easy to reach)
-- **Project flow**: `W` picker, `B` branch worktree, `V` editor, `Q` AI, `G` git
+- **Project flow**: `W` dev session, `B` branch worktree, `V` editor, `Q` AI, `G` git
 - **Quick tools**: `r` reload config, `D` dev layout
 
 ---

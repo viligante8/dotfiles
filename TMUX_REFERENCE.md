@@ -4,7 +4,7 @@ Source of truth for this document:
 - `tmux.conf`
 - `bin/dev`
 - `bin/dev-worktree`
-- `bin/tmux-dev-session`
+- `bin/tmux-feature-drawer`
 - `bin/lib/tmux-session-lib.sh`
 
 ## Prefix and Core Behavior
@@ -29,7 +29,7 @@ Source of truth for this document:
 - `M-space H/J/K/L` - Resize pane left/down/up/right by 5 cells (repeatable).
 
 ### Workflow Shortcuts
-- `M-space W` - Open project picker popup (`bin/dev`).
+- `M-space W` - Start/switch `dev` for `#{pane_current_path}`.
 - `M-space B` - Pick/type branch and create or switch repo worktree (`bin/dev-worktree`).
 - `M-space V` - Open/switch to `editor` window; if missing, create it using configured editor command.
 - `M-space Q` - Open/switch to `ai` window; if missing, create it using configured AI command.
@@ -47,79 +47,34 @@ Source of truth for this document:
 - `Alt-Shift-l` - Next window.
 - `Alt-h` - Previous window.
 
-## Useful tmux Defaults Still Active (Now Using `M-space` Prefix)
+## Shell Commands
 
-- `M-space d` - Detach session.
-- `M-space s` - List sessions.
-- `M-space $` - Rename session.
-- `M-space ,` - Rename window.
-- `M-space n` / `M-space p` - Next/previous window.
-- `M-space 1..9` - Select window by number.
-- `M-space x` - Kill pane.
-- `M-space z` - Toggle pane zoom.
-- `M-space [` - Enter copy mode.
-- `M-space ]` - Paste copied text.
+`zshrc` adds `$DOTFILES_DIR/bin` to `PATH`, so these commands are available in shell:
 
-Notes:
-- Default split bindings `"` and `%` are unbound intentionally.
-- `M-space ?` is tmux's default key list/help screen.
-
-## Copy Mode
-
-- Copy mode uses vi keys (`mode-keys vi`).
-In copy mode:
-- `v` - Begin selection.
-- `y` - Copy selection to macOS clipboard via `pbcopy`, then exit copy mode.
-- `r` - Toggle rectangle selection.
-
-## Shell Commands and Functions
-
-`zshrc` adds `$DOTFILES_DIR/bin` to `PATH`, so these standalone commands are available in shell:
-
-- `dev` - Interactive tmux project picker (from `bin/dev`).
+- `dev [path]` - Create/attach a dev session (`dev-<dirname>`) using feature-driven windows.
 - `dev-worktree [path]` - Branch picker for current repo; creates/switches centralized worktrees.
-- `dev-session [path]` - Create/attach a generic session (`dev-<dirname>`).
-- `dev-layout` - Create the same 3-pane layout as `M-space D`.
-- `tmux-list` - List active sessions.
-- `tmux-attach [session]` - Attach (or switch, if already in tmux) to most recent or named session.
-- `tmux-clean` - Kill all tmux sessions.
-- `tmux-help` - Print helper text.
 
-Internal command:
-- `tmux-dev-session <session_name> <project_path> [picker|dev]` - Used by `bin/dev`, `bin/dev-worktree`, and `bin/dev-session`.
+## Session Layout
 
-## Session Layouts
-
-### `dev` picker flow (`bin/dev` -> `bin/tmux-dev-session`)
-Creates or attaches a named project session with 5 windows:
-1. `editor` (configured editor command; default `nvim`)
-2. `terminal`
-3. `ai` (configured command; default `opencode`)
-4. `git` (configured command; default `lazygit`)
-5. `dbdev` (configured command; default `dbdev`, no Enter)
-
-### `dev-session`
-Creates or attaches `dev-<dirname>` with 4 windows:
+### `dev`
+Creates or attaches `dev-<dirname>` with feature-driven windows:
 1. `editor` (configured editor command; default `nvim`)
 2. `terminal` (`clear`)
 3. `ai` (configured command; default `opencode`)
 4. `git` (configured command; default `lazygit`)
 
-## Project Picker (`dev`) Notes
+Notes:
+- Windows are controlled by feature config in `dotfiles.config.json`.
+- Features with `includeInDevSession: false` (for example `database`) are excluded.
+- If a session already exists, missing configured windows are added automatically.
 
-- Reads roots from `dotfiles.config.json` (with optional `dotfiles.local.json` overrides).
-- Scans subdirectories as projects.
-- Existing tmux sessions are shown first.
-- If selected project is a git repo with multiple non-bare worktrees, prompts for worktree.
-- Session names are sanitized to alphanumeric with dashes.
-
-## Branch Worktree Picker (`dev-worktree`) Notes
-
+### `dev-worktree`
 - Intended for use from inside a repo (or with an explicit path argument).
 - Opens a branch picker; typed input creates a new branch from current `HEAD`.
 - Stores worktrees under `~/dev/worktrees/<repo>/<sanitized-branch>`.
 - Branch names with `/` are sanitized for directory/session names (for example, `feature/foo` -> `feature-foo`).
 - Reuses existing worktree paths when a branch is already checked out.
+- Launches/attaches using the same feature-driven layout logic as `dev`.
 
 ## Plugins (TPM)
 
@@ -134,8 +89,3 @@ TPM commands (use tmux prefix, now `M-space`):
 - `M-space I` - Install plugins.
 - `M-space U` - Update plugins.
 - `M-space Alt-u` - Remove unused plugins.
-
-## Known Mismatches in Other Docs
-
-- Some older docs still mention `Ctrl-a`; actual prefix is `M-space`.
-- `tmux.conf` includes `@tmux-which-key-*` options, but no `tmux-which-key` plugin is currently declared.

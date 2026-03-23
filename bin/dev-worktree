@@ -273,4 +273,7 @@ fi
 
 session_name="$(sanitize_session_name "${repo_name}-${branch_dir}")"
 
-exec "$SCRIPT_DIR/tmux-dev-session" "$session_name" "$project_path" "picker"
+# shellcheck source=bin/lib/tmux-session-lib.sh
+. "$SCRIPT_DIR/lib/tmux-session-lib.sh"
+tmux_require_config_tool
+tmux_ensure_session "$session_name" "$project_path"

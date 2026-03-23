@@ -34,7 +34,7 @@
       "sed *": "allow",
       "ls *": "allow",
       "npm *": "allow",
-      "openspec *": "allow",
+      "openspec *": "allow"
     },
     "external_directory": "ask",
   },

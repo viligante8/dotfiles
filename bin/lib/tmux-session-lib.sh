@@ -67,13 +67,12 @@ tmux_feature_send_enter() {
 
 tmux_append_feature_window() {
     local feature_name="$1"
-    local mode="$2"
 
     if ! tmux_feature_enabled "$feature_name"; then
         return
     fi
 
-    if [ "$mode" = "dev" ] && ! tmux_feature_in_dev_session "$feature_name"; then
+    if ! tmux_feature_in_dev_session "$feature_name"; then
         return
     fi
 
@@ -83,34 +82,51 @@ tmux_append_feature_window() {
 }
 
 tmux_build_window_plan() {
-    local mode="$1"
-
     TMUX_PLAN_NAMES=()
     TMUX_PLAN_COMMANDS=()
     TMUX_PLAN_SEND_ENTER=()
 
-    tmux_append_feature_window "editor" "$mode"
+    tmux_append_feature_window "editor"
 
     TMUX_PLAN_NAMES+=("terminal")
-    if [ "$mode" = "dev" ]; then
-        TMUX_PLAN_COMMANDS+=("clear")
-    else
-        TMUX_PLAN_COMMANDS+=("")
-    fi
+    TMUX_PLAN_COMMANDS+=("clear")
     TMUX_PLAN_SEND_ENTER+=("true")
 
-    tmux_append_feature_window "ai" "$mode"
-    tmux_append_feature_window "git" "$mode"
-    tmux_append_feature_window "database" "$mode"
+    tmux_append_feature_window "ai"
+    tmux_append_feature_window "gitUi"
+    tmux_append_feature_window "database"
+}
+
+tmux_send_window_command() {
+    local target_window="$1"
+    local command_to_run="$2"
+    local send_enter="$3"
+
+    if [ -z "$command_to_run" ]; then
+        return
+    fi
+
+    if [ "$send_enter" = "true" ]; then
+        tmux send-keys -t "$target_window" "$command_to_run" Enter
+    else
+        tmux send-keys -t "$target_window" "$command_to_run"
+    fi
+}
+
+tmux_session_has_window() {
+    local session_name="$1"
+    local window_name="$2"
+
+    tmux list-windows -t "$session_name" -F "#{window_name}" 2>/dev/null \
+        | grep -Fxq -- "$window_name"
 }
 
 tmux_create_session_layout() {
     local session_name="$1"
     local project_path="$2"
-    local mode="$3"
     local i
 
-    tmux_build_window_plan "$mode"
+    tmux_build_window_plan
 
     if [ ${#TMUX_PLAN_NAMES[@]} -eq 0 ]; then
         echo "Error: no windows configured for tmux session" >&2
@@ -131,16 +147,31 @@ tmux_create_session_layout() {
             tmux new-window -t "$target_window" -n "$window_name" -c "$project_path"
         fi
 
-        if [ -n "$command_to_run" ]; then
-            if [ "$send_enter" = "true" ]; then
-                tmux send-keys -t "$target_window" "$command_to_run" Enter
-            else
-                tmux send-keys -t "$target_window" "$command_to_run"
-            fi
-        fi
+        tmux_send_window_command "$target_window" "$command_to_run" "$send_enter"
     done
 
     tmux select-window -t "$session_name:1"
+}
+
+tmux_reconcile_session_layout() {
+    local session_name="$1"
+    local project_path="$2"
+    local i
+
+    tmux_build_window_plan
+
+    for ((i = 0; i < ${#TMUX_PLAN_NAMES[@]}; i++)); do
+        local window_name="${TMUX_PLAN_NAMES[$i]}"
+        local command_to_run="${TMUX_PLAN_COMMANDS[$i]}"
+        local send_enter="${TMUX_PLAN_SEND_ENTER[$i]}"
+
+        if tmux_session_has_window "$session_name" "$window_name"; then
+            continue
+        fi
+
+        tmux new-window -t "$session_name:" -n "$window_name" -c "$project_path"
+        tmux_send_window_command "$session_name:$window_name" "$command_to_run" "$send_enter"
+    done
 }
 
 tmux_switch_or_attach() {
@@ -156,13 +187,13 @@ tmux_switch_or_attach() {
 tmux_ensure_session() {
     local session_name="$1"
     local project_path="$2"
-    local mode="$3"
 
     if tmux has-session -t "$session_name" 2>/dev/null; then
+        tmux_reconcile_session_layout "$session_name" "$project_path"
         tmux_switch_or_attach "$session_name"
         return
     fi
 
-    tmux_create_session_layout "$session_name" "$project_path" "$mode"
+    tmux_create_session_layout "$session_name" "$project_path"
     tmux_switch_or_attach "$session_name"
 }

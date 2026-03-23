@@ -194,6 +194,11 @@ nvm() {
 # This prevents zsh from switching to vi mode based on EDITOR variable
 bindkey -e
 
+# Ensure Delete and Backspace are mapped correctly across terminal types
+[[ -n ${terminfo[kdch1]-} ]] && bindkey "${terminfo[kdch1]}" delete-char
+[[ -n ${terminfo[kbs]-} ]] && bindkey "${terminfo[kbs]}" backward-delete-char
+bindkey '^[[3~' delete-char
+
 # ============================================================================
 # ENHANCED HISTORY SEARCH
 # ============================================================================
@@ -308,7 +313,7 @@ RPROMPT=""
 [ -f "$DOTFILES_DIR/zshrc.secrets" ] && source "$DOTFILES_DIR/zshrc.secrets"
 
 # Tmux workflow commands are standalone scripts in $DOTFILES_DIR/bin
-# (dev, dev-session, dev-worktree, tmux-help, etc.)
+# (dev, dev-worktree, tmux-feature-drawer, etc.)
 
 # ============================================================================
 # AI INTEGRATION (Post-block)
