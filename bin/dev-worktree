@@ -114,17 +114,27 @@ branch_rows="$(git -C "$repo_root" for-each-ref --format=$'%(refname)\t%(refname
             ts = $3 + 0
 
             branch = ""
+            is_local = 0
+            is_remote = 0
+            remote_source = ""
+
             if (ref ~ /^refs\/heads\//) {
                 branch = short
+                is_local = 1
             } else if (ref ~ /^refs\/remotes\//) {
                 slash = index(short, "/")
                 if (slash <= 0) {
                     next
                 }
-                branch = substr(short, slash + 1)
-                if (branch == "HEAD") {
+
+                remote_branch = substr(short, slash + 1)
+                if (remote_branch == "HEAD") {
                     next
                 }
+
+                branch = remote_branch
+                is_remote = 1
+                remote_source = short
             } else {
                 next
             }
@@ -136,10 +146,24 @@ branch_rows="$(git -C "$repo_root" for-each-ref --format=$'%(refname)\t%(refname
             if (!(branch in max_ts) || ts > max_ts[branch]) {
                 max_ts[branch] = ts
             }
+
+            if (is_local) {
+                has_local[branch] = 1
+            }
+
+            if (is_remote) {
+                has_remote[branch] = 1
+                if (!(branch in preferred_remote) || remote_source ~ /^origin\//) {
+                    preferred_remote[branch] = remote_source
+                }
+            }
         }
         END {
             for (branch in max_ts) {
-                print branch "\t" max_ts[branch]
+                local_flag = (branch in has_local) ? 1 : 0
+                remote_flag = (branch in has_remote) ? 1 : 0
+                source = (branch in preferred_remote) ? preferred_remote[branch] : ""
+                print branch "\t" max_ts[branch] "\t" local_flag "\t" remote_flag "\t" source
             }
         }
     ' \
@@ -147,7 +171,7 @@ branch_rows="$(git -C "$repo_root" for-each-ref --format=$'%(refname)\t%(refname
 
 branch_entries=()
 now_epoch="$(date +%s)"
-while IFS=$'\t' read -r branch branch_ts; do
+while IFS=$'\t' read -r branch branch_ts has_local has_remote remote_source; do
     [ -z "$branch" ] && continue
     meta_parts=()
 
@@ -155,13 +179,11 @@ while IFS=$'\t' read -r branch branch_ts; do
         meta_parts+=("current")
     fi
 
-    if git -C "$repo_root" show-ref --verify --quiet "refs/heads/$branch"; then
+    if [ "$has_local" = "1" ]; then
         meta_parts+=("local")
     fi
 
-    remote_source="$(find_remote_branch_source "$repo_root" "$branch" || true)"
-
-    if [ -n "$remote_source" ]; then
+    if [ "$has_remote" = "1" ]; then
         meta_parts+=("remote")
     fi
 
@@ -205,6 +227,13 @@ fi
 if ! git check-ref-format --branch "$selected_branch" >/dev/null 2>&1; then
     echo "Error: '$selected_branch' is not a valid branch name."
     exit 1
+fi
+
+selected_branch_info="$(printf '%s\n' "$branch_rows" | awk -F'\t' -v branch="$selected_branch" '$1 == branch { print; exit }')"
+selected_branch_has_local=""
+selected_branch_remote_source=""
+if [ -n "$selected_branch_info" ]; then
+    IFS=$'\t' read -r _ _ selected_branch_has_local _ selected_branch_remote_source <<< "$selected_branch_info"
 fi
 
 existing_worktree_path=""
@@ -252,10 +281,14 @@ else
         exit 1
     fi
 
-    if git -C "$repo_root" show-ref --verify --quiet "refs/heads/$selected_branch"; then
+    if [ "$selected_branch_has_local" = "1" ] || git -C "$repo_root" show-ref --verify --quiet "refs/heads/$selected_branch"; then
         git -C "$repo_root" worktree add "$worktree_path" "$selected_branch"
     else
-        remote_source="$(find_remote_branch_source "$repo_root" "$selected_branch" || true)"
+        remote_source="$selected_branch_remote_source"
+
+        if [ -z "$remote_source" ]; then
+            remote_source="$(find_remote_branch_source "$repo_root" "$selected_branch" || true)"
+        fi
 
         if [ -n "$remote_source" ]; then
             git -C "$repo_root" worktree add -b "$selected_branch" "$worktree_path" "$remote_source"
